@@ -19,19 +19,15 @@ From: debian:stretch-slim
 
     # ANTs
     apt-get -y install ants
-    apt-get update
 
     # FSL
     apt-get -y install fsl-core fsl-atlases
-    apt-get update
 
     # AFNI
     apt-get -y install afni
-    apt-get update
 
     # Workbench
     apt-get -y install connectome-workbench
-    apt-get update
 
     # Freesurfer
     cd /tmp
