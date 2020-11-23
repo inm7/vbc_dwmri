@@ -50,6 +50,9 @@ From: debian:stretch-slim
     ./configure
     ./build
     ./set_path
+    # remove compiler artifacts
+    # not using `./build clean`, seems to delete stuff in bin/ too
+    rm -rf ./tmp
 
     # cleanup
     apt-get autoremove
