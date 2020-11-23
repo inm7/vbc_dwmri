@@ -1,14 +1,9 @@
 Bootstrap: docker
 From: debian:stretch-slim
 
-%files
+%setup
     # install your pipeline script into /usr/local/bin
-    /local_path/to/directory/of/pipelin_scripts/container_SC_pipeline.sh /usr/local/bin/container_SC_pipeline.sh
-    /local_path/to/directory/of/pipelin_scripts/container_SC_preprocess.sh /usr/local/bin/container_SC_preprocess.sh
-    /local_path/to/directory/of/pipelin_scripts/container_SC_tractography.sh /usr/local/bin/container_SC_tractography.sh
-    /local_path/to/directory/of/pipelin_scripts/container_SC_atlas_transformation.sh /usr/local/bin/container_SC_atlas_transformation.sh
-    /local_path/to/directory/of/pipelin_scripts/Container/container_SC_reconstruct.sh /usr/local/bin/container_SC_reconstruct.sh
-    /local_path/to/directory/of/pipelin_scripts/Container/container_SC_dependencies.sh /usr/local/bin/container_SC_dependencies.sh
+    install -m 755 ./code/* ${SINGULARITY_ROOTFS}/usr/local/bin
 
 %environment
     export LC_ALL=C
