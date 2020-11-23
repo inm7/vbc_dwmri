@@ -75,10 +75,8 @@ From: debian:stretch-slim
     exec echo "bash ${pipeline} ${input}"
 
 %labels
-    Author Kyesam Jung (k.jung@fz-juelich.de)
-    Version v0.0.0 - Install AFNI (5 Nov. 2020)
-    Version v0.0.1 - Install FSL, AFNI, ANTs, and Workbench (6 Nov. 2020)
-    Version v1.0.0 - Install AFNI, FSL, ANTs, Freesurfer, Workbench, and MRtrix3 (7 Nov. 2020)
+    author Kyesam Jung (k.jung@fz-juelich.de)
+    version 1.0.0
 
 %help
     This container contains AFNI, FSL, ANTs, Freesurfer, Workbench, and MRtrix3.
