@@ -22,7 +22,7 @@ From: debian:stretch-slim
     apt-get update
 
     # FSL
-    apt-get -y install fsl-complete
+    apt-get -y install fsl-core fsl-atlases
     apt-get update
 
     # AFNI
