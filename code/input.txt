@@ -1,0 +1,67 @@
+# Freesurfer license
+# ------------------
+email=end.user@your-institute.de
+digit=xxxxx
+line1=xxxxxxxxxxxxx
+line2=xxxxxxxxxxxxx
+
+# Input variables
+# ---------------
+grp=INM                                 # Name of dataset
+sbj=Sub-1234                            # Subject's ID
+tract=100000                            # Total number of streamlines for whole-brain tractography
+atlname=atlas_prefix                    # Name of atlas for prefixing results
+numparc=100                             # Total number of regions in a given atlas
+shells=0,1000,2000,3000                 # shells=0,1000,2000,3000 for HCP dwMRI, i.e., b-values
+
+# Paths setting
+# -------------
+tp=/mnt_sc/path/to/results              # Target (result) path
+sp=/mnt_sc/path/to/raw_data             # Source (raw) data path
+wp=/mnt_sc/path/to/scripts              # Working path
+fp=/mnt_sc/freesurfer/subjects          # Subject's path for freesurfer
+ap=/mnt_sc/path/to/atlas/atlas.nii.gz   # Full path of an atlas on the MNI 1mm space (6th generation in FSL)
+mni=/mnt_sc/path/to/Standard            # Path of the MNI standard T1 1mm template
+
+# Optimal configuration (Default: JURECA setting, 48 threads per node)
+# --------------------------------------------------------------------
+threads1=6      # For container_SC_preprocess.sh (WARNING: Many runs might cause 'out of memory')
+threads2=48     # For container_SC_tractography.sh
+threads3=6      # For container_SC_atlas_transformation.sh
+threads4=48     # For container_SC_reconstruct.sh
+
+# [PART 1] ============
+# Preprocess parameters
+# =====================
+bfc=MRtrix                  # MRtrix or ANTs for Bias-field correction
+coreg_flirt_dof=7           # Option of the flirt function
+coreg_flirt_cost=mutualinfo # Option of the flirt function
+reg_flirt_dof=12            # Option of the flirt function
+reg_flirt_cost=mutualinfo   # Option of the flirt function
+reg_fnirt_interp=spline     # Option of the fnirt function
+
+# [PART 2] ==============
+# Tractography parameters
+# =======================
+tracking_algorithm=msmt_5tt # dhollander, fa, manual, msmt_5tt (default), tax, or tournier
+fod_algorithm=msmt_csd      # csd or msmt_csd (default)
+tckgen_algorithm=iFOD2      # FACT, iFOD1, iFOD2 (default), NullDist1, SD_STREAM, SeedTest, Tensor_Det, and Tensor_Prob
+tckgen_step=0.625           # in millimeter
+tckgen_angle=45             # in degree
+tckgen_minlength=2.5        # in millimeter
+tckgen_maxlength=250        # in millimeter
+tckgen_cutoff=0.06
+tckgen_trials=1000
+tckgen_downsample=3
+tckgen_max_attempts_per_seed=50
+tckgen_samples=4
+tckgen_power=0.25
+
+# [PART 3] ===========
+# Atlas transformation
+# ====================
+
+# [PART 4] ==
+# Reconstruct
+# ===========
+tck2connectome_assignment_radial_search=2
