@@ -10,7 +10,7 @@
 
 - `code/Singularity`: Recipe file to be used with `singularity build` to generate a container image
 - `code/input.txt`: Example pipeline parameter specification
-- `code/container_SC_pipeline_JURECA.sh`: Example SLURM submission scripts for the JURECA HPC system
+- `code/container_SC_pipeline_JURECA.sh`: Script to run an independent module with the optimized configuration for the JURECA HPC system
 
 ## INSTRUCTION
 
