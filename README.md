@@ -139,3 +139,11 @@ Each module can perform independently. For instance, if the preprocessing module
 
 ## TROUBLESHOOT
 If you have a problem to use the containerized SC pipeline. Please contact Kyesam Jung (k.jung@fz-juelich.de).
+
+
+## Acknowledgements
+
+This development was supported by European Union’s Horizon 2020 research and
+innovation programme under grant agreement [VirtualBrainCloud
+(H2020-EU.3.1.5.3, grant no.
+826421)](https://cordis.europa.eu/project/id/826421).
