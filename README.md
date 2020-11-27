@@ -6,11 +6,11 @@
 
 2. This pipeline uses Freesurfer. If you do not have a license, please register for Freesurfer: https://surfer.nmr.mgh.harvard.edu/registration.html
 
-3. Files
-Container_dwMRI.simg (You can build the container by using singularity with Container_dwMRI.def)
-input.txt
-README_dwMRI_pipeline.txt
-container_SC_pipeline_JURECA.sh
+3. Essential files
+
+- `code/Singularity`: Recipe file to be used with `singularity build` to generate a container image
+- `code/input.txt`: Example pipeline parameter specification
+- `code/container_SC_pipeline_JURECA.sh`: Example SLURM submission scripts for the JURECA HPC system
 
 ## INSTRUCTION
 
