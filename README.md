@@ -45,7 +45,7 @@ An example of an input text file is the following.
     # Input variables
     # ---------------
     grp=INM                                 # Name of dataset
-    sbj=Sub-1234                            # Subject's ID
+    sbj=sub-01                              # Subject's ID
     tract=100000                            # Total number of streamlines for whole-brain tractography
     atlname=atlas_prefix                    # Name of atlas for prefixing results
     numparc=100                             # Total number of regions in a given atlas
@@ -71,22 +71,24 @@ The parameters can be modified by the end-users. For licensing Freesurfer, they 
 
 ### 3. DATA STRUCTURE
 
-The raw data path should have a data structure as below (in case of sp=/mnt_sc/path/to/raw_data, grp=INM, and sbj=Sub-1234).
+The raw data path should have a data structure as below (in case of sp=/mnt_sc/path/to/raw_data, grp=INM, and sbj=sub-01).
 
-    /mnt_sc/path/to/raw_data/INM/Sub-1234/bval
-    /mnt_sc/path/to/raw_data/INM/Sub-1234/bvec
-    /mnt_sc/path/to/raw_data/INM/Sub-1234/dwi.nii.gz
-    /mnt_sc/path/to/raw_data/INM/Sub-1234/t1.nii.gz
+    /mnt_sc/path/to/raw_data/INM/sub-01/anat/sub-01_T1w.nii.gz
+    /mnt_sc/path/to/raw_data/INM/sub-01/dwi/sub-01_dwi.bval
+    /mnt_sc/path/to/raw_data/INM/sub-01/dwi/sub-01_dwi.bvec
+    /mnt_sc/path/to/raw_data/INM/sub-01/dwi/sub-01_dwi.nii.gz
     
     INM
-    |-- Sub-1234
-    |   |-- bval
-    |   |-- bvec
-    |   |-- dwi.nii.gz
-    |   `-- t1w.nii.gz
-    |-- ...
-    .
-    .
+    ├── sub-01
+    │   ├── anat
+    │   │   └── sub-01_T1w.nii.gz
+    │   ├── dwi
+    │   │   ├── sub-01_dwi.bval
+    │   │   ├── sub-01_dwi.bvec
+    │   │   └── sub-01_dwi.nii.gz
+    .   .
+    .   .
+    .   .
 
 ### 4. EXAMPLE SCRIPT FOR THE SLURM
 
@@ -138,12 +140,9 @@ Then, make a script for 'sbatch' as below.
 Each module can perform independently. For instance, if the preprocessing module was already performed for considered subjects, then you can continue to perform on the tractography module for the given subjects. An advanced version will have more parameters such as tracking algorithms, tracking steps, tracking angles, and so forth.
 
 ## TROUBLESHOOT
-If you have a problem to use the containerized SC pipeline. Please contact Kyesam Jung (k.jung@fz-juelich.de).
 
+If you have a problem to use the containerized SC pipeline. Please contact Kyesam Jung (k.jung@fz-juelich.de).
 
 ## Acknowledgements
 
-This development was supported by European Union’s Horizon 2020 research and
-innovation programme under grant agreement [VirtualBrainCloud
-(H2020-EU.3.1.5.3, grant no.
-826421)](https://cordis.europa.eu/project/id/826421).
+This development was supported by European Union’s Horizon 2020 research and innovation programme under grant agreement [VirtualBrainCloud (H2020-EU.3.1.5.3, grant no. 826421)](https://cordis.europa.eu/project/id/826421).

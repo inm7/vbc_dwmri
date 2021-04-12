@@ -61,7 +61,7 @@ if [[ -f $t1 ]]; then
 	printf "${GRN}[T1-weighted]${RED} ID: $grp$sbj${NCR} - Check file: $t1\n"
 else
 	printf "${RED}[T1-weighted]${RED} ID: $grp$sbj${NCR} - There is not T1-weighted image!!! ${t1}\n"
-	exit
+	exit 1
 fi
 
 # Check Diffusion-weighted images
@@ -70,7 +70,7 @@ if [[ -f $dwi ]]; then
 	printf "${GRN}[Diffusion-weighted]${RED} ID: $grp$sbj${NCR} - Check file: $dwi\n"
 else
 	printf "${RED}[Diffusion-weighted]${RED} ID: $grp$sbj${NCR} - There is not Diffusion-weighted image!!!\n"
-	exit
+	exit 1
 fi
 
 # Check a subject directory for Freesurfing
