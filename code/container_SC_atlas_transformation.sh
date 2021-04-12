@@ -73,6 +73,7 @@ else
 	fslmaths $atl -mul $tp/$grp/$sbj/fs_t1_gm_mask_to_dwi.nii.gz $atl
 
 	rm $tmp/temp*.nii.gz
+	
 	# Elapsed time
 	# ------------
 	elapsedtime=$(($(date +%s) - $startingtime))

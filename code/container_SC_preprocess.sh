@@ -13,10 +13,10 @@ pwd=$(pwd)
 
 # Path setting
 # ------------
-t1=$sp/$grp/$sbj/t1w.nii.gz
-dwi=$sp/$grp/$sbj/dwi.nii.gz
-bval=$sp/$grp/$sbj/bval
-bvec=$sp/$grp/$sbj/bvec
+t1=$sp/$grp/$sbj/anat/${sbj}_T1w.nii.gz
+dwi=$sp/$grp/$sbj/dwi/${sbj}_dwi.nii.gz
+bval=$sp/$grp/$sbj/dwi/${sbj}_dwi.bval
+bvec=$sp/$grp/$sbj/dwi/${sbj}_dwi.bvec
 
 parcseg=$tmp/aparc.a2009s+aseg.nii.gz
 ctx=$tp/$grp/$sbj/fs_t1_ctx_mask_to_dwi.nii.gz
@@ -330,8 +330,8 @@ else
 	# Clear temporary files
 	# ---------------------
 	rm $tmp/temp_*.nii.gz
-	rm $tmp/fs_t1*.nii.gz
-	rm $parcseg
+	# rm $tmp/fs_t1*.nii.gz
+	# rm $parcseg
 fi
 
 # Make 5TT (Five-type tissues)

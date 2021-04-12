@@ -9,6 +9,7 @@ done
 threads=${threads2}
 
 ftt=$tp/$grp/$sbj/5tt.nii.gz
+# ftt_w_neck=$tp/$grp/$sbj/5tt_w_neck.nii.gz
 pwd=$(pwd)
 
 # Colors
@@ -67,7 +68,7 @@ if [[ -f  $odfWM ]]; then
 else
 	printf "${GRN}[MRtrix]${RED} ID: $grp$sbj${NCR} - Estimate response functions.\n"
 
-	# dwi2response msmt_5tt -shells $shells -force -nthreads $threads -voxels $tp/$grp/$sbj/response_voxels_w_neck.nii.gz -fslgrad $mbvec $mbval $tp/$grp/$sbj/dt_recon/dwi-ec.nii.gz $ftt $resWM $resGM $resCSF
+	# dwi2response msmt_5tt -shells $shells -force -nthreads $threads -voxels $tp/$grp/$sbj/response_voxels_w_neck.nii.gz -fslgrad $mbvec $mbval $tp/$grp/$sbj/dt_recon/dwi-ec.nii.gz $ftt_w_neck $resWM $resGM $resCSF
 	dwi2response ${tracking_algorithm} -shells $shells -force -nthreads $threads -voxels $tp/$grp/$sbj/response_voxels.nii.gz -fslgrad $mbvec $mbval $tp/$grp/$sbj/dt_recon/dwi-ec.nii.gz $ftt $resWM $resGM $resCSF
 
 	printf "${GRN}[MRtrix]${RED} ID: $grp$sbj${NCR} - Estimate fibre orientation distributions using spherical deconvolution.\n"
@@ -80,7 +81,7 @@ if [[ -f $tck ]]; then
 else
 	printf "${GRN}[MRtrix]${RED} ID: $grp$sbj${NCR} - Start whole brain tracking.\n"
 	printf "${GRN}[MRtrix]${RED} ID: $grp$sbj${NCR} - Output: WBT_${tractM}_ctx.tck\n"
-	# tckgen -algorithm iFOD2 -select $tract -step 0.625 -angle 45 -minlength 2.5 -maxlength 250 -cutoff 0.06 -trials 1000 -downsample 3 -seed_dynamic $odfWM -max_attempts_per_seed 50 -output_seeds $out -act $ftt -backtrack -crop_at_gmwmi -samples 4 -power 0.25 -fslgrad $mbvec $mbval -bvalue_scaling true -nthreads $threads $odfWM $tck
+	# tckgen -algorithm iFOD2 -select $tract -step 0.625 -angle 45 -minlength 2.5 -maxlength 250 -cutoff 0.06 -trials 1000 -downsample 3 -seed_dynamic $odfWM -max_attempts_per_seed 50 -output_seeds $out -act $ftt_w_neck -backtrack -crop_at_gmwmi -samples 4 -power 0.25 -fslgrad $mbvec $mbval -bvalue_scaling true -nthreads $threads $odfWM $tck
     tckgen -algorithm ${tckgen_algorithm} -select $tract -step ${tckgen_step} -angle ${tckgen_angle} -minlength ${tckgen_minlength} -maxlength ${tckgen_maxlength} -cutoff ${tckgen_cutoff} -trials ${tckgen_trials} -downsample ${tckgen_downsample} -seed_dynamic $odfWM -max_attempts_per_seed ${tckgen_max_attempts_per_seed} -output_seeds $out -act $ftt -backtrack -crop_at_gmwmi -samples ${tckgen_samples} -power ${tckgen_power} -fslgrad $mbvec $mbval -nthreads $threads $odfWM $tck
 fi
 
