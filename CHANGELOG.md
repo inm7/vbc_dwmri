@@ -1,3 +1,8 @@
+# 1.0.1 (15 Apr. 2021)
+
+- Support BIDS format
+- Refine lines behind running scripts
+
 # 1.0.0 (7 Nov. 2020)
 
 - Install AFNI, FSL, ANTs, Freesurfer, Workbench, and MRtrix3 (7 Nov. 2020)
