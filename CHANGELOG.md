@@ -1,6 +1,6 @@
 # 1.0.1 (15 Apr. 2021)
 
-- Support BIDS format
+- Support BIDS
 - Refine lines behind running scripts
 
 # 1.0.0 (7 Nov. 2020)
