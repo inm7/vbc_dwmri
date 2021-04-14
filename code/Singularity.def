@@ -3,7 +3,7 @@ From: debian:stretch-slim
 
 %setup
     # install your pipeline script into /usr/local/bin
-    install -m 755 /data/project/SC_pipeline/01_MRI_pipelines/Container/vbc_dwmri/code/* ${SINGULARITY_ROOTFS}/usr/local/bin
+    install -m 755 /data/project/SC_pipeline/01_MRI_pipelines/Container/vbc_dwmri/code/*.sh ${SINGULARITY_ROOTFS}/usr/local/bin
 
 %environment
     export LC_ALL=C
