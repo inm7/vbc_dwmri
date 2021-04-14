@@ -55,24 +55,10 @@ From: debian:stretch-slim
     apt-get autoclean
 
 %runscript
-    exec echo "source /usr/local/bin/container_SC_dependencies.sh"
-
-    # call your script here, and pass arguments to it using the $@ syntax below
-    if [ "$#" -eq 1 ] ; then
-        pipeline="/usr/local/bin/container_SC_pipeline.sh"
-        input=${1}
-    fi
-    if [ "$#" -eq 2 ] ; then
-        pipeline=${1}
-        input=${2}
-    fi
-
-    echo "Arguments received: $*"
-    exec echo "bash ${pipeline} ${input}"
 
 %labels
     author Kyesam Jung (k.jung@fz-juelich.de)
-    version 1.0.0
+    version 1.0.1
 
 %help
     This container contains AFNI, FSL, ANTs, Freesurfer, Workbench, and MRtrix3.

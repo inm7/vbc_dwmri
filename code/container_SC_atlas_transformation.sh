@@ -12,7 +12,6 @@ num=${numparc}
 ctx=${tp}/${grp}/${sbj}/fs_t1_ctx_mask_to_dwi.nii.gz
 atl=${tp}/${grp}/${sbj}/${atlname}_to_dwi.nii.gz
 tmp=${tp}/${grp}/${sbj}/temp
-pwd=$(pwd)
 
 # Colors
 # ------
