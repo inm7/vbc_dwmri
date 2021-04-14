@@ -52,6 +52,15 @@ else
 	printf "Freesurfer license has been updated.\n"
 fi
 
+# Target folder check
+# -------------------
+if [[ -d ${tp}/${grp}/${sbj} ]]; then
+	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - Target folder exists, so the process will overwrite the files in the target folder.\n"
+else
+	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - Create a target folder.\n"
+	mkdir -p ${tp}/${grp}/${sbj}
+fi
+
 startingtime=$(date +%s)
 et=${tp}/${grp}/${sbj}/SC_pipeline_elapsedtime.txt
 echo "\n[SC preprocessing] $(date)" >> ${et}
@@ -97,15 +106,6 @@ if [[ -f ${fp}/${grp}_${sbj}/scripts/recon-all.done ]]; then
 else
 	printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - Start recon-all.\n"
 	recon-all -subjid ${grp}_${sbj} -all -noappend -no-isrunning -parallel -openmp ${threads} -sd $fp
-fi
-
-# Target folder check
-# -------------------
-if [[ -d ${tp}/${grp}/${sbj} ]]; then
-	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - Target folder exists, so the process will overwrite the files in the target folder.\n"
-else
-	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - Create a target folder.\n"
-	mkdir -p ${tp}/${grp}/${sbj}
 fi
 
 # Elapsed time
