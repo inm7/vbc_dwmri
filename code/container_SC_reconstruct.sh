@@ -7,9 +7,7 @@ for (( i = 1; i < totalNum + 1 ; i++ )); do
 	eval "${cmd}"
 done
 threads=${threads4}
-
-atl=$tp/$grp/$sbj/${atlname}_to_dwi.nii.gz
-pwd=$(pwd)
+atl=${tp}/${grp}/${sbj}/${atlname}_to_dwi.nii.gz
 
 # Colors
 # ------
@@ -34,27 +32,30 @@ else
 	printf "Freesurfer license has been updated.\n"
 fi
 
-if [[ $tract -gt 999999 ]]; then
+if [[ ${tract} -gt 999999 ]]; then
 	tractM=$((${tract}/1000000))M
 else
 	tractM=$((${tract}/1000))K
 fi
 
 startingtime=$(date +%s)
-et=$tp/$grp/$sbj/SC_reconstruct_${tractM}_elapsedtime.txt
-tck=$tp/$grp/$sbj/WBT_${tractM}_ctx.tck
-counts=$tp/$grp/$sbj/${atlname}_${tractM}_ctx_count.csv
-lengths=$tp/$grp/$sbj/${atlname}_${tractM}_ctx_length.csv
+et=${tp}/${grp}/${sbj}/SC_pipeline_elapsedtime.txt
+echo "\n[SC reconstruct for ${tractM}] $(date)" >> ${et}
+echo "Starting time in seconds ${startingtime}" >> ${et}
+
+tck=${tp}/${grp}/${sbj}/WBT_${tractM}_ctx.tck
+counts=${tp}/${grp}/${sbj}/${atlname}_${tractM}_ctx_count.csv
+lengths=${tp}/${grp}/${sbj}/${atlname}_${tractM}_ctx_length.csv
 
 # Over-write code
 # ---------------
-printf "${GRN}[MRtrix]${RED} ID: $grp$sbj${NCR} - Reconstruct structural connectivity (counts).\n"
-tck2connectome -symmetric -force -nthreads $threads -assignment_radial_search ${tck2connectome_assignment_radial_search} $tck $atl $counts
-printf "${GRN}[MRtrix]${RED} ID: $grp$sbj${NCR} - Reconstruct structural connectivity (lengths).\n"
-tck2connectome -symmetric -force -nthreads $threads -scale_length -stat_edge mean -assignment_radial_search ${tck2connectome_assignment_radial_search} $tck $atl $lengths
+printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Reconstruct structural connectivity (counts).\n"
+tck2connectome -symmetric -force -nthreads ${threads} -assignment_radial_search ${tck2connectome_assignment_radial_search} ${tck} ${atl} ${counts}
+printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Reconstruct structural connectivity (lengths).\n"
+tck2connectome -symmetric -force -nthreads ${threads} -scale_length -stat_edge mean -assignment_radial_search ${tck2connectome_assignment_radial_search} ${tck} ${atl} ${lengths}
 
 # Elapsed time
 # ------------
-elapsedtime=$(($(date +%s) - $startingtime))
-printf "${GRN}[MRtrix]${RED} ID: $grp$sbj${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+elapsedtime=$(($(date +%s) - ${startingtime}))
+printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 echo "${elapsedtime} tck2connectome" >> ${et}
