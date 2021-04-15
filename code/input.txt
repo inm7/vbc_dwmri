@@ -13,6 +13,7 @@ tract=100000                            # Total number of streamlines for whole-
 atlname=atlas_prefix                    # Name of atlas for prefixing results
 numparc=100                             # Total number of regions in a given atlas
 shells=0,1000,2000,3000                 # shells=0,1000,2000,3000 for HCP dwMRI, i.e., b-values
+non_zero_shells=1000,2000,3000          # shells=1000,2000,3000 for HCP dwMRI
 
 # Paths setting
 # -------------

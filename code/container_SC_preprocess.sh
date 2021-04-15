@@ -374,7 +374,6 @@ else
 	
 	fslmerge -t ${ftt_w_neck} ${tp}/${grp}/${sbj}/split0000.nii.gz ${tp}/${grp}/${sbj}/split0001.nii.gz ${tp}/${grp}/${sbj}/split0002.nii.gz ${tp}/${grp}/${sbj}/split0003.nii.gz ${tp}/${grp}/${sbj}/split0004.nii.gz
 	rm ${tp}/${grp}/${sbj}/split*.nii.gz
-	rm ${tmp}/temp_*.nii.gz
 	rm ${seg}
 fi
 

@@ -92,7 +92,7 @@ else
 	dwi2fod ${fod_algorithm} -shells ${shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcec_avg_bet_mask.nii.gz -fslgrad ${mbvec} ${mbval} ${tp}/${grp}/${sbj}/dt_recon/dwi-ec.nii.gz ${resWM} ${odfWM} ${resGM} ${odfGM} ${resCSF} ${odfCSF}
 		;;
 	csd )
-	dwi2fod ${fod_algorithm} -shells ${shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcec_avg_bet_mask.nii.gz -fslgrad ${mbvec} ${mbval} ${tp}/${grp}/${sbj}/dt_recon/dwi-ec.nii.gz ${resWM} ${odfWM}
+	dwi2fod ${fod_algorithm} -shells ${non_zero_shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcec_avg_bet_mask.nii.gz -fslgrad ${mbvec} ${mbval} ${tp}/${grp}/${sbj}/dt_recon/dwi-ec.nii.gz ${resWM} ${odfWM}
 		;;
 	* )
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Invalid FOD algorithm for dwi2fod!\n"
