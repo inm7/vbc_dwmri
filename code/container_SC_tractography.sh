@@ -68,6 +68,7 @@ odfWM=${tp}/${grp}/${sbj}/odf_wm.mif
 odfCSF=${tp}/${grp}/${sbj}/odf_csf.mif
 resGM=${tp}/${grp}/${sbj}/response_gm.txt
 resWM=${tp}/${grp}/${sbj}/response_wm.txt
+resSFWM=${tp}/${grp}/${sbj}/response_sfwm.txt
 resCSF=${tp}/${grp}/${sbj}/response_csf.txt
 if [[ -f  ${odfWM} ]]; then
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - FOD (Fibre orientation distribution was already estimated!!!\n"
@@ -79,6 +80,7 @@ else
 		;;
 	dhollander )
 	dwi2response ${tracking_algorithm} -shells ${shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -erode 3 -fa 0.2 -sfwm 0.5 -gm 2 -csf 10 -fslgrad ${mbvec} ${mbval} ${tp}/${grp}/${sbj}/dt_recon/dwi-ec.nii.gz ${resWM} ${resGM} ${resCSF}
+	echo $(tail -n 1 ${resWM}) >> ${resSFWM}
 		;;
 	* )
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Invalid tracking algorithm for dwi2response!\n"
@@ -86,13 +88,13 @@ else
 		;;
 	esac
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Estimate fibre orientation distributions using spherical deconvolution.\n"
-	
+
 	case ${fod_algorithm} in
 	msmt_csd )
 	dwi2fod ${fod_algorithm} -shells ${shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcec_avg_bet_mask.nii.gz -fslgrad ${mbvec} ${mbval} ${tp}/${grp}/${sbj}/dt_recon/dwi-ec.nii.gz ${resWM} ${odfWM} ${resGM} ${odfGM} ${resCSF} ${odfCSF}
 		;;
 	csd )
-	dwi2fod ${fod_algorithm} -shells ${non_zero_shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcec_avg_bet_mask.nii.gz -fslgrad ${mbvec} ${mbval} ${tp}/${grp}/${sbj}/dt_recon/dwi-ec.nii.gz ${resWM} ${odfWM}
+	dwi2fod ${fod_algorithm} ${tp}/${grp}/${sbj}/dt_recon/dwi-ec.nii.gz ${resSFWM} ${odfWM} -shells ${non_zero_shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcec_avg_bet_mask.nii.gz -fslgrad ${mbvec} ${mbval}
 		;;
 	* )
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Invalid FOD algorithm for dwi2fod!\n"
@@ -105,7 +107,6 @@ if [[ -f ${tck} ]]; then
 else
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Start whole brain tracking.\n"
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Output: WBT_${tractM}_ctx.tck\n"
-	# tckgen -algorithm iFOD2 -select ${tract} -step 0.625 -angle 45 -minlength 2.5 -maxlength 250 -cutoff 0.06 -trials 1000 -downsample 3 -seed_dynamic ${odfWM} -max_attempts_per_seed 50 -output_seeds ${out} -act ${ftt_w_neck} -backtrack -crop_at_gmwmi -samples 4 -power 0.25 -fslgrad ${mbvec} ${mbval} -bvalue_scaling true -nthreads ${threads} ${odfWM} ${tck}
 	tckgen -algorithm ${tckgen_algorithm} -select ${tract} -step ${tckgen_step} -angle ${tckgen_angle} -minlength ${tckgen_minlength} -maxlength ${tckgen_maxlength} -cutoff ${tckgen_cutoff} -trials ${tckgen_trials} -downsample ${tckgen_downsample} -seed_dynamic ${odfWM} -max_attempts_per_seed ${tckgen_max_attempts_per_seed} -output_seeds ${out} -act ${ftt} -backtrack -crop_at_gmwmi -samples ${tckgen_samples} -power ${tckgen_power} -fslgrad ${mbvec} ${mbval} -nthreads ${threads} ${odfWM} ${tck}
 fi
 
