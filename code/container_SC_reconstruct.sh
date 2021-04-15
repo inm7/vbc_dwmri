@@ -41,7 +41,7 @@ fi
 startingtime=$(date +%s)
 et=${tp}/${grp}/${sbj}/SC_pipeline_elapsedtime.txt
 echo "[+] SC reconstruct for ${tractM} - $(date)" >> ${et}
-echo "Starting time in seconds ${startingtime}" >> ${et}
+echo "    Starting time in seconds ${startingtime}" >> ${et}
 
 tck=${tp}/${grp}/${sbj}/WBT_${tractM}_ctx.tck
 counts=${tp}/${grp}/${sbj}/${atlname}_${tractM}_ctx_count.csv
@@ -58,4 +58,4 @@ tck2connectome -symmetric -force -nthreads ${threads} -scale_length -stat_edge m
 # ------------
 elapsedtime=$(($(date +%s) - ${startingtime}))
 printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
-echo "${elapsedtime} tck2connectome" >> ${et}
+echo "    ${elapsedtime} tck2connectome" >> ${et}

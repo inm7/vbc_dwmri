@@ -39,7 +39,7 @@ fi
 startingtime=$(date +%s)
 et=${tp}/${grp}/${sbj}/SC_pipeline_elapsedtime.txt
 echo "[+] SC atlas transformation - $(date)" >> ${et}
-echo "Starting time in seconds ${startingtime}" >> ${et}
+echo "    Starting time in seconds ${startingtime}" >> ${et}
 
 if [[ -f ${atl} ]]; then
 	printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - Atlas transformation was already performed!!!\n"
@@ -79,5 +79,5 @@ else
 	# ------------
 	elapsedtime=$(($(date +%s) - ${startingtime}))
 	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
-	echo "${elapsedtime} ${atlname}" >> ${et}
+	echo "    ${elapsedtime} ${atlname}" >> ${et}
 fi

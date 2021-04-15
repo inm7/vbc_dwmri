@@ -64,7 +64,7 @@ fi
 startingtime=$(date +%s)
 et=${tp}/${grp}/${sbj}/SC_pipeline_elapsedtime.txt
 echo "[+] SC preprocessing - $(date)" >> ${et}
-echo "Starting time in seconds ${startingtime}" >> ${et}
+echo "    Starting time in seconds ${startingtime}" >> ${et}
 
 # Check T1-weighted image
 # -----------------------
@@ -112,7 +112,7 @@ fi
 # ------------
 elapsedtime=$(($(date +%s) - ${startingtime}))
 printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
-echo "${elapsedtime} recon-all" >> ${et}
+echo "    ${elapsedtime} recon-all" >> ${et}
 
 # Check denoise of DWIs
 # ---------------------
@@ -127,7 +127,7 @@ fi
 # ------------
 elapsedtime=$(($(date +%s) - ${startingtime}))
 printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
-echo "${elapsedtime} dwidenoise" >> ${et}
+echo "    ${elapsedtime} dwidenoise" >> ${et}
 
 # Temporary folder check
 # ----------------------
@@ -162,7 +162,7 @@ fi
 # ------------
 elapsedtime=$(($(date +%s) - ${startingtime}))
 printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
-echo "${elapsedtime} Bias_field_correction" >> ${et}
+echo "    ${elapsedtime} Bias_field_correction" >> ${et}
 
 # Eddy current correction, head motion correction, and b-vector rotation
 # ----------------------------------------------------------------------
@@ -180,7 +180,7 @@ fi
 # ------------
 elapsedtime=$(($(date +%s) - ${startingtime}))
 printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
-echo "${elapsedtime} dt_recon" >> ${et}
+echo "    ${elapsedtime} dt_recon" >> ${et}
 
 # Co-registration (from T1WI to averaged DWI)
 # -------------------------------------------
@@ -381,4 +381,4 @@ fi
 # ------------
 elapsedtime=$(($(date +%s) - ${startingtime}))
 printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
-echo "${elapsedtime} coregistration_and_cortical_mask" >> ${et}
+echo "    ${elapsedtime} coregistration_and_cortical_mask" >> ${et}
