@@ -144,7 +144,7 @@ if [[ -f ${tp}/${grp}/${sbj}/dwi_bc.nii.gz ]]; then
 	printf "${GRN}[MRtrix & ANTs]${RED} ID: ${grp}${sbj}${NCR} - Bias-field correction was already performed!!!\n"
 else
 	printf "${GRN}[MRtrix & ANTs]${RED} ID: ${grp}${sbj}${NCR} - Start Bias-field correction (ANTs).\n"
-	case $bfc in
+	case ${bfc} in
 		ANTs )
 		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Split 4D-DWI into 3D-DWIs.\n"
 		fslsplit ${tp}/${grp}/${sbj}/dwi_denoise.nii.gz ec -t

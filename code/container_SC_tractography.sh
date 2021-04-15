@@ -10,6 +10,9 @@ threads=${threads2}
 
 ftt=${tp}/${grp}/${sbj}/5tt.nii.gz
 # ftt_w_neck=${tp}/${grp}/${sbj}/5tt_w_neck.nii.gz
+wm=${tp}/${grp}/${sbj}/fs_t1_wm_mask_to_dwi.nii.gz
+wmneck=${tp}/${grp}/${sbj}/fs_t1_neck_wm_mask_to_dwi.nii.gz
+
 
 # Colors
 # ------
@@ -70,14 +73,32 @@ if [[ -f  ${odfWM} ]]; then
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - FOD (Fibre orientation distribution was already estimated!!!\n"
 else
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Estimate response functions.\n"
-
-	# dwi2response msmt_5tt -shells ${shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels_w_neck.nii.gz -fslgrad ${mbvec} ${mbval} ${tp}/${grp}/${sbj}/dt_recon/dwi-ec.nii.gz ${ftt_w_neck} ${resWM} ${resGM} ${resCSF}
-	dwi2response ${tracking_algorithm} -shells ${shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -fslgrad ${mbvec} ${mbval} ${tp}/${grp}/${sbj}/dt_recon/dwi-ec.nii.gz ${ftt} ${resWM} ${resGM} ${resCSF}
-
+	case ${tracking_algorithm} in
+	msmt_5tt )
+	dwi2response ${tracking_algorithm} -shells ${shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -pvf 0.95 -fa 0.2  -wm_algo tournier -fslgrad ${mbvec} ${mbval} ${tp}/${grp}/${sbj}/dt_recon/dwi-ec.nii.gz ${ftt} ${resWM} ${resGM} ${resCSF}
+		;;
+	dhollander )
+	dwi2response ${tracking_algorithm} -shells ${shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -erode 3 -fa 0.2 -sfwm 0.5 -gm 2 -csf 10 -fslgrad ${mbvec} ${mbval} ${tp}/${grp}/${sbj}/dt_recon/dwi-ec.nii.gz ${resWM} ${resGM} ${resCSF}
+		;;
+	* )
+	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Invalid tracking algorithm for dwi2response!\n"
+	exit 1
+		;;
+	esac
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Estimate fibre orientation distributions using spherical deconvolution.\n"
 	
-	# dwi2fod msmt_csd -shells ${shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcec_avg_bet_mask_w_neck.nii.gz -fslgrad ${mbvec} ${mbval} ${tp}/${grp}/${sbj}/dt_recon/dwi-ec.nii.gz ${resWM} ${odfWM} ${resGM} $odfGM ${resCSF} ${odfCSF}
-	dwi2fod ${fod_algorithm} -shells ${shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcec_avg_bet_mask.nii.gz -fslgrad ${mbvec} ${mbval} ${tp}/${grp}/${sbj}/dt_recon/dwi-ec.nii.gz ${resWM} ${odfWM} ${resGM} $odfGM ${resCSF} ${odfCSF}
+	case ${fod_algorithm} in
+	msmt_csd )
+	dwi2fod ${fod_algorithm} -shells ${shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcec_avg_bet_mask.nii.gz -fslgrad ${mbvec} ${mbval} ${tp}/${grp}/${sbj}/dt_recon/dwi-ec.nii.gz ${resWM} ${odfWM} ${resGM} ${odfGM} ${resCSF} ${odfCSF}
+		;;
+	csd )
+	dwi2fod ${fod_algorithm} -shells ${shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcec_avg_bet_mask.nii.gz -fslgrad ${mbvec} ${mbval} ${tp}/${grp}/${sbj}/dt_recon/dwi-ec.nii.gz ${resWM} ${odfWM}
+		;;
+	* )
+	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Invalid FOD algorithm for dwi2fod!\n"
+	exit 1
+		;;
+	esac
 fi
 if [[ -f ${tck} ]]; then
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Whole brain tracking was already performed!!!\n"
