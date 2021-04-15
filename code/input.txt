@@ -8,7 +8,7 @@ line2=xxxxxxxxxxxxx
 # Input variables
 # ---------------
 grp=INM                                 # Name of dataset
-sbj=Sub-1234                            # Subject's ID
+sbj=sub-01                              # Subject's ID
 tract=100000                            # Total number of streamlines for whole-brain tractography
 atlname=atlas_prefix                    # Name of atlas for prefixing results
 numparc=100                             # Total number of regions in a given atlas
@@ -43,8 +43,8 @@ reg_fnirt_interp=spline     # Option of the fnirt function
 # [PART 2] ==============
 # Tractography parameters
 # =======================
-tracking_algorithm=msmt_5tt # dhollander, fa, manual, msmt_5tt (default), tax, or tournier
-fod_algorithm=msmt_csd      # csd or msmt_csd (default)
+tracking_algorithm=msmt_5tt # dhollander (valid), fa, manual, msmt_5tt (valid), tax, or tournier
+fod_algorithm=msmt_csd      # csd (for dhollander or msmt_csd for msmt_5tt)
 tckgen_algorithm=iFOD2      # FACT, iFOD1, iFOD2 (default), NullDist1, SD_STREAM, SeedTest, Tensor_Det, and Tensor_Prob
 tckgen_step=0.625           # in millimeter
 tckgen_angle=45             # in degree
