@@ -103,14 +103,14 @@ The following example is a script for the slurm system on JURECA. You can copy t
 
 Prepare 8 input files for each subject in the working path (wp=/mnt_sc/path/to/scripts) as below.
 
-    input_Sub-1001.txt
-    input_Sub-1002.txt
-    input_Sub-1003.txt
-    input_Sub-1004.txt
-    input_Sub-1005.txt
-    input_Sub-1006.txt
-    input_Sub-1007.txt
-    input_Sub-1008.txt
+    input_sub-01.txt
+    input_sub-02.txt
+    input_sub-03.txt
+    input_sub-04.txt
+    input_sub-05.txt
+    input_sub-06.txt
+    input_sub-07.txt
+    input_sub-08.txt
 
 Then, make a script for 'sbatch' as below.
 
@@ -125,16 +125,16 @@ Then, make a script for 'sbatch' as below.
     #SBATCH --mail-type=All
     #SBATCH --partition=batch
     
-    bash container_SC_pipeline_JURECA.sh Preprocess Sub-1001 Sub-1002 Sub-1003 Sub-1004 Sub-1005 Sub-1006 Sub-1007 Sub-1008
+    bash container_SC_pipeline_JURECA.sh Preprocess sub-01 sub-02 sub-03 sub-04 sub-05 sub-06 sub-07 sub-08
     wait
     
-    bash container_SC_pipeline_JURECA.sh Tractography Sub-1001 Sub-1002 Sub-1003 Sub-1004 Sub-1005 Sub-1006 Sub-1007 Sub-1008
+    bash container_SC_pipeline_JURECA.sh Tractography sub-01 sub-02 sub-03 sub-04 sub-05 sub-06 sub-07 sub-08
     wait
     
-    bash container_SC_pipeline_JURECA.sh Atlas_transformation Sub-1001 Sub-1002 Sub-1003 Sub-1004 Sub-1005 Sub-1006 Sub-1007 Sub-1008
+    bash container_SC_pipeline_JURECA.sh Atlas_transformation sub-01 sub-02 sub-03 sub-04 sub-05 sub-06 sub-07 sub-08
     wait
     
-    bash container_SC_pipeline_JURECA.sh Reconstruction Sub-1001 Sub-1002 Sub-1003 Sub-1004 Sub-1005 Sub-1006 Sub-1007 Sub-1008
+    bash container_SC_pipeline_JURECA.sh Reconstruction sub-01 sub-02 sub-03 sub-04 sub-05 sub-06 sub-07 sub-08
     wait
 
 Each module can perform independently. For instance, if the preprocessing module was already performed for considered subjects, then you can continue to perform on the tractography module for the given subjects. An advanced version will have more parameters such as tracking algorithms, tracking steps, tracking angles, and so forth.
