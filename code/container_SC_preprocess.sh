@@ -63,7 +63,7 @@ fi
 
 startingtime=$(date +%s)
 et=${tp}/${grp}/${sbj}/SC_pipeline_elapsedtime.txt
-echo "\n[SC preprocessing] $(date)" >> ${et}
+echo "[+] SC preprocessing - $(date)" >> ${et}
 echo "Starting time in seconds ${startingtime}" >> ${et}
 
 # Check T1-weighted image

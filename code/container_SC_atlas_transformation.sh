@@ -38,7 +38,7 @@ fi
 
 startingtime=$(date +%s)
 et=${tp}/${grp}/${sbj}/SC_pipeline_elapsedtime.txt
-echo "\n[SC atlas transformation] $(date)" >> ${et}
+echo "[+] SC atlas transformation - $(date)" >> ${et}
 echo "Starting time in seconds ${startingtime}" >> ${et}
 
 if [[ -f ${atl} ]]; then

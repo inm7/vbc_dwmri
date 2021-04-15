@@ -43,7 +43,7 @@ fi
 
 startingtime=$(date +%s)
 et=${tp}/${grp}/${sbj}/SC_pipeline_elapsedtime.txt
-echo "\n[SC tractography for ${tractM}] $(date)" >> ${et}
+echo "[+] SC tractography for ${tractM} - $(date)" >> ${et}
 echo "Starting time in seconds ${startingtime}" >> ${et}
 
 # MRtrix
