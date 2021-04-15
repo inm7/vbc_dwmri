@@ -9,7 +9,7 @@ done
 threads=${threads2}
 
 ftt=${tp}/${grp}/${sbj}/5tt.nii.gz
-# ftt_w_neck=${tp}/${grp}/${sbj}/5tt_w_neck.nii.gz
+ftt_w_neck=${tp}/${grp}/${sbj}/5tt_w_neck.nii.gz
 wm=${tp}/${grp}/${sbj}/fs_t1_wm_mask_to_dwi.nii.gz
 wmneck=${tp}/${grp}/${sbj}/fs_t1_neck_wm_mask_to_dwi.nii.gz
 
@@ -76,7 +76,7 @@ else
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Estimate response functions.\n"
 	case ${tracking_algorithm} in
 	msmt_5tt )
-	dwi2response ${tracking_algorithm} -shells ${shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -pvf 0.95 -fa 0.2  -wm_algo tournier -fslgrad ${mbvec} ${mbval} ${tp}/${grp}/${sbj}/dt_recon/dwi-ec.nii.gz ${ftt} ${resWM} ${resGM} ${resCSF}
+	dwi2response ${tracking_algorithm} -shells ${shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -pvf 0.95 -fa 0.2  -wm_algo tournier -fslgrad ${mbvec} ${mbval} ${tp}/${grp}/${sbj}/dt_recon/dwi-ec.nii.gz ${ftt_w_neck} ${resWM} ${resGM} ${resCSF}
 		;;
 	dhollander )
 	dwi2response ${tracking_algorithm} -shells ${shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -erode 3 -fa 0.2 -sfwm 0.5 -gm 2 -csf 10 -fslgrad ${mbvec} ${mbval} ${tp}/${grp}/${sbj}/dt_recon/dwi-ec.nii.gz ${resWM} ${resGM} ${resCSF}
@@ -107,7 +107,7 @@ if [[ -f ${tck} ]]; then
 else
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Start whole brain tracking.\n"
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Output: WBT_${tractM}_ctx.tck\n"
-	tckgen -algorithm ${tckgen_algorithm} -select ${tract} -step ${tckgen_step} -angle ${tckgen_angle} -minlength ${tckgen_minlength} -maxlength ${tckgen_maxlength} -cutoff ${tckgen_cutoff} -trials ${tckgen_trials} -downsample ${tckgen_downsample} -seed_dynamic ${odfWM} -max_attempts_per_seed ${tckgen_max_attempts_per_seed} -output_seeds ${out} -act ${ftt} -backtrack -crop_at_gmwmi -samples ${tckgen_samples} -power ${tckgen_power} -fslgrad ${mbvec} ${mbval} -nthreads ${threads} ${odfWM} ${tck}
+	tckgen -algorithm ${tckgen_algorithm} -select ${tract} -step ${tckgen_step} -angle ${tckgen_angle} -minlength ${tckgen_minlength} -maxlength ${tckgen_maxlength} -cutoff ${tckgen_cutoff} -trials ${tckgen_trials} -downsample ${tckgen_downsample} -seed_dynamic ${odfWM} -max_attempts_per_seed ${tckgen_max_attempts_per_seed} -output_seeds ${out} -act ${ftt_w_neck} -backtrack -crop_at_gmwmi -samples ${tckgen_samples} -power ${tckgen_power} -fslgrad ${mbvec} ${mbval} -nthreads ${threads} ${odfWM} ${tck}
 fi
 
 # Elapsed time
