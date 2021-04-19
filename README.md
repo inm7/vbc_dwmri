@@ -73,18 +73,22 @@ The parameters can be modified by the end-users. For licensing Freesurfer, they 
 
 The raw data path should have a data structure as below (in case of sp=/mnt_sc/path/to/raw_data, grp=INM, and sbj=sub-01).
 
+    /mnt_sc/path/to/raw_data/INM/sub-01/anat/sub-01_T1w.json
     /mnt_sc/path/to/raw_data/INM/sub-01/anat/sub-01_T1w.nii.gz
     /mnt_sc/path/to/raw_data/INM/sub-01/dwi/sub-01_dwi.bval
     /mnt_sc/path/to/raw_data/INM/sub-01/dwi/sub-01_dwi.bvec
+    /mnt_sc/path/to/raw_data/INM/sub-01/dwi/sub-01_dwi.json
     /mnt_sc/path/to/raw_data/INM/sub-01/dwi/sub-01_dwi.nii.gz
     
     INM
     ├── sub-01
     │   ├── anat
+    │   │   ├── sub-01_T1w.json
     │   │   └── sub-01_T1w.nii.gz
     │   ├── dwi
     │   │   ├── sub-01_dwi.bval
     │   │   ├── sub-01_dwi.bvec
+    │   │   ├── sub-01_dwi.json
     │   │   └── sub-01_dwi.nii.gz
     .   .
     .   .

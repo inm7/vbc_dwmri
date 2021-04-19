@@ -34,7 +34,8 @@ threads4=48     # For container_SC_reconstruct.sh
 # [PART 1] ============
 # Preprocess parameters
 # =====================
-bfc=MRtrix                  # MRtrix or ANTs for Bias-field correction
+pe_json=json                # Use a json file for the phase encoding during dwifslpreproc
+pe_dir=ap                   # Direction of the phase encoding (ap = anterior to posterior, lr = left to right, pa, and rl). If a json file is assigned, this option will not be used.
 coreg_flirt_dof=7           # Option of the flirt function
 coreg_flirt_cost=mutualinfo # Option of the flirt function
 reg_flirt_dof=12            # Option of the flirt function

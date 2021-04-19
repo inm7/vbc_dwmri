@@ -7,13 +7,16 @@ for (( i = 1; i < totalNum + 1 ; i++ )); do
 	eval "${cmd}"
 done
 threads=${threads4}
+
+# Path setting
+# ------------
 atl=${tp}/${grp}/${sbj}/${atlname}_to_dwi.nii.gz
 
 # Colors
 # ------
-RED='\033[1;31m'
-GRN='\033[1;32m'
-NCR='\033[0m' # No Color
+RED='\033[1;31m'	# Red
+GRN='\033[1;32m' 	# Green
+NCR='\033[0m' 		# No Color
 
 # Call container_SC_dependencies
 # ------------------------------
@@ -38,6 +41,8 @@ else
 	tractM=$((${tract}/1000))K
 fi
 
+# Start the SC reconstruct
+# ------------------------
 startingtime=$(date +%s)
 et=${tp}/${grp}/${sbj}/SC_pipeline_elapsedtime.txt
 echo "[+] SC reconstruct for ${tractM} - $(date)" >> ${et}
@@ -47,12 +52,27 @@ tck=${tp}/${grp}/${sbj}/WBT_${tractM}_ctx.tck
 counts=${tp}/${grp}/${sbj}/${atlname}_${tractM}_ctx_count.csv
 lengths=${tp}/${grp}/${sbj}/${atlname}_${tractM}_ctx_length.csv
 
-# Over-write code
-# ---------------
+# SC Reconstruct
+# --------------
 printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Reconstruct structural connectivity (counts).\n"
 tck2connectome -symmetric -force -nthreads ${threads} -assignment_radial_search ${tck2connectome_assignment_radial_search} ${tck} ${atl} ${counts}
+if [[ -f ${counts} ]]; then
+	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - ${counts} has been saved.\n"
+else
+	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - ${counts} has not been saved!!\n"
+	exit 1
+fi
+
+# PL Reconstruct
+# --------------
 printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Reconstruct structural connectivity (lengths).\n"
 tck2connectome -symmetric -force -nthreads ${threads} -scale_length -stat_edge mean -assignment_radial_search ${tck2connectome_assignment_radial_search} ${tck} ${atl} ${lengths}
+if [[ -f ${lengths} ]]; then
+	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - ${lengths} has been saved.\n"
+else
+	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - ${lengths} has not been saved!!\n"
+	exit 1
+fi
 
 # Elapsed time
 # ------------
