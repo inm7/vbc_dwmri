@@ -116,7 +116,23 @@ if [[ -f ${tp}/${grp}/${sbj}/t1w_bc.nii.gz ]]; then
 	printf "${GRN}[ANTs]${RED} ID: ${grp}${sbj}${NCR} - Bias-field correction for T1-weighted image was already performed.\n"
 else
 	printf "${GRN}[ANTs]${RED} ID: ${grp}${sbj}${NCR} - Estimate bias-field of T1-weighted image.\n"
-	N4BiasFieldCorrection -i ${t1} -o [${tp}/${grp}/${sbj}/t1w_bc.nii.gz,${tp}/${grp}/${sbj}/t1_biasfield.nii.gz]
+	
+	# 4-time iterative bias-field corrections, because of the bright occipital lobe by very dark outside of the brain.
+	# ----------------------------------------------------------------------------------------------------------------
+	N4BiasFieldCorrection -i ${t1} -o [${tp}/${grp}/${sbj}/t1w_bc1.nii.gz,${tp}/${grp}/${sbj}/t1_bf1.nii.gz]
+	N4BiasFieldCorrection -i ${tp}/${grp}/${sbj}/t1w_bc1.nii.gz -o [${tp}/${grp}/${sbj}/t1w_bc2.nii.gz,${tp}/${grp}/${sbj}/t1_bf2.nii.gz]
+	N4BiasFieldCorrection -i ${tp}/${grp}/${sbj}/t1w_bc2.nii.gz -o [${tp}/${grp}/${sbj}/t1w_bc3.nii.gz,${tp}/${grp}/${sbj}/t1_bf3.nii.gz]
+	N4BiasFieldCorrection -i ${tp}/${grp}/${sbj}/t1w_bc3.nii.gz -o [${tp}/${grp}/${sbj}/t1w_bc4.nii.gz,${tp}/${grp}/${sbj}/t1_bf4.nii.gz]
+	
+	# Enhance intensity
+	# -----------------
+	fslmaths ${tp}/${grp}/${sbj}/t1w_bc4.nii.gz -mul 4 ${tp}/${grp}/${sbj}/t1w_bc.nii.gz
+	
+	rm ${tp}/${grp}/${sbj}/t1w_bc1.nii.gz
+	rm ${tp}/${grp}/${sbj}/t1w_bc2.nii.gz
+	rm ${tp}/${grp}/${sbj}/t1w_bc3.nii.gz
+	rm ${tp}/${grp}/${sbj}/t1w_bc4.nii.gz
+
 	if [[ -f ${tp}/${grp}/${sbj}/t1w_bc.nii.gz ]]; then
 		printf "${GRN}[ANTs]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${grp}/${sbj}/t1w_bc.nii.gz has been saved.\n"
 	else
@@ -282,10 +298,11 @@ fi
 # Co-registration (from T1WI to averaged DWI)
 # -------------------------------------------
 if [[ -f ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz ]]; then
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - An averaged DWI was already created!!!\n"
+	printf "${GRN}[MRtrix & FSL]${RED} ID: ${grp}${sbj}${NCR} - An averaged DWI was already created!!!\n"
 else
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Make an averaged DWI.\n"
-	fslmaths ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz -Tmean ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz
+	printf "${GRN}[MRtrix & FSL]${RED} ID: ${grp}${sbj}${NCR} - Make an averaged DWI.\n"
+	dwiextract -shells ${non_zero_shells} -fslgrad ${mc_bvec} ${mc_bval} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${tp}/${grp}/${sbj}/dwi_nonzero_bval.nii.gz
+	fslmaths ${tp}/${grp}/${sbj}/dwi_nonzero_bval.nii.gz -Tmean ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz
 	bet ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet.nii.gz -f 0.5
 fi
 if [[ -f ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz ]]; then
