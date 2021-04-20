@@ -254,10 +254,10 @@ else
 	printf "${GRN}[MRtrix & FSL]${RED} ID: ${grp}${sbj}${NCR} - Start dwifslpreproc for head motion correction, b-vector rotation and eddy correction.\n"
 	case ${pe_json} in
 		json )
-		dwifslpreproc ${tp}/${grp}/${sbj}/dwi_bc.nii.gz ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz -fslgrad ${bvec} ${bval} -export_grad_fsl ${mc_bvec} ${mc_bval} -rpe_header -json_import ${dwi_json}
+		dwifslpreproc ${tp}/${grp}/${sbj}/dwi_bc.nii.gz ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz -fslgrad ${bvec} ${bval} -export_grad_fsl ${mc_bvec} ${mc_bval} -nthreads ${threads} -rpe_header -json_import ${dwi_json}
 		;;
 		none )
-		dwifslpreproc ${tp}/${grp}/${sbj}/dwi_bc.nii.gz ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz -fslgrad ${bvec} ${bval} -export_grad_fsl ${mc_bvec} ${mc_bval} -rpe_none -pe_dir ${pe_dir}
+		dwifslpreproc ${tp}/${grp}/${sbj}/dwi_bc.nii.gz ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz -fslgrad ${bvec} ${bval} -export_grad_fsl ${mc_bvec} ${mc_bval} -nthreads ${threads} -rpe_none -pe_dir ${pe_dir}
 		;;
 	esac
 	if [[ -f ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ]]; then
@@ -301,7 +301,7 @@ if [[ -f ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz ]]; then
 	printf "${GRN}[MRtrix & FSL]${RED} ID: ${grp}${sbj}${NCR} - An averaged DWI was already created!!!\n"
 else
 	printf "${GRN}[MRtrix & FSL]${RED} ID: ${grp}${sbj}${NCR} - Make an averaged DWI.\n"
-	dwiextract -shells ${non_zero_shells} -fslgrad ${mc_bvec} ${mc_bval} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${tp}/${grp}/${sbj}/dwi_nonzero_bval.nii.gz
+	dwiextract -shells ${non_zero_shells} -fslgrad ${mc_bvec} ${mc_bval} -nthreads ${threads} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${tp}/${grp}/${sbj}/dwi_nonzero_bval.nii.gz
 	fslmaths ${tp}/${grp}/${sbj}/dwi_nonzero_bval.nii.gz -Tmean ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz
 	bet ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet.nii.gz -f 0.5
 fi
