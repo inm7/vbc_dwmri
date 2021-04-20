@@ -50,6 +50,7 @@ An example of an input text file is the following.
     atlname=atlas_prefix                    # Name of atlas for prefixing results
     numparc=100                             # Total number of regions in a given atlas
     shells=0,1000,2000,3000                 # shells=0,1000,2000,3000 for HCP dwMRI, i.e., b-values
+    non_zero_shells=1000,2000,3000          # shells=1000,2000,3000 for HCP dwMRI
 
     # Paths setting
     # -------------
@@ -71,7 +72,7 @@ The parameters can be modified by the end-users. For licensing Freesurfer, they 
 
 ### 3. DATA STRUCTURE
 
-The raw data path should have a data structure as below (in case of sp=/mnt_sc/path/to/raw_data, grp=INM, and sbj=sub-01).
+The raw data path should have a data structure (BIDS) as below (in case of sp=/mnt_sc/path/to/raw_data, grp=INM, and sbj=sub-01).
 
     /mnt_sc/path/to/raw_data/INM/sub-01/anat/sub-01_T1w.json
     /mnt_sc/path/to/raw_data/INM/sub-01/anat/sub-01_T1w.nii.gz
