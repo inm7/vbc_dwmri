@@ -20,16 +20,15 @@ tmp=${tp}/${grp}/${sbj}/temp
 Transform()
 {
 	idx=${1}
-	nthread=${2}
-	mask1=${tmp}/temp_thread${nthread}_mask1.nii.gz
-	mask2=${tmp}/temp_thread${nthread}_mask2.nii.gz
-	mask3=${tmp}/temp_thread${nthread}_mask3.nii.gz
-	mask4=${tmp}/temp_thread${nthread}_mask4.nii.gz
+	mask1=${tmp}/temp_thread${idx}_mask1.nii.gz
+	mask2=${tmp}/temp_thread${idx}_mask2.nii.gz
+	mask3=${tmp}/temp_thread${idx}_mask3.nii.gz
+	mask4=${tmp}/temp_thread${idx}_mask4.nii.gz
 
 	fslmaths ${ap} -thr ${idx} -uthr ${idx} -bin ${mask1}
 	applywarp --ref=${tmp}/fs_t1.nii.gz --in=${mask1} --out=${mask2} --warp=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --premat=${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.mat
 	applywarp -i ${mask2} -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet.nii.gz -o ${mask3} --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat
-	fslmaths ${mask3} -thr 0.5 -uthr 0.5 ${tmp}/temp_mask4.nii.gz
+	fslmaths ${mask3} -thr 0.5 -uthr 0.5 ${mask4}
 	fslmaths ${mask3} -sub ${mask4} -thr 0.5 -bin -mul ${idx} ${mask3}
 }
 
@@ -69,37 +68,15 @@ else
 	printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - Transform the target atlas.\n"
 	mri_convert ${fp}/${grp}_${sbj}/mri/brainmask.mgz ${tmp}/fs_t1.nii.gz
 	fslreorient2std ${tmp}/fs_t1.nii.gz ${tmp}/fs_t1.nii.gz
-	cp ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz ${tmp}/temp_mask.nii.gz
-	fslmaths ${tmp}/temp_mask.nii.gz -mul 0 ${tmp}/temp_mask.nii.gz
-	(( temp_num = 0 ))
-	for (( i = 1; i < num + 1; i++ )); do
-		(( temp_num++ ))
-		if (( temp_num < threads )); then
-			Transform ${i} ${temp_num} &
-		else
-			if (( temp_num = threads )); then
-			Transform ${i} ${temp_num}
-			wait
-			for (( k = 1; k < theads; k++ )); do
-				fslmaths ${tmp}/temp_mask.nii.gz -add ${tmp}/temp_thread${k}_mask3.nii.gz ${tmp}/temp_mask.nii.gz
-			done
-			(( temp_num = 0 ))
-			rm ${tmp}/temp_thread*mask*.nii.gz
-		fi
-		# fslmaths ${ap} -thr ${i} -uthr ${i} ${tmp}/temp_mask1.nii.gz
-		# fslmaths ${tmp}/temp_mask1.nii.gz -bin ${tmp}/temp_mask1.nii.gz
-		# applywarp --ref=${tmp}/fs_t1.nii.gz --in=${tmp}/temp_mask1.nii.gz --out=${tmp}/temp_mask2.nii.gz --warp=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --premat=${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.mat
-		# applywarp -i ${tmp}/temp_mask2.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet.nii.gz -o ${tmp}/temp_mask3.nii.gz --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat
-		# fslmaths ${tmp}/temp_mask3.nii.gz -thr 0.5 -uthr 0.5 ${tmp}/temp_mask4.nii.gz
-		# fslmaths ${tmp}/temp_mask3.nii.gz -sub ${tmp}/temp_mask4.nii.gz ${tmp}/temp_mask3.nii.gz
-		# fslmaths ${tmp}/temp_mask3.nii.gz -thr 0.5 ${tmp}/temp_mask3.nii.gz
-		# fslmaths ${tmp}/temp_mask3.nii.gz -bin ${tmp}/temp_mask3.nii.gz
-		# fslmaths ${tmp}/temp_mask3.nii.gz -mul ${i} ${tmp}/temp_mask3.nii.gz
-		# if [[ ${i} = 1 ]]; then
-		# 	cp ${tmp}/temp_mask3.nii.gz ${tmp}/temp_mask.nii.gz
-		# else
-		# 	fslmaths ${tmp}/temp_mask.nii.gz -add ${tmp}/temp_mask3.nii.gz ${tmp}/temp_mask.nii.gz
-		# fi
+	fslmaths ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz -mul 0 ${tmp}/temp_mask.nii.gz
+	for (( i = 1; i < num + 1; i++ ))
+	do
+		Transform ${i} &
+	done
+	wait
+	for (( i = 1; i < num + 1; i++ ))
+	do
+		fslmaths ${tmp}/temp_mask.nii.gz -add ${tmp}/temp_thread${i}_mask3.nii.gz ${tmp}/temp_mask.nii.gz
 	done
 	fslmaths ${tp}/${grp}/${sbj}/fs_t1_ctx_mask_to_dwi.nii.gz -add ${tp}/${grp}/${sbj}/fs_t1_subctx_mask_to_dwi.nii.gz -add ${tp}/${grp}/${sbj}/fs_t1_neck_gm_mask_to_dwi.nii.gz -bin ${tp}/${grp}/${sbj}/fs_t1_gm_mask_to_dwi.nii.gz
 	fslmaths ${tp}/${grp}/${sbj}/fs_t1_wm_mask_to_dwi.nii.gz -add ${tp}/${grp}/${sbj}/fs_t1_neck_wm_mask_to_dwi.nii.gz -bin ${tp}/${grp}/${sbj}/fs_t1_wm_mask_to_dwi.nii.gz

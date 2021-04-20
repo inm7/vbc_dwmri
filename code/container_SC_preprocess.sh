@@ -102,11 +102,11 @@ fi
 # -------------------------
 if [[ -f ${dwi_json} ]]; then
 	printf "${GRN}[Diffusion-weighted]${RED} ID: ${grp}${sbj}${NCR} - Check file: ${dwi_json}\n"
-	printf "${RED}[Diffusion-weighted]${RED} ID: ${grp}${sbj}${NCR} - The option 'pe_json' has been set as 'json'.\n"
+	printf "${GRN}[Diffusion-weighted]${RED} ID: ${grp}${sbj}${NCR} - The option 'pe_json' has been set as 'json'.\n"
 	pe_json=json
 else
-	printf "${RED}[Diffusion-weighted]${RED} ID: ${grp}${sbj}${NCR} - There is not a json file for diffusion-weighted image!!!\n"
-	printf "${RED}[Diffusion-weighted]${RED} ID: ${grp}${sbj}${NCR} - The option 'pe_json' has been set as 'none'.\n"
+	printf "${GRN}[Diffusion-weighted]${RED} ID: ${grp}${sbj}${NCR} - There is not a json file for diffusion-weighted image!!!\n"
+	printf "${GRN}[Diffusion-weighted]${RED} ID: ${grp}${sbj}${NCR} - The option 'pe_json' has been set as 'none'.\n"
 	pe_json=none
 fi
 
