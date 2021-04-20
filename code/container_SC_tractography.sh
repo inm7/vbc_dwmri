@@ -102,10 +102,10 @@ else
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Estimate fibre orientation distributions using spherical deconvolution.\n"
 	case ${fod_algorithm} in
 	msmt_csd )
-	dwi2fod ${fod_algorithm} -shells ${shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz -fslgrad ${mc_bvec} ${mc_bval} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resWM} ${odfWM} ${resGM} ${odfGM} ${resCSF} ${odfCSF}
+	dwi2fod ${fod_algorithm} -shells ${shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask_w_neck.nii.gz -fslgrad ${mc_bvec} ${mc_bval} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resWM} ${odfWM} ${resGM} ${odfGM} ${resCSF} ${odfCSF}
 		;;
 	csd )
-	dwi2fod ${fod_algorithm} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resSFWM} ${odfWM} -shells ${non_zero_shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz -fslgrad ${mc_bvec} ${mc_bval}
+	dwi2fod ${fod_algorithm} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resSFWM} ${odfWM} -shells ${non_zero_shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask_w_neck.nii.gz -fslgrad ${mc_bvec} ${mc_bval}
 		;;
 	* )
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Invalid FOD algorithm for dwi2fod!\n"

@@ -1,3 +1,8 @@
+# 1.1.0 (20 Apr. 2021)
+
+- Parallelize the atlas transformation module
+- Step-wise process for being easy to detect problems
+
 # 1.0.1 (15 Apr. 2021)
 
 - Support BIDS
