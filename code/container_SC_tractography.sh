@@ -48,7 +48,7 @@ fi
 # -------------------------
 startingtime=$(date +%s)
 et=${tp}/${grp}/${sbj}/SC_pipeline_elapsedtime.txt
-echo "[+] SC tractography for ${tractM} - $(date)" >> ${et}
+echo "[+] SC tractography for ${tractM} with ${threads} thread(s) - $(date)" >> ${et}
 echo "    Starting time in seconds ${startingtime}" >> ${et}
 
 # Files for MRtrix
@@ -151,3 +151,5 @@ else
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} Whole-brain tractography" >> ${et}
 fi
+
+echo "[-] SC tractography for ${tractM} - $(date)" >> ${et}

@@ -77,7 +77,7 @@ fi
 # --------------------------
 startingtime=$(date +%s)
 et=${tp}/${grp}/${sbj}/SC_pipeline_elapsedtime.txt
-echo "[+] SC preprocessing - $(date)" >> ${et}
+echo "[+] SC preprocessing with ${threads} thread(s) - $(date)" >> ${et}
 echo "    Starting time in seconds ${startingtime}" >> ${et}
 
 # Check T1-weighted image
@@ -188,7 +188,7 @@ fi
 if [[ -f ${tp}/${grp}/${sbj}/dwi_denoise.nii.gz ]]; then
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Denoising of DWIs was already performed!!!\n"
 else
-	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Start denoise\n"
+	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Start denoise.\n"
 	dwidenoise ${dwi} ${tp}/${grp}/${sbj}/dwi_denoise.nii.gz -nthreads ${threads}
 	if [[ -f ${tp}/${grp}/${sbj}/dwi_denoise.nii.gz ]]; then
 		printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${grp}/${sbj}/dwi_denoise.nii.gz has been saved.\n"
@@ -209,7 +209,7 @@ fi
 if [[ -f ${tp}/${grp}/${sbj}/dwi_denoise_degibbs.nii.gz ]]; then
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Degibbsing of DWIs was already performed!!!\n"
 else
-	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Start denoise\n"
+	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Start degibbs.\n"
 	mrdegibbs ${dwi} ${tp}/${grp}/${sbj}/dwi_denoise_degibbs.nii.gz -nthreads ${threads}
 	if [[ -f ${tp}/${grp}/${sbj}/dwi_denoise_degibbs.nii.gz ]]; then
 		printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${grp}/${sbj}/dwi_denoise_degibbs.nii.gz has been saved.\n"
@@ -538,3 +538,4 @@ else
 	echo "    ${elapsedtime} 5-tissue type images" >> ${et}
 fi
 
+echo "[-] SC preprocessing - $(date)" >> ${et}

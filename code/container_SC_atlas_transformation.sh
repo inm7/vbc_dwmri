@@ -59,7 +59,7 @@ fi
 # ---------------------------------
 startingtime=$(date +%s)
 et=${tp}/${grp}/${sbj}/SC_pipeline_elapsedtime.txt
-echo "[+] SC atlas transformation - $(date)" >> ${et}
+echo "[+] SC atlas transformation with ${threads} thread(s) - $(date)" >> ${et}
 echo "    Starting time in seconds ${startingtime}" >> ${et}
 
 if [[ -f ${atl} ]]; then
@@ -95,3 +95,5 @@ else
 	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} ${atlname}" >> ${et}
 fi
+
+echo "[-] SC atlas transformation - $(date)" >> ${et}
