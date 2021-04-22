@@ -27,7 +27,7 @@ Transform()
 
 	fslmaths ${ap} -thr ${idx} -uthr ${idx} -bin ${mask1}
 	applywarp --ref=${tmp}/fs_t1.nii.gz --in=${mask1} --out=${mask2} --warp=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --premat=${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.mat
-	applywarp -i ${mask2} -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet.nii.gz -o ${mask3} --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat
+	applywarp -i ${mask2} -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${mask3} --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat
 	fslmaths ${mask3} -thr 0.5 -uthr 0.5 ${mask4}
 	fslmaths ${mask3} -sub ${mask4} -thr 0.5 -bin -mul ${idx} ${mask3}
 }
@@ -66,7 +66,7 @@ if [[ -f ${atl} ]]; then
 	printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - Atlas transformation was already performed!!!\n"
 else
 	printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - Transform the target atlas.\n"
-	mri_convert ${fp}/${grp}_${sbj}/mri/brainmask.mgz ${tmp}/fs_t1.nii.gz
+	mri_convert ${fp}/${grp}_${sbj}/mri/nu.mgz ${tmp}/fs_t1.nii.gz
 	fslreorient2std ${tmp}/fs_t1.nii.gz ${tmp}/fs_t1.nii.gz
 	fslmaths ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz -mul 0 ${tmp}/temp_mask.nii.gz
 	for (( i = 1; i < num + 1; i++ ))
