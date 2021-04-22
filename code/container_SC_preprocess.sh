@@ -124,10 +124,6 @@ else
 	N4BiasFieldCorrection -i ${tp}/${grp}/${sbj}/t1w_bc2.nii.gz -o [${tp}/${grp}/${sbj}/t1w_bc3.nii.gz,${tp}/${grp}/${sbj}/t1_bf3.nii.gz]
 	N4BiasFieldCorrection -i ${tp}/${grp}/${sbj}/t1w_bc3.nii.gz -o [${tp}/${grp}/${sbj}/t1w_bc4.nii.gz,${tp}/${grp}/${sbj}/t1_bf4.nii.gz]
 	
-	# Enhance intensity
-	# -----------------
-	fslmaths ${tp}/${grp}/${sbj}/t1w_bc4.nii.gz -mul 4 ${tp}/${grp}/${sbj}/t1w_bc.nii.gz
-	
 	rm ${tp}/${grp}/${sbj}/t1w_bc1.nii.gz
 	rm ${tp}/${grp}/${sbj}/t1w_bc2.nii.gz
 	rm ${tp}/${grp}/${sbj}/t1w_bc3.nii.gz
@@ -303,15 +299,16 @@ else
 	printf "${GRN}[MRtrix & FSL]${RED} ID: ${grp}${sbj}${NCR} - Make an averaged DWI.\n"
 	dwiextract -shells ${non_zero_shells} -fslgrad ${mc_bvec} ${mc_bval} -nthreads ${threads} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${tp}/${grp}/${sbj}/dwi_nonzero_bval.nii.gz
 	fslmaths ${tp}/${grp}/${sbj}/dwi_nonzero_bval.nii.gz -Tmean ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz
-	# bet ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet.nii.gz -f 0.5
 fi
 if [[ -f ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz ]]; then
 	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Coregistration from T1WI in Freesurfer to DWI space was already performed!!!\n"
 else
 	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Start coregistration.\n"
 	mri_convert ${fp}/${grp}_${sbj}/mri/nu.mgz ${tmp}/fs_t1.nii.gz
+	mri_convert ${fp}/${grp}_${sbj}/mri/brain.mgz ${tmp}/fs_t1_brain.nii.gz
 	fslreorient2std ${tmp}/fs_t1.nii.gz ${tmp}/fs_t1.nii.gz
-	flirt -in ${tmp}/fs_t1.nii.gz -ref ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -out ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz -omat ${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat -dof ${coreg_flirt_dof} -cost ${coreg_flirt_cost}
+	fslreorient2std ${tmp}/fs_t1_brain.nii.gz ${tmp}/fs_t1_brain.nii.gz
+	flirt -in ${tmp}/fs_t1_brain.nii.gz -ref ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -out ${tp}/${grp}/${sbj}/fs_t1_brain_to_dwi.nii.gz -omat ${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat -dof ${coreg_flirt_dof} -cost ${coreg_flirt_cost}
 	applywarp -i ${tmp}/fs_t1.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat
 	if [[ -f ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz ]]; then
 		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz has been saved.\n"
