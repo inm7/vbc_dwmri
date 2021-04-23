@@ -305,11 +305,8 @@ if [[ -f ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz ]]; then
 else
 	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Start coregistration.\n"
 	mri_convert ${fp}/${grp}_${sbj}/mri/nu.mgz ${tmp}/fs_t1.nii.gz
-	mri_convert ${fp}/${grp}_${sbj}/mri/brain.mgz ${tmp}/fs_t1_brain.nii.gz
 	fslreorient2std ${tmp}/fs_t1.nii.gz ${tmp}/fs_t1.nii.gz
-	fslreorient2std ${tmp}/fs_t1_brain.nii.gz ${tmp}/fs_t1_brain.nii.gz
-	flirt -in ${tmp}/fs_t1_brain.nii.gz -ref ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -out ${tp}/${grp}/${sbj}/fs_t1_brain_to_dwi.nii.gz -omat ${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat -dof ${coreg_flirt_dof} -cost ${coreg_flirt_cost}
-	applywarp -i ${tmp}/fs_t1.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat
+	flirt -in ${tmp}/fs_t1.nii.gz -ref ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -out ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz -omat ${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat -dof ${coreg_flirt_dof} -cost ${coreg_flirt_cost}
 	if [[ -f ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz ]]; then
 		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz has been saved.\n"
 	else
