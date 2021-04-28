@@ -23,10 +23,10 @@ tmp=${tp}/${grp}/${sbj}/temp
 Transform()
 {
 	idx=${1}
-	mask1=${tmp}/temp_thread${idx}_mask1.nii.gz
-	mask2=${tmp}/temp_thread${idx}_mask2.nii.gz
-	mask3=${tmp}/temp_thread${idx}_mask3.nii.gz
-	mask4=${tmp}/temp_thread${idx}_mask4.nii.gz
+	mask1=${tmp}/temp_label${idx}_mask1.nii.gz
+	mask2=${tmp}/temp_label${idx}_mask2.nii.gz
+	mask3=${tmp}/temp_label${idx}_mask3.nii.gz
+	mask4=${tmp}/temp_label${idx}_mask4.nii.gz
 
 	fslmaths ${ap} -thr ${idx} -uthr ${idx} -bin ${mask1}
 	applywarp --ref=${tmp}/fs_t1.nii.gz --in=${mask1} --out=${mask2} --warp=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --premat=${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.mat
@@ -84,7 +84,7 @@ else
 	fslmaths ${tp}/${grp}/${sbj}/fs_t1_ctx_mask_to_dwi.nii.gz -add ${tp}/${grp}/${sbj}/fs_t1_subctx_mask_to_dwi.nii.gz -add ${tp}/${grp}/${sbj}/fs_t1_neck_gm_mask_to_dwi.nii.gz -bin ${tp}/${grp}/${sbj}/fs_t1_gm_mask_to_dwi.nii.gz
 	fslmaths ${tp}/${grp}/${sbj}/fs_t1_wm_mask_to_dwi.nii.gz -add ${tp}/${grp}/${sbj}/fs_t1_neck_wm_mask_to_dwi.nii.gz -bin ${tp}/${grp}/${sbj}/fs_t1_wm_mask_to_dwi.nii.gz
 	fslmaths ${tmp}/temp_mask.nii.gz -mul ${tp}/${grp}/${sbj}/fs_t1_gm_mask_to_dwi.nii.gz ${atl}
-	rm ${tmp}/temp*.nii.gz
+	rm -f ${tmp}/temp*.nii.gz
 	if [[ -f ${atl} ]]; then
 		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${atl} has been saved.\n"
 	else

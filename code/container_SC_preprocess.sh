@@ -127,10 +127,10 @@ else
 	N4BiasFieldCorrection -i ${tp}/${grp}/${sbj}/t1w_bc2.nii.gz -o [${tp}/${grp}/${sbj}/t1w_bc3.nii.gz,${tp}/${grp}/${sbj}/t1_bf3.nii.gz]
 	N4BiasFieldCorrection -i ${tp}/${grp}/${sbj}/t1w_bc3.nii.gz -o [${tp}/${grp}/${sbj}/t1w_bc4.nii.gz,${tp}/${grp}/${sbj}/t1_bf4.nii.gz]
 	
-	rm ${tp}/${grp}/${sbj}/t1w_bc1.nii.gz
-	rm ${tp}/${grp}/${sbj}/t1w_bc2.nii.gz
-	rm ${tp}/${grp}/${sbj}/t1w_bc3.nii.gz
-	rm ${tp}/${grp}/${sbj}/t1w_bc4.nii.gz
+	rm -f ${tp}/${grp}/${sbj}/t1w_bc1.nii.gz
+	rm -f ${tp}/${grp}/${sbj}/t1w_bc2.nii.gz
+	rm -f ${tp}/${grp}/${sbj}/t1w_bc3.nii.gz
+	rm -f ${tp}/${grp}/${sbj}/t1w_bc4.nii.gz
 
 	if [[ -f ${tp}/${grp}/${sbj}/t1w_bc.nii.gz ]]; then
 		printf "${GRN}[ANTs]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${grp}/${sbj}/t1w_bc.nii.gz has been saved.\n"
@@ -330,7 +330,7 @@ if [[ -f ${tp}/${grp}/${sbj}/mni_to_dwi.nii.gz ]]; then
 	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Registration from MNI to DWI space was already performed!!!\n"
 else
 	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Start registration from MNI to T1WI space.\n"
-	flirt -in ${mni}/MNI152_T1_1mm.nii.gz -ref ${tmp}/fs_t1.nii.gz -out ${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.nii.gz -omat ${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.mat -dof ${reg_flirt_dof} -cost ${reg_flirt_cost}
+	flirt -in ${mni} -ref ${tmp}/fs_t1.nii.gz -out ${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.nii.gz -omat ${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.mat -dof ${reg_flirt_dof} -cost ${reg_flirt_cost}
 	fnirt --ref=${tmp}/fs_t1.nii.gz --in=${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.nii.gz --iout=${tp}/${grp}/${sbj}/mni_to_fs_t1.nii.gz --cout=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --interp=${reg_fnirt_interp}
 	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Start registration from MNI to DWI space.\n"
 	applywarp -i ${tp}/${grp}/${sbj}/mni_to_fs_t1.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${tp}/${grp}/${sbj}/mni_to_dwi.nii.gz --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat
@@ -480,7 +480,7 @@ else
 
 	# Clear temporary files
 	# ---------------------
-	rm ${tmp}/temp_*.nii.gz
+	rm -f ${tmp}/temp_*.nii.gz
 
 	# Elapsed time
 	# ------------
@@ -500,7 +500,7 @@ else
 	fslmerge -t ${ftt} ${ctx} ${sub} ${wm} ${csf} ${tmp}/temp.nii.gz
 	fslmerge -t ${tp}/${grp}/${sbj}/5tt_xsub.nii.gz ${ctx} ${tmp}/temp.nii.gz ${wm} ${csf} ${tmp}/temp.nii.gz
 	fslmaths ${ctx} -add ${sub} -add ${wm} ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz
-	rm ${tmp}/temp.nii.gz
+	rm -f ${tmp}/temp.nii.gz
 
 	cd ${tp}/${grp}/${sbj}
 	fslsplit ${ftt} split -t
@@ -523,8 +523,8 @@ else
 		printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - ${ftt_w_neck} has not been saved!!\n"
 		exit 1
 	fi
-	rm ${tp}/${grp}/${sbj}/split*.nii.gz
-	rm ${seg}
+	rm -f ${tp}/${grp}/${sbj}/split*.nii.gz
+	rm -f ${seg}
 
 	# Elapsed time
 	# ------------
