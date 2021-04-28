@@ -1,13 +1,13 @@
 #!/bin/bash
 # v1.3
 
-# variables
 CPUS='4'
 RAM='8G'
 DISK='90G'
 LOGS_DIR=~/htcondor-templates/vbc_dwmri/logs
 VBC_DWMRI='/data/project/singularity/vbc_dwmri_1.1.0.simg'
 DATA_DIR='/data/project/SC_pipeline/02_MRI_data'
+ATLAS_DIR='/data/project/SC_pipeline/02_MRI_data/Atlases'
 OUTPUT_DIR='/data/project/SC_pipeline/03_Structural_Connectivity'
 FREESURFER_OUTPUT='/data/project/SC_pipeline/Neuroimage/Tools/freesurfer/subjects'
 FREESURFER_LICENSE='/opt/freesurfer/6.0/license.txt'
@@ -32,7 +32,7 @@ executable     = /usr/bin/singularity
 # loop over all subjects
 for sub in 101309 102311; do
     printf "arguments = exec --cleanenv \
-                        -B ${DATA_DIR}:/mnt_sp,${OUTPUT_DIR}:/mnt_tp,${FREESURFER_OUTPUT}:/mnt_fp,${FREESURFER_LICENSE}:/opt/freesurfer/license.txt,${INPUT_PARAMETERS}:/opt/input.txt \
+                        -B ${DATA_DIR}:/mnt_sp,${OUTPUT_DIR}:/mnt_tp,${FREESURFER_OUTPUT}:/mnt_fp,${ATLAS_DIR}:/mnt_ap,${FREESURFER_LICENSE}:/opt/freesurfer/license.txt,${INPUT_PARAMETERS}:/opt/input.txt \
                         ${VBC_DWMRI} \
                         /usr/local/bin/container_SC_pipeline.sh \
                         /opt/input.txt \

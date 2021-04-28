@@ -14,6 +14,7 @@ num=${numparc}
 
 # Path setting
 # ------------
+atlmni=${ap}/${atlas}
 ctx=${tp}/${grp}/${sbj}/fs_t1_ctx_mask_to_dwi.nii.gz
 atl=${tp}/${grp}/${sbj}/${atlname}_to_dwi.nii.gz
 tmp=${tp}/${grp}/${sbj}/temp
@@ -28,7 +29,7 @@ Transform()
 	mask3=${tmp}/temp_label${idx}_mask3.nii.gz
 	mask4=${tmp}/temp_label${idx}_mask4.nii.gz
 
-	fslmaths ${ap} -thr ${idx} -uthr ${idx} -bin ${mask1}
+	fslmaths ${atlmni} -thr ${idx} -uthr ${idx} -bin ${mask1}
 	applywarp --ref=${tmp}/fs_t1.nii.gz --in=${mask1} --out=${mask2} --warp=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --premat=${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.mat
 	applywarp -i ${mask2} -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${mask3} --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat
 	fslmaths ${mask3} -thr 0.5 -uthr 0.5 ${mask4}

@@ -17,6 +17,8 @@ non_zero_shells=1000,2000,3000          # shells=1000,2000,3000 for HCP dwMRI
 tp=/mnt_tp                                                  # Target (result) path
 sp=/mnt_sp                                                  # Source (raw) data path
 fp=/mnt_fp                                                  # Subject's path for freesurfer
+ap=/mnt_ap                                                  # Atlas path
+atlas=atlas.nii.gz                                          # Atlas on the MNI 1mm space (6th generation in FSL)
 mni=/usr/share/fsl/5.0/data/standard/MNI152_T1_1mm.nii.gz   # Standard template for registration
 
 # Optimal configuration (Default: JURECA setting, 48 threads per node)
@@ -57,8 +59,7 @@ tckgen_power=0.25
 # [PART 3] ===========
 # Atlas transformation
 # ====================
-ap=/mnt_sp/atlas.nii.gz   # Full path of an atlas on the MNI 1mm space (6th generation in FSL)
-atlname=atlas_prefix        # Name of atlas for prefixing results
+atlname=atlas_prefix        # Compact name of the atlas for prefixing results
 numparc=100                 # Total number of regions in a given atlas
 
 # [PART 4] ==
