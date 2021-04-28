@@ -8,7 +8,6 @@ line2=xxxxxxxxxxxxx
 # Input variables
 # ---------------
 grp=INM                                 # Name of dataset
-sbj=sub-01                              # Subject's ID
 tract=100000                            # Total number of streamlines for whole-brain tractography
 atlname=atlas_prefix                    # Name of atlas for prefixing results
 numparc=100                             # Total number of regions in a given atlas
@@ -19,17 +18,16 @@ non_zero_shells=1000,2000,3000          # shells=1000,2000,3000 for HCP dwMRI
 # -------------
 tp=/mnt_sc/path/to/results              # Target (result) path
 sp=/mnt_sc/path/to/raw_data             # Source (raw) data path
-wp=/mnt_sc/path/to/scripts              # Working path
 fp=/mnt_sc/freesurfer/subjects          # Subject's path for freesurfer
 ap=/mnt_sc/path/to/atlas/atlas.nii.gz   # Full path of an atlas on the MNI 1mm space (6th generation in FSL)
 mni=/mnt_sc/path/to/Standard            # Path of the MNI standard T1 1mm template
 
 # Optimal configuration (Default: JURECA setting, 48 threads per node)
 # --------------------------------------------------------------------
-threads1=6      # For container_SC_preprocess.sh (WARNING: Many runs might cause 'out of memory')
-threads2=48     # For container_SC_tractography.sh
-threads3=6      # For container_SC_atlas_transformation.sh
-threads4=48     # For container_SC_reconstruct.sh
+# threads1=6      # For container_SC_preprocess.sh (WARNING: Many runs might cause 'out of memory')
+# threads2=48     # For container_SC_tractography.sh
+# threads3=6      # For container_SC_atlas_transformation.sh
+# threads4=48     # For container_SC_reconstruct.sh
 
 # [PART 1] ============
 # Preprocess parameters

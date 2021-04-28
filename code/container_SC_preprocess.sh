@@ -1,12 +1,15 @@
 #!/bin/bash
 
 input=${1}
+threads=${2}
+sbj=${3}
+
 totalNum=$(grep -c $ ${input})
 for (( i = 1; i < totalNum + 1 ; i++ )); do
 	cmd=$(sed -n ${i}p ${input})
 	eval "${cmd}"
 done
-threads=${threads1}
+# threads=${threads1}
 
 # Path setting
 # ------------
