@@ -22,4 +22,4 @@ printf "/usr/local/bin/container_SC_atlas_transformation.sh ${input} ${threads} 
 # Part 4: Reconstruct
 # -------------------
 printf "/usr/local/bin/container_SC_reconstruct.sh ${input} ${threads} ${sbj}\n"
-/usr/local/bin/container_SC_reconstruct.sh ${input} ${sbj}
+/usr/local/bin/container_SC_reconstruct.sh ${input} ${threads} ${sbj}
