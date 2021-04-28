@@ -125,12 +125,11 @@ else
 	N4BiasFieldCorrection -i ${t1} -o [${tp}/${grp}/${sbj}/t1w_bc1.nii.gz,${tp}/${grp}/${sbj}/t1_bf1.nii.gz]
 	N4BiasFieldCorrection -i ${tp}/${grp}/${sbj}/t1w_bc1.nii.gz -o [${tp}/${grp}/${sbj}/t1w_bc2.nii.gz,${tp}/${grp}/${sbj}/t1_bf2.nii.gz]
 	N4BiasFieldCorrection -i ${tp}/${grp}/${sbj}/t1w_bc2.nii.gz -o [${tp}/${grp}/${sbj}/t1w_bc3.nii.gz,${tp}/${grp}/${sbj}/t1_bf3.nii.gz]
-	N4BiasFieldCorrection -i ${tp}/${grp}/${sbj}/t1w_bc3.nii.gz -o [${tp}/${grp}/${sbj}/t1w_bc4.nii.gz,${tp}/${grp}/${sbj}/t1_bf4.nii.gz]
+	N4BiasFieldCorrection -i ${tp}/${grp}/${sbj}/t1w_bc3.nii.gz -o [${tp}/${grp}/${sbj}/t1w_bc.nii.gz,${tp}/${grp}/${sbj}/t1_bf4.nii.gz]
 	
 	rm -f ${tp}/${grp}/${sbj}/t1w_bc1.nii.gz
 	rm -f ${tp}/${grp}/${sbj}/t1w_bc2.nii.gz
 	rm -f ${tp}/${grp}/${sbj}/t1w_bc3.nii.gz
-	rm -f ${tp}/${grp}/${sbj}/t1w_bc4.nii.gz
 
 	if [[ -f ${tp}/${grp}/${sbj}/t1w_bc.nii.gz ]]; then
 		printf "${GRN}[ANTs]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${grp}/${sbj}/t1w_bc.nii.gz has been saved.\n"
