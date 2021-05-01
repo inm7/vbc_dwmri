@@ -7,10 +7,12 @@ line2=xxxxxxxxxxxxx
 
 # Input variables
 # ---------------
-grp=INM                                 # Name of dataset
-tract=100000                            # Total number of streamlines for whole-brain tractography
-shells=0,1000,2000,3000                 # shells=0,1000,2000,3000 for HCP dwMRI, i.e., b-values
-non_zero_shells=1000,2000,3000          # shells=1000,2000,3000 for HCP dwMRI
+grp=INM                         # Name of dataset
+tract=100000                    # Total number of streamlines for whole-brain tractography
+atlname=atlas_prefix            # Compact name of the atlas for prefixing results
+numparc=100                     # Total number of regions in a given atlas
+shells=0,1000,2000,3000         # shells=0,1000,2000,3000 for HCP dwMRI, i.e., b-values
+non_zero_shells=1000,2000,3000  # shells=1000,2000,3000 for HCP dwMRI
 
 # Paths setting
 # -------------
@@ -42,27 +44,25 @@ reg_fnirt_interp=spline     # Option of the fnirt function
 # [PART 2] ==============
 # Tractography parameters
 # =======================
-tracking_algorithm=msmt_5tt # dhollander, fa, manual, msmt_5tt (valid), tax, or tournier (valid)
-fod_algorithm=msmt_csd      # csd (for tournier or msmt_csd for msmt_5tt)
-tckgen_algorithm=iFOD2      # FACT, iFOD1, iFOD2 (default), NullDist1, SD_STREAM, SeedTest, Tensor_Det, and Tensor_Prob
-tckgen_step=0.625           # in millimeter (defaults: for first-order algorithms, 0.1 x voxelsize; if using RK4, 0.25 x voxelsize; for iFOD2: 0.5 x voxelsize)
-tckgen_angle=45             # in degree
-tckgen_minlength=2.5        # in millimeter
-tckgen_maxlength=250        # in millimeter
-tckgen_cutoff=0.06
-tckgen_trials=1000
-tckgen_downsample=3
-tckgen_max_attempts_per_seed=1000
-tckgen_samples=4
-tckgen_power=0.25
+tracking_algorithm=dependent        # use `dependent` for automatic checking b-values (shells), tournier (valid for a single non-zero b-value), dhollander (valid for multiple non-zeo b-values), fa, manual, msmt_5tt, tax
+fod_algorithm=dependent             # use `dependent` for automatic checking b-values (shells), csd for tournier, msmt_csd for dhollander or msmt_5tt
+tckgen_algorithm=iFOD2              # FACT, iFOD1, iFOD2 (default), NullDist1, SD_STREAM, SeedTest, Tensor_Det, and Tensor_Prob
+tckgen_step=0.625                   # in millimeter (defaults: for first-order algorithms, 0.1 x voxelsize; if using RK4, 0.25 x voxelsize; for iFOD2: 0.5 x voxelsize)
+tckgen_angle=45                     # in degree (default = 45)
+tckgen_minlength=2.5                # in millimeter
+tckgen_maxlength=250                # in millimeter
+tckgen_cutoff=0.06                  # default = 0.06
+tckgen_trials=1000                  # default = 1000
+tckgen_downsample=3                 # default = 3
+tckgen_max_attempts_per_seed=1000   # default = 1000
+tckgen_samples=4                    # default = 4
+tckgen_power=0.25                   # default = 0.25
 
 # [PART 3] ===========
 # Atlas transformation
 # ====================
-atlname=atlas_prefix        # Compact name of the atlas for prefixing results
-numparc=100                 # Total number of regions in a given atlas
 
 # [PART 4] ==
 # Reconstruct
 # ===========
-tck2connectome_assignment_radial_search=2
+tck2connectome_assignment_radial_search=2 # default = 2

@@ -24,6 +24,28 @@ RED='\033[1;31m'	# Red
 GRN='\033[1;32m' 	# Green
 NCR='\033[0m' 		# No Color
 
+# Check b-values for tracking algorithms
+# --------------------------------------
+if [[ ${tracking_algorithm} = dependent || ${fod_algorithm} = dependent ]]; then
+	commas=$(echo ${shells} | awk -F "," '{print NF-1}')
+	if [[ ${commas} -eq 0 ]]; then
+		printf "${RED}Wrong b-values!!! Please set b-values in separate with commas, for example, shells=0,1000,2000,3000 in the input text file. \n"
+		exit 1
+	fi
+	if [[ ${commas} -gt 1 ]]; then
+		tracking_algorithm=dhollander   # tournier (valid for a single non-zero b-value), dhollander (valid for multiple non-zeo b-values), fa, manual, msmt_5tt, tax
+		fod_algorithm=msmt_csd         	# csd for tournier, msmt_csd for dhollander or msmt_5tt
+	elif [[ ${commas} -eq 1 ]]; then
+		tracking_algorithm=tournier    	# tournier (valid for a single non-zero b-value), dhollander (valid for multiple non-zeo b-values), fa, manual, msmt_5tt, tax
+		fod_algorithm=csd           	# csd for tournier, msmt_csd for dhollander or msmt_5tt
+	fi
+	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - tracking_algorithm = ${tracking_algorithm}\n"
+	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - fod_algorithm = ${fod_algorithm}\n"
+else
+	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - tracking_algorithm = ${tracking_algorithm}\n"
+	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - fod_algorithm = ${fod_algorithm}\n"
+fi
+
 # Call container_SC_dependencies
 # ------------------------------
 source /usr/local/bin/container_SC_dependencies.sh
@@ -79,18 +101,18 @@ else
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Estimate response functions.\n"
 	case ${tracking_algorithm} in
 	msmt_5tt )
-	dwi2response ${tracking_algorithm} -shells ${shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -pvf 0.95 -fa 0.2  -wm_algo tournier -fslgrad ${mc_bvec} ${mc_bval} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${ftt_w_neck} ${resWM} ${resGM} ${resCSF}
+	dwi2response msmt_5tt -shells ${shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -pvf 0.95 -fa 0.2 -wm_algo tournier -fslgrad ${mc_bvec} ${mc_bval} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${ftt_w_neck} ${resWM} ${resGM} ${resCSF}
 		;;
 	tournier )
-	dwi2response ${tracking_algorithm} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resWM} -shells  ${non_zero_shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -fslgrad ${mc_bvec} ${mc_bval}
+	dwi2response tournier ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resWM} -shells  ${non_zero_shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -fslgrad ${mc_bvec} ${mc_bval}
 	cp ${resWM} ${resSFWM}
 		;;
 	dhollander )
-	dwi2response ${tracking_algorithm} -shells ${shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -erode 3 -fa 0.2 -sfwm 0.5 -gm 2 -csf 10 -fslgrad ${mc_bvec} ${mc_bval} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resWM} ${resGM} ${resCSF}
-	if [[ -f ${resSFWM} ]]; then
-		rm -f ${resSFWM}
-	fi
-	echo $(tail -n 1 ${resWM}) >> ${resSFWM}
+	dwi2response dhollander ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resWM} ${resGM} ${resCSF} -shells ${shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -fslgrad ${mc_bvec} ${mc_bval} -erode 3 -fa 0.2 -sfwm 0.5 -gm 2 -csf 10
+	# if [[ -f ${resSFWM} ]]; then
+	# 	rm -f ${resSFWM}
+	# fi
+	# echo $(tail -n 1 ${resWM}) >> ${resSFWM}
 		;;
 	* )
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Invalid tracking algorithm for dwi2response!\n"

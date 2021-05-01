@@ -495,10 +495,10 @@ if [[ -f ${ftt_w_neck} ]]; then
 else
 	printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - Make a 5TT image.\n"
 	cp ${csf} ${tmp}/temp.nii.gz
-	fslmaths ${tmp}/temp.nii.gz -uthr 0.5 ${tmp}/temp.nii.gz
+	fslmaths ${tmp}/temp.nii.gz -mul 0 -bin ${tmp}/temp.nii.gz
 	fslmerge -t ${ftt} ${ctx} ${sub} ${wm} ${csf} ${tmp}/temp.nii.gz
 	fslmerge -t ${tp}/${grp}/${sbj}/5tt_xsub.nii.gz ${ctx} ${tmp}/temp.nii.gz ${wm} ${csf} ${tmp}/temp.nii.gz
-	fslmaths ${ctx} -add ${sub} -add ${wm} ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz
+	fslmaths ${ctx} -add ${sub} -add ${wm} -bin ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz
 	rm -f ${tmp}/temp.nii.gz
 
 	cd ${tp}/${grp}/${sbj}
