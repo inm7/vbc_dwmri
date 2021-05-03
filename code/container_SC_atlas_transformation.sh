@@ -73,9 +73,16 @@ else
 	mri_convert ${fp}/${grp}_${sbj}/mri/nu.mgz ${tmp}/fs_t1.nii.gz
 	fslreorient2std ${tmp}/fs_t1.nii.gz ${tmp}/fs_t1.nii.gz
 	fslmaths ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz -mul 0 ${tmp}/temp_mask.nii.gz
+	nThr=0
 	for (( i = 1; i < num + 1; i++ ))
 	do
 		Transform ${i} &
+		(( nThr++ ))
+        printf "\n[+] Running threads ${nThr}\n"
+        if [[ ${nThr} -eq ${threads} ]]; then
+            wait
+            nThr=0
+        fi
 	done
 	wait
 	for (( i = 1; i < num + 1; i++ ))

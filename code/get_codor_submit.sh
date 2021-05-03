@@ -2,8 +2,8 @@
 # v1.3
 
 CPUS='4'
-RAM='8G'
-DISK='90G'
+RAM='48G'
+DISK='120G'
 LOGS_DIR=~/htcondor-templates/vbc_dwmri/logs
 VBC_DWMRI='/data/project/singularity/vbc_dwmri_1.1.0.simg'
 DATA_DIR='/data/project/SC_pipeline/02_MRI_data'
