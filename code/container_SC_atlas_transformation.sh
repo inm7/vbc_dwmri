@@ -87,7 +87,7 @@ else
 	wait
 	for (( i = 1; i < num + 1; i++ ))
 	do
-		fslmaths ${tmp}/temp_mask.nii.gz -add ${tmp}/temp_thread${i}_mask3.nii.gz ${tmp}/temp_mask.nii.gz
+		fslmaths ${tmp}/temp_mask.nii.gz -add ${tmp}/temp_label${i}_mask3.nii.gz ${tmp}/temp_mask.nii.gz
 	done
 	fslmaths ${tp}/${grp}/${sbj}/fs_t1_ctx_mask_to_dwi.nii.gz -add ${tp}/${grp}/${sbj}/fs_t1_subctx_mask_to_dwi.nii.gz -add ${tp}/${grp}/${sbj}/fs_t1_neck_gm_mask_to_dwi.nii.gz -bin ${tp}/${grp}/${sbj}/fs_t1_gm_mask_to_dwi.nii.gz
 	fslmaths ${tp}/${grp}/${sbj}/fs_t1_wm_mask_to_dwi.nii.gz -add ${tp}/${grp}/${sbj}/fs_t1_neck_wm_mask_to_dwi.nii.gz -bin ${tp}/${grp}/${sbj}/fs_t1_wm_mask_to_dwi.nii.gz
