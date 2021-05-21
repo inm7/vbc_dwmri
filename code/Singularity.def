@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: debian:stretch-slim
+From: debian:buster-slim
 
 %setup
     # install your pipeline script into /usr/local/bin
@@ -13,10 +13,10 @@ From: debian:stretch-slim
     sudo apt-get -y install curl gnupg apt-transport-https wget
 
     # NeuroDebian
-    curl http://neuro.debian.net/lists/stretch.us-ca.full -o /etc/apt/sources.list.d/neurodebian.sources.list
-    apt-key adv --recv-keys --keyserver hkp://pool.sks-keyservers.net:80 0xA5D32F012649A5A9
-    # wget -O- http://neuro.debian.net/lists/buster.de-fzj.full | sudo tee /etc/apt/sources.list.d/neurodebian.sources.list
+    # curl http://neuro.debian.net/lists/stretch.us-ca.full -o /etc/apt/sources.list.d/neurodebian.sources.list
     # apt-key adv --recv-keys --keyserver hkp://pool.sks-keyservers.net:80 0xA5D32F012649A5A9
+    wget -O- http://neuro.debian.net/lists/buster.de-fzj.full | sudo tee /etc/apt/sources.list.d/neurodebian.sources.list
+    apt-key adv --recv-keys --keyserver hkp://pool.sks-keyservers.net:80 0xA5D32F012649A5A9
     apt-get update
 
     # ANTs
