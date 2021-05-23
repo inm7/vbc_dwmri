@@ -4,7 +4,7 @@
 #SBATCH -e slurm_logs/DWMRI-err.%j
 #SBATCH -A jinm71
 #SBATCH -N 1
-#SBATCH --time=20:00:00
+#SBATCH --time=12:00:00
 #SBATCH --mail-user=k.jung@fz-juelich.de
 #SBATCH --mail-type=ALL
 #SBATCH --partition=dc-cpu
@@ -23,7 +23,7 @@ PROCESS_MODULE=/usr/local/bin/container_SC_pipeline.sh
 fn=${1}
 grp=${2}
 startNum=${3}
-totalNum=${4}
+endNum=${4}
 threads=${5}
 
 wp=$(pwd)
@@ -72,11 +72,11 @@ for (( i = threads; i < max_threads + 1; i+= threads )); do
         # Perform srun
         # ------------
         sbj=$(sed -n $((nSbj))p ${wp}/${fn})
-        if [[ ${nSbj} -gt ${totalNum} ]]; then
-            printf "Subject number (${nSbj}) exceeded the total number (${totalNum}). \n"
+        if [[ ${nSbj} -gt ${endNum} ]]; then
+            printf "Subject number (${nSbj}) exceeded the end number (${endNum}). \n"
         else
             printf "srun --exclusive --cpu-bind=mask_cpu:0x${bind_hex} -n 1 -N 1 singularity exec --cleanenv -B ${DATA_DIR}:/mnt_sp,${OUTPUT_DIR}:/mnt_tp,${FREESURFER_OUTPUT}:/mnt_fp,${ATLAS_DIR}:/mnt_ap,${FREESURFER_LICENSE}:/opt/freesurfer/license.txt,${INPUT_PARAMETERS}:/opt/input.txt ${VBC_DWMRI} ${PROCESS_MODULE} /opt/input.txt ${threads} ${sbj} &\n"
-            srun --exclusive --cpu-bind=mask_cpu:0x${bind_hex} -n 1 -N 1 singularity exec --cleanenv -B ${DATA_DIR}:/mnt_sp,${OUTPUT_DIR}:/mnt_tp,${FREESURFER_OUTPUT}:/mnt_fp,${ATLAS_DIR}:/mnt_ap,${FREESURFER_LICENSE}:/opt/freesurfer/license.txt,${INPUT_PARAMETERS}:/opt/input.txt ${VBC_DWMRI} ${PROCESS_MODULE} /opt/input.txt ${threads} ${sbj} &
+            # srun --exclusive --cpu-bind=mask_cpu:0x${bind_hex} -n 1 -N 1 singularity exec --cleanenv -B ${DATA_DIR}:/mnt_sp,${OUTPUT_DIR}:/mnt_tp,${FREESURFER_OUTPUT}:/mnt_fp,${ATLAS_DIR}:/mnt_ap,${FREESURFER_LICENSE}:/opt/freesurfer/license.txt,${INPUT_PARAMETERS}:/opt/input.txt ${VBC_DWMRI} ${PROCESS_MODULE} /opt/input.txt ${threads} ${sbj} &
         fi
         (( nSbj++ ))
     fi
