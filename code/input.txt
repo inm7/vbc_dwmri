@@ -36,7 +36,7 @@ mni=/usr/share/fsl/5.0/data/standard/MNI152_T1_1mm.nii.gz   # Standard template 
 pe_json=json                # Use a json file for the phase encoding during dwifslpreproc
 pe_dir=ap                   # Direction of the phase encoding (ap = anterior to posterior, lr = left to right, pa, and rl). If a json file is assigned, this option will not be used.
 coreg_flirt_dof=6           # Option of the flirt function
-coreg_flirt_cost=mutualinfo # Option of the flirt function
+coreg_flirt_cost=leastsq    # Option of the flirt function (mutualinfo or leastsq)
 reg_flirt_dof=12            # Option of the flirt function
 reg_flirt_cost=mutualinfo   # Option of the flirt function
 reg_fnirt_interp=spline     # Option of the fnirt function

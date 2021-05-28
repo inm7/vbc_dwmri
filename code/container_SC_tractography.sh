@@ -104,7 +104,7 @@ else
 	dwi2response msmt_5tt -shells ${shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -pvf 0.95 -fa 0.2 -wm_algo tournier -fslgrad ${mc_bvec} ${mc_bval} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${ftt_w_neck} ${resWM} ${resGM} ${resCSF}
 		;;
 	tournier )
-	dwi2response tournier ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resWM} -shells  ${non_zero_shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -fslgrad ${mc_bvec} ${mc_bval}
+	dwi2response tournier ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resWM} -shells ${non_zero_shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -fslgrad ${mc_bvec} ${mc_bval}
 	cp ${resWM} ${resSFWM}
 		;;
 	dhollander )
