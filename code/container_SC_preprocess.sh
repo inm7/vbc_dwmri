@@ -447,11 +447,11 @@ else
 	# Dilate the brain-tissue mask
 	# ----------------------------
 	mri_binarize --i ${tmp}/fs_t1_gmwm_mask.nii.gz --min 0.5 --max 1.5 --dilate 20 --o ${tmp}/fs_t1_gmwm_mask_dilate.nii.gz
-	fslmaths ${tmp}/fs_t1.nii.gz -mas ${tmp}/fs_t1_gmwm_mask_dilate.nii.gz ${tmp}/fs_t1.nii.gz
+	fslmaths ${tmp}/fs_t1.nii.gz -mas ${tmp}/fs_t1_gmwm_mask_dilate.nii.gz ${tp}/${grp}/${sbj}/fs_t1.nii.gz
 
 	# Linear registration
 	# -------------------
-	flirt -in ${tmp}/fs_t1.nii.gz -ref ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -out ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz -omat ${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat -dof ${coreg_flirt_dof} -cost ${coreg_flirt_cost}
+	flirt -in ${tp}/${grp}/${sbj}/fs_t1.nii.gz -ref ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -out ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz -omat ${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat -dof ${coreg_flirt_dof} -cost ${coreg_flirt_cost}
 	if [[ -f ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz ]]; then
 		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz has been saved.\n"
 	else
@@ -472,10 +472,21 @@ if [[ -f ${tp}/${grp}/${sbj}/mni_to_dwi.nii.gz ]]; then
 	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Registration from MNI to DWI space was already performed!!!\n"
 else
 	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Start registration from MNI to T1WI space.\n"
-	flirt -in ${mni} -ref ${tmp}/fs_t1.nii.gz -out ${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.nii.gz -omat ${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.mat -dof ${reg_flirt_dof} -cost ${reg_flirt_cost}
-	fnirt --ref=${tmp}/fs_t1.nii.gz --in=${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.nii.gz --iout=${tp}/${grp}/${sbj}/mni_to_fs_t1.nii.gz --cout=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --interp=${reg_fnirt_interp}
+	fslmaths ${tp}/${grp}/${sbj}/fs_t1.nii.gz -mas ${tmp}/fs_t1_gmwm_mask.nii.gz ${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz
+
+	# Linear (MNI brain to T1 brain)
+	# ------------------------------
+	flirt -in ${mni} -ref ${tp}/${grp}/${sbj}/fs_t1.nii.gz -out ${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.nii.gz -omat ${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.mat -dof ${reg_flirt_dof} -cost ${reg_flirt_cost}
+	applywarp -i ${mni_brain} -r ${tp}/${grp}/${sbj}/fs_t1.nii.gz -o ${tp}/${grp}/${sbj}/mni_brain_to_fs_t1_flirt.nii.gz --premat=mni_to_fs_t1_flirt.mat
+
+	# Non-linear
+	# ----------
+	fnirt --ref=${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz --in=${tp}/${grp}/${sbj}/mni_brain_to_fs_t1_flirt.nii.gz --iout=${tp}/${grp}/${sbj}/mni_brain_to_fs_t1.nii.gz --cout=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --interp=${reg_fnirt_interp}
+	applywarp --ref=${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz --in=${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.nii.gz --out=${tp}/${grp}/${sbj}/mni_to_fs_t1.nii.gz --warp=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --premat=${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.mat
+	
 	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Start registration from MNI to DWI space.\n"
 	applywarp -i ${tp}/${grp}/${sbj}/mni_to_fs_t1.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${tp}/${grp}/${sbj}/mni_to_dwi.nii.gz --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat
+	applywarp -i ${tp}/${grp}/${sbj}/mni_brain_to_fs_t1.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${tp}/${grp}/${sbj}/mni_brain_to_dwi.nii.gz --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat
 	if [[ -f ${tp}/${grp}/${sbj}/mni_to_dwi.nii.gz ]]; then
 		printf "${GRN}[FSL Non-linear registration]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${grp}/${sbj}/mni_to_dwi.nii.gz has been saved.\n"
 	else
