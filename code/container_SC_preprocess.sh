@@ -448,10 +448,14 @@ else
 	# ----------------------------
 	mri_binarize --i ${tmp}/fs_t1_gmwm_mask.nii.gz --min 0.5 --max 1.5 --dilate 20 --o ${tmp}/fs_t1_gmwm_mask_dilate.nii.gz
 	fslmaths ${tmp}/fs_t1.nii.gz -mas ${tmp}/fs_t1_gmwm_mask_dilate.nii.gz ${tp}/${grp}/${sbj}/fs_t1.nii.gz
+	fslmaths ${tp}/${grp}/${sbj}/fs_t1.nii.gz -mas ${tmp}/fs_t1_gmwm_mask.nii.gz ${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz
 
 	# Linear registration
 	# -------------------
-	flirt -in ${tp}/${grp}/${sbj}/fs_t1.nii.gz -ref ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -out ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz -omat ${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat -dof ${coreg_flirt_dof} -cost ${coreg_flirt_cost}
+	flirt -in ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -ref ${tp}/${grp}/${sbj}/fs_t1.nii.gz -out ${tp}/${grp}/${sbj}/dwi_to_fs_t1_affine.nii.gz -omat ${tp}/${grp}/${sbj}/dwi_to_fs_t1_affine.mat -dof ${coreg_flirt_dof} -cost ${coreg_flirt_cost}
+	convert_xfm -omat ${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat -inverse ${tp}/${grp}/${sbj}/dwi_to_fs_t1_affine.mat
+	applywarp -i ${tp}/${grp}/${sbj}/fs_t1.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz --premat=${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
+	applywarp -i ${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${tp}/${grp}/${sbj}/fs_t1_brain_to_dwi.nii.gz --premat=${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
 	if [[ -f ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz ]]; then
 		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz has been saved.\n"
 	else
@@ -472,21 +476,23 @@ if [[ -f ${tp}/${grp}/${sbj}/mni_to_dwi.nii.gz ]]; then
 	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Registration from MNI to DWI space was already performed!!!\n"
 else
 	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Start registration from MNI to T1WI space.\n"
-	fslmaths ${tp}/${grp}/${sbj}/fs_t1.nii.gz -mas ${tmp}/fs_t1_gmwm_mask.nii.gz ${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz
-
-	# Linear (MNI brain to T1 brain)
-	# ------------------------------
-	flirt -in ${mni} -ref ${tp}/${grp}/${sbj}/fs_t1.nii.gz -out ${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.nii.gz -omat ${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.mat -dof ${reg_flirt_dof} -cost ${reg_flirt_cost}
-	applywarp -i ${mni_brain} -r ${tp}/${grp}/${sbj}/fs_t1.nii.gz -o ${tp}/${grp}/${sbj}/mni_brain_to_fs_t1_flirt.nii.gz --premat=${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.mat
-
-	# Non-linear
-	# ----------
-	fnirt --ref=${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz --in=${tp}/${grp}/${sbj}/mni_brain_to_fs_t1_flirt.nii.gz --iout=${tp}/${grp}/${sbj}/mni_brain_to_fs_t1.nii.gz --cout=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --interp=${reg_fnirt_interp}
-	applywarp --ref=${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz --in=${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.nii.gz --out=${tp}/${grp}/${sbj}/mni_to_fs_t1.nii.gz --warp=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz
 	
+	# From T1 (Freesurfer) to MNI152 1mm
+	# ----------------------------------
+	flirt -ref ${mni_brain} -in ${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz -omat ${tp}/${grp}/${sbj}/fs_t1_to_mni_affine.mat -dof ${reg_flirt_dof}
+	fnirt --in=${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz --aff=${tp}/${grp}/${sbj}/fs_t1_to_mni_affine.mat --cout=${tp}/${grp}/${sbj}/fs_t1_to_mni_warp_struct.nii.gz --config=T1_2_MNI152_2mm
+	
+	# From MNI152 1mm to T1 (Freesurfer) - inverse
+	# --------------------------------------------
+	invwarp --ref=${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz --warp=${tp}/${grp}/${sbj}/fs_t1_to_mni_warp_struct.nii.gz --out=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz
+	applywarp --ref=${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz --in=${mni_brain} --warp=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --out=${tp}/${grp}/${sbj}/mni_brain_to_fs_t1.nii.gz --interp=${reg_fnirt_interp}
+	applywarp --ref=${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz --in=${mni} --warp=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --out=${tp}/${grp}/${sbj}/mni_to_fs_t1.nii.gz --interp=${reg_fnirt_interp}
+
+	# Rigid transform from T1 (Freesurfer) to DWI space
+	# -------------------------------------------------
 	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Start registration from MNI to DWI space.\n"
-	applywarp -i ${tp}/${grp}/${sbj}/mni_to_fs_t1.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${tp}/${grp}/${sbj}/mni_to_dwi.nii.gz --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat
-	applywarp -i ${tp}/${grp}/${sbj}/mni_brain_to_fs_t1.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${tp}/${grp}/${sbj}/mni_brain_to_dwi.nii.gz --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat
+	applywarp -i ${tp}/${grp}/${sbj}/mni_to_fs_t1.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${tp}/${grp}/${sbj}/mni_to_dwi.nii.gz --premat=${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
+	applywarp -i ${tp}/${grp}/${sbj}/mni_brain_to_fs_t1.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${tp}/${grp}/${sbj}/mni_brain_to_dwi.nii.gz --premat=${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
 	if [[ -f ${tp}/${grp}/${sbj}/mni_to_dwi.nii.gz ]]; then
 		printf "${GRN}[FSL Non-linear registration]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${grp}/${sbj}/mni_to_dwi.nii.gz has been saved.\n"
 	else
@@ -510,7 +516,7 @@ else
 
 	# Cortical gray-matter mask
 	# -------------------------
-	applywarp -i ${tmp}/fs_t1_ctx_mask.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${ctx} --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat
+	applywarp -i ${tmp}/fs_t1_ctx_mask.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${ctx} --premat=${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
 	fslmaths ${ctx} -thr 0.5 -bin ${ctx}
 	if [[ -f ${ctx} ]]; then
 		printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - ${ctx} has been saved.\n"
@@ -522,7 +528,7 @@ else
 	# Cerebellum
 	# ----------
 	fslmaths ${tmp}/fs_t1_ctx_mask.nii.gz -add ${tmp}/fs_t1_gm_cerebellum_mask.nii.gz -bin ${tmp}/temp_mask.nii.gz
-	applywarp -i ${tmp}/temp_mask.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${gmneck} --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat
+	applywarp -i ${tmp}/temp_mask.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${gmneck} --premat=${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
 	fslmaths ${gmneck} -thr 0.5 -bin ${gmneck}
 	if [[ -f ${gmneck} ]]; then
 		printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - ${gmneck} has been saved.\n"
@@ -533,7 +539,7 @@ else
 
 	# White-matter
 	# ------------
-	applywarp -i ${tmp}/fs_t1_wm_mask.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${wm} --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat
+	applywarp -i ${tmp}/fs_t1_wm_mask.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${wm} --premat=${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
 	fslmaths ${wm} -thr 0.5 -bin ${wm}
 	if [[ -f ${wm} ]]; then
 		printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - ${wm} has been saved.\n"
@@ -544,7 +550,7 @@ else
 
 	# White-matter with a neck
 	# ------------------------
-	applywarp -i ${tmp}/fs_t1_neck_wm_mask.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${wmneck} --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat
+	applywarp -i ${tmp}/fs_t1_neck_wm_mask.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${wmneck} --premat=${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
 	fslmaths ${wmneck} -thr 0.5 -bin ${wmneck}
 	if [[ -f ${wmneck} ]]; then
 		printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - ${wmneck} has been saved.\n"
@@ -555,7 +561,7 @@ else
 
 	# Subcortical areas
 	# -----------------
-	applywarp -i ${tmp}/fs_t1_subctx_mask.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${sub} --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat
+	applywarp -i ${tmp}/fs_t1_subctx_mask.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${sub} --premat=${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
 	fslmaths ${sub} -thr 0.5 -bin ${sub}
 	if [[ -f ${sub} ]]; then
 		printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - ${sub} has been saved.\n"
@@ -566,7 +572,7 @@ else
 
 	# Cerebrospinal fluid (CSF)
 	# -------------------------
-	applywarp -i ${tmp}/fs_t1_csf_mask.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${csf} --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat
+	applywarp -i ${tmp}/fs_t1_csf_mask.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${csf} --premat=${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
 	fslmaths ${csf} -thr 0.5 -bin ${csf}
 	if [[ -f ${csf} ]]; then
 		printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - ${csf} has been saved.\n"

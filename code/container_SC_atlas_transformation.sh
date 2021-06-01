@@ -30,8 +30,8 @@ Transform()
 	mask4=${tmp}/temp_label${idx}_mask4.nii.gz
 
 	fslmaths ${atlmni} -thr ${idx} -uthr ${idx} -bin ${mask1}
-	applywarp --ref=${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz --in=${mask1} --out=${mask2} --warp=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --premat=${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.mat
-	applywarp -i ${mask2} -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${mask3} --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat
+	applywarp --ref=${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz --in=${mask1} --out=${mask2} --warp=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --interp=${reg_fnirt_interp}
+	applywarp -i ${mask2} -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${mask3} --premat=${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
 	fslmaths ${mask3} -thr 0.5 -uthr 0.5 ${mask4}
 	fslmaths ${mask3} -sub ${mask4} -thr 0.5 -bin -mul ${idx} ${mask3}
 }
