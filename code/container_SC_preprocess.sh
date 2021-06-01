@@ -477,7 +477,7 @@ else
 	# Linear (MNI brain to T1 brain)
 	# ------------------------------
 	flirt -in ${mni} -ref ${tp}/${grp}/${sbj}/fs_t1.nii.gz -out ${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.nii.gz -omat ${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.mat -dof ${reg_flirt_dof} -cost ${reg_flirt_cost}
-	applywarp -i ${mni_brain} -r ${tp}/${grp}/${sbj}/fs_t1.nii.gz -o ${tp}/${grp}/${sbj}/mni_brain_to_fs_t1_flirt.nii.gz --premat=mni_to_fs_t1_flirt.mat
+	applywarp -i ${mni_brain} -r ${tp}/${grp}/${sbj}/fs_t1.nii.gz -o ${tp}/${grp}/${sbj}/mni_brain_to_fs_t1_flirt.nii.gz --premat=${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.mat
 
 	# Non-linear
 	# ----------
