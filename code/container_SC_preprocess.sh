@@ -482,7 +482,7 @@ else
 	# Non-linear
 	# ----------
 	fnirt --ref=${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz --in=${tp}/${grp}/${sbj}/mni_brain_to_fs_t1_flirt.nii.gz --iout=${tp}/${grp}/${sbj}/mni_brain_to_fs_t1.nii.gz --cout=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --interp=${reg_fnirt_interp}
-	applywarp --ref=${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz --in=${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.nii.gz --out=${tp}/${grp}/${sbj}/mni_to_fs_t1.nii.gz --warp=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --premat=${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.mat
+	applywarp --ref=${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz --in=${tp}/${grp}/${sbj}/mni_to_fs_t1_flirt.nii.gz --out=${tp}/${grp}/${sbj}/mni_to_fs_t1.nii.gz --warp=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz
 	
 	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Start registration from MNI to DWI space.\n"
 	applywarp -i ${tp}/${grp}/${sbj}/mni_to_fs_t1.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${tp}/${grp}/${sbj}/mni_to_dwi.nii.gz --premat=${tp}/${grp}/${sbj}/fs_t1_to_dwi.mat

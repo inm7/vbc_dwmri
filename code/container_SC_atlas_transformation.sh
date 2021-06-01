@@ -76,7 +76,7 @@ else
 	do
 		Transform ${i} &
 		(( nThr++ ))
-        printf "\n[+] Running threads ${nThr}\n"
+        printf "[+] Running thread ${nThr} - index ${i}\n"
         if [[ ${nThr} -eq ${threads} ]]; then
             wait
             nThr=0
