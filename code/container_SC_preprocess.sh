@@ -452,7 +452,7 @@ else
 
 	# Linear registration
 	# -------------------
-	flirt -in ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -ref ${tp}/${grp}/${sbj}/fs_t1.nii.gz -out ${tp}/${grp}/${sbj}/dwi_to_fs_t1_affine.nii.gz -omat ${tp}/${grp}/${sbj}/dwi_to_fs_t1_affine.mat -dof ${coreg_flirt_dof} -cost ${coreg_flirt_cost}
+	flirt -in ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -ref ${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz -out ${tp}/${grp}/${sbj}/dwi_to_fs_t1_affine.nii.gz -omat ${tp}/${grp}/${sbj}/dwi_to_fs_t1_affine.mat -dof ${coreg_flirt_dof} -cost ${coreg_flirt_cost}
 	convert_xfm -omat ${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat -inverse ${tp}/${grp}/${sbj}/dwi_to_fs_t1_affine.mat
 	applywarp -i ${tp}/${grp}/${sbj}/fs_t1.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz --premat=${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
 	applywarp -i ${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${tp}/${grp}/${sbj}/fs_t1_brain_to_dwi.nii.gz --premat=${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
