@@ -40,7 +40,7 @@ coreg_flirt_dof=6           # Option of the flirt function
 coreg_flirt_cost=corratio   # Option of the flirt function (mutualinfo or corratio)
 reg_flirt_dof=12            # Option of the flirt function
 reg_flirt_cost=corratio     # Option of the flirt function
-reg_fnirt_interp=spline     # Option of the fnirt function
+reg_fnirt_interp=trilinear  # Option of the fnirt function (spline or trilinear)
 
 # [PART 2] ==============
 # Tractography parameters
