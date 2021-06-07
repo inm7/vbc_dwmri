@@ -153,11 +153,33 @@ else
 	printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - Make a subject directory.\n"
 	mkdir -p ${fp}/${grp}_${sbj}/mri/orig
 fi
+
+# AC-PC alignment
+# ---------------
 if [[ -f ${fp}/${grp}_${sbj}/mri/orig/001.mgz ]]; then
 	printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - The T1-weighted image exists in the subject directory.\n"
 else
 	printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - Convert T1-weighted image to mgz.\n"
-	mri_convert ${tp}/${grp}/${sbj}/t1w_bc.nii.gz ${fp}/${grp}_${sbj}/mri/orig/001.mgz
+
+	# AC-PC alignment
+	# ---------------
+	fslreorient2std ${tp}/${grp}/${sbj}/t1w_bc.nii.gz ${tmp}/t1w_bc_reori.nii.gz
+	robustfov -i ${tmp}/t1w_bc_reori.nii.gz -b 170 -m ${tmp}/acpc_roi2full.mat -r ${tmp}/acpc_robustroi.nii.gz
+	flirt -interp spline -in ${tmp}/acpc_robustroi.nii.gz -ref ${mni} -omat ${tmp}/acpc_roi2std.mat -out ${tmp}/acpc_roi2std.nii.gz -searchrx -30 30 -searchry -30 30 -searchrz -30 30
+	convert_xfm -omat ${tmp}/acpc_full2roi.mat -inverse ${tmp}/acpc_roi2full.mat
+	convert_xfm -omat ${tmp}/acpc_full2std.mat -concat ${tmp}/acpc_roi2std.mat ${tmp}/acpc_full2roi.mat
+	aff2rigid ${tmp}/acpc_full2std.mat ${tmp}/acpc.mat
+	applywarp --rel --interp=spline -i ${tmp}/t1w_bc_reori.nii.gz -r ${mni} --premat=${tmp}/acpc.mat -o ${tmp}/t1w_acpc.nii.gz
+	if [[ -f ${tmp}/t1w_acpc.nii.gz ]]; then
+		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/t1w_acpc.nii.gz has been saved.\n"
+	else
+		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/t1w_acpc.nii.gz has not been saved!!\n"
+		exit 1
+	fi
+
+	# Copy to the directory for recon-all
+	# -----------------------------------
+	mri_convert ${tmp}/t1w_acpc.nii.gz ${fp}/${grp}_${sbj}/mri/orig/001.mgz
 fi
 
 # Check recon-all by Freesurfer
