@@ -114,6 +114,7 @@ else
 			;;
 		esac
 		mv ${tmp}/temp.nii.gz ${atlt1w}
+		fslreorient2std ${atlt1w} ${atlt1w}
 		if [[ -f ${atlt1w} ]]; then
 			printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - ${atlt1w} has been saved.\n"
 		else
