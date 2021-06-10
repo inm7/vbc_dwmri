@@ -344,7 +344,7 @@ else
 
 	# White-matter
 	# ------------
-	fslmaths ${tmp}/temp_roi_2_mask.nii.gz -add ${tmp}/temp_roi_41_mask.nii.gz -add ${tmp}/temp_roi_77_mask.nii.gz -add ${tmp}/temp_roi_251_mask.nii.gz -add ${tmp}/temp_roi_252_mask.nii.gz -add ${tmp}/temp_roi_253_mask.nii.gz -add ${tmp}/temp_roi_254_mask.nii.gz -add ${tmp}/temp_roi_255_mask.nii.gz -bin ${tmp}/fs_t1_wm_mask.nii.gz
+	fslmaths ${tmp}/temp_roi_2.nii.gz -add ${tmp}/temp_roi_41.nii.gz -add ${tmp}/temp_roi_77.nii.gz -add ${tmp}/temp_roi_251.nii.gz -add ${tmp}/temp_roi_252.nii.gz -add ${tmp}/temp_roi_253.nii.gz -add ${tmp}/temp_roi_254.nii.gz -add ${tmp}/temp_roi_255.nii.gz -bin ${tmp}/fs_t1_wm_mask.nii.gz
 	fslreorient2std ${tmp}/fs_t1_wm_mask.nii.gz ${tmp}/fs_t1_wm_mask.nii.gz
 	if [[ -f ${tmp}/fs_t1_wm_mask.nii.gz ]]; then
 		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_wm_mask.nii.gz has been saved.\n"
