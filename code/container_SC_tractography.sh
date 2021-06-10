@@ -14,7 +14,6 @@ done
 # Path setting
 # ------------
 ftt=${tp}/${grp}/${sbj}/5tt.nii.gz
-ftt_w_neck=${tp}/${grp}/${sbj}/5tt_w_neck.nii.gz
 wm=${tp}/${grp}/${sbj}/fs_t1_wm_mask_to_dwi.nii.gz
 wmneck=${tp}/${grp}/${sbj}/fs_t1_neck_wm_mask_to_dwi.nii.gz
 
@@ -101,7 +100,7 @@ else
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Estimate response functions.\n"
 	case ${tracking_algorithm} in
 	msmt_5tt )
-	dwi2response msmt_5tt -shells ${shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -pvf 0.95 -fa 0.2 -wm_algo tournier -fslgrad ${mc_bvec} ${mc_bval} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${ftt_w_neck} ${resWM} ${resGM} ${resCSF}
+	dwi2response msmt_5tt -shells ${shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -pvf 0.95 -fa 0.2 -wm_algo tournier -fslgrad ${mc_bvec} ${mc_bval} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${ftt} ${resWM} ${resGM} ${resCSF}
 		;;
 	tournier )
 	dwi2response tournier ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resWM} -shells ${non_zero_shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -fslgrad ${mc_bvec} ${mc_bval}
@@ -131,10 +130,10 @@ else
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Estimate fibre orientation distributions using spherical deconvolution.\n"
 	case ${fod_algorithm} in
 	msmt_csd )
-	dwi2fod ${fod_algorithm} -shells ${shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask_w_neck.nii.gz -fslgrad ${mc_bvec} ${mc_bval} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resWM} ${odfWM} ${resGM} ${odfGM} ${resCSF} ${odfCSF}
+	dwi2fod ${fod_algorithm} -shells ${shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz -fslgrad ${mc_bvec} ${mc_bval} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resWM} ${odfWM} ${resGM} ${odfGM} ${resCSF} ${odfCSF}
 		;;
 	csd )
-	dwi2fod ${fod_algorithm} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resSFWM} ${odfWM} -shells ${non_zero_shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask_w_neck.nii.gz -fslgrad ${mc_bvec} ${mc_bval}
+	dwi2fod ${fod_algorithm} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resSFWM} ${odfWM} -shells ${non_zero_shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz -fslgrad ${mc_bvec} ${mc_bval}
 		;;
 	* )
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Invalid FOD algorithm for dwi2fod!\n"
@@ -162,7 +161,7 @@ if [[ -f ${tck} ]]; then
 else
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Start whole brain tracking.\n"
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Output: WBT_${tractM}_ctx.tck\n"
-	tckgen -algorithm ${tckgen_algorithm} -select ${tract} -step ${tckgen_step} -angle ${tckgen_angle} -minlength ${tckgen_minlength} -maxlength ${tckgen_maxlength} -cutoff ${tckgen_cutoff} -trials ${tckgen_trials} -downsample ${tckgen_downsample} -seed_dynamic ${odfWM} -max_attempts_per_seed ${tckgen_max_attempts_per_seed} -output_seeds ${out} -act ${ftt_w_neck} -backtrack -crop_at_gmwmi -samples ${tckgen_samples} -power ${tckgen_power} -fslgrad ${mc_bvec} ${mc_bval} -nthreads ${threads} ${odfWM} ${tck}
+	tckgen -algorithm ${tckgen_algorithm} -select ${tract} -step ${tckgen_step} -angle ${tckgen_angle} -minlength ${tckgen_minlength} -maxlength ${tckgen_maxlength} -cutoff ${tckgen_cutoff} -trials ${tckgen_trials} -downsample ${tckgen_downsample} -seed_dynamic ${odfWM} -max_attempts_per_seed ${tckgen_max_attempts_per_seed} -output_seeds ${out} -act ${ftt} -backtrack -crop_at_gmwmi -samples ${tckgen_samples} -power ${tckgen_power} -fslgrad ${mc_bvec} ${mc_bval} -nthreads ${threads} ${odfWM} ${tck}
 	if [[ -f ${tck} ]]; then
 		printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - ${tck} has been saved.\n"
 	else

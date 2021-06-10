@@ -13,7 +13,7 @@ done
 
 # Path setting
 # ------------
-atl=${tp}/${grp}/${sbj}/${atlname}_to_dwi.nii.gz
+atl=${tp}/${grp}/${sbj}/${atlname}_to_dwi_${parcellation}.nii.gz
 
 # Colors
 # ------

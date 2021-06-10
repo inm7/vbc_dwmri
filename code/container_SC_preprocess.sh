@@ -15,7 +15,7 @@ done
 # ------------
 wp=$(pwd)
 tmp=${tp}/${grp}/${sbj}/temp
-seg=${tmp}/aseg.auto_noCCseg.nii.gz
+aseg=${tmp}/aseg.nii.gz
 parcseg=${tmp}/aparc.a2009s+aseg.nii.gz
 
 t1=${sp}/${grp}/${sbj}/anat/${sbj}_T1w.nii.gz
@@ -33,7 +33,6 @@ wm=${tp}/${grp}/${sbj}/fs_t1_wm_mask_to_dwi.nii.gz
 wmneck=${tp}/${grp}/${sbj}/fs_t1_neck_wm_mask_to_dwi.nii.gz
 gmneck=${tp}/${grp}/${sbj}/fs_t1_neck_gm_mask_to_dwi.nii.gz
 ftt=${tp}/${grp}/${sbj}/5tt.nii.gz
-ftt_w_neck=${tp}/${grp}/${sbj}/5tt_w_neck.nii.gz
 
 # Colors
 # ------
@@ -157,9 +156,9 @@ fi
 # AC-PC alignment
 # ---------------
 if [[ -f ${fp}/${grp}_${sbj}/mri/orig/001.mgz ]]; then
-	printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - The T1-weighted image exists in the subject directory.\n"
+	printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - The T1-weighted image exists in the subject directory for recon-all.\n"
 else
-	printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - Convert T1-weighted image to mgz.\n"
+	printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - AC-PC align and convert T1-weighted image to mgz.\n"
 
 	# AC-PC alignment
 	# ---------------
@@ -321,125 +320,107 @@ if [[ -f ${tmp}/fs_t1_gmwm_mask.nii.gz ]]; then
 	printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - Brain masks on T1 space (Freesurfer output) exist!!!\n"
 else
 	printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - Create brain masks on T1 space (Freesurfer output).\n"
+	mri_convert ${fp}/${grp}_${sbj}/mri/aseg.mgz ${aseg}
 
-	# Cortical gray-matter mask
-	# -------------------------
-	mri_convert ${fp}/${grp}_${sbj}/mri/aparc.a2009s+aseg.mgz ${parcseg}
-	fslmaths ${parcseg} -thr 11101 -uthr 11175 -bin ${tmp}/temp_LH_mask.nii.gz
-	fslmaths ${parcseg} -thr 12101 -uthr 12175 -bin ${tmp}/temp_RH_mask.nii.gz
-	cp ${tmp}/temp_LH_mask.nii.gz ${tmp}/temp_BH_mask.nii.gz
-	fslmaths ${tmp}/temp_LH_mask.nii.gz -add ${tmp}/temp_RH_mask.nii.gz -bin ${tmp}/temp_BH_mask.nii.gz
-	fslreorient2std ${tmp}/temp_BH_mask.nii.gz ${tmp}/fs_t1_ctx_mask.nii.gz
-	if [[ -f ${tmp}/fs_t1_ctx_mask.nii.gz ]]; then
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_ctx_mask.nii.gz has been saved.\n"
-	else
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_ctx_mask.nii.gz has not been saved!!\n"
-		exit 1
-	fi
-
-	# Subcortical areas
-	# -----------------
-	for i in 10 11 12 13 17 18 26 28 49 50 51 52 53 54 58 60
+	# White-matter mask with a neck
+	# -----------------------------
+	for i in 2 7 16 28 41 46 60 77 251 252 253 254 255
 	do
-		fslmaths ${parcseg} -thr ${i} -uthr ${i} -bin ${tmp}/temp_subctx_${i}_mask.nii.gz
+		fslmaths ${aseg} -thr ${i} -uthr ${i} -bin ${tmp}/temp_roi_${i}.nii.gz
+		if [[ ${i} = 2 ]]; then
+			cp ${tmp}/temp_roi_${i}.nii.gz ${tmp}/temp_mask.nii.gz
+		else
+			fslmaths ${tmp}/temp_mask.nii.gz -add ${tmp}/temp_roi_${i}.nii.gz ${tmp}/temp_mask.nii.gz
+		fi
 	done
-	cp ${tmp}/temp_subctx_10_mask.nii.gz ${tmp}/fs_t1_subctx_mask.nii.gz
-	for i in 11 12 13 17 18 26 28 49 50 51 52 53 54 58 60
-	do
-		fslmaths ${tmp}/fs_t1_subctx_mask.nii.gz -add ${tmp}/temp_subctx_${i}_mask.nii.gz ${tmp}/fs_t1_subctx_mask.nii.gz
-	done
-	fslmaths ${tmp}/fs_t1_subctx_mask.nii.gz -bin ${tmp}/fs_t1_subctx_mask.nii.gz
-	fslreorient2std ${tmp}/fs_t1_subctx_mask.nii.gz ${tmp}/fs_t1_subctx_mask.nii.gz
-	if [[ -f ${tmp}/fs_t1_subctx_mask.nii.gz ]]; then
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_subctx_mask.nii.gz has been saved.\n"
+	fslmaths ${tmp}/temp_mask.nii.gz -bin ${tmp}/fs_t1_neck_wm_mask.nii.gz
+	fslreorient2std ${tmp}/fs_t1_neck_wm_mask.nii.gz ${tmp}/fs_t1_neck_wm_mask.nii.gz
+	if [[ -f ${tmp}/fs_t1_neck_wm_mask.nii.gz ]]; then
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_neck_wm_mask.nii.gz has been saved.\n"
 	else
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_subctx_mask.nii.gz has not been saved!!\n"
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_neck_wm_mask.nii.gz has not been saved!!\n"
 		exit 1
 	fi
 
 	# White-matter
 	# ------------
-	fslmaths ${parcseg} -thr 2 -uthr 2 -bin ${tmp}/temp_WM_LH_mask.nii.gz
-	fslmaths ${parcseg} -thr 41 -uthr 41 -bin ${tmp}/temp_WM_RH_mask.nii.gz
-	fslmaths ${parcseg} -thr 251 -uthr 255 -bin ${tmp}/temp_WM_CC_mask.nii.gz
-	fslmaths ${parcseg} -thr 85 -uthr 85 -bin ${tmp}/temp_WM_OC_mask.nii.gz
-	fslmaths ${tmp}/temp_WM_LH_mask.nii.gz -add ${tmp}/temp_WM_RH_mask.nii.gz -add ${tmp}/temp_WM_CC_mask.nii.gz -add ${tmp}/temp_WM_OC_mask.nii.gz -bin ${tmp}/fs_t1_wm_mask.nii.gz
+	fslmaths ${tmp}/temp_roi_2_mask.nii.gz -add ${tmp}/temp_roi_41_mask.nii.gz -add ${tmp}/temp_roi_77_mask.nii.gz -add ${tmp}/temp_roi_251_mask.nii.gz -add ${tmp}/temp_roi_252_mask.nii.gz -add ${tmp}/temp_roi_253_mask.nii.gz -add ${tmp}/temp_roi_254_mask.nii.gz -add ${tmp}/temp_roi_255_mask.nii.gz -bin ${tmp}/fs_t1_wm_mask.nii.gz
 	fslreorient2std ${tmp}/fs_t1_wm_mask.nii.gz ${tmp}/fs_t1_wm_mask.nii.gz
 	if [[ -f ${tmp}/fs_t1_wm_mask.nii.gz ]]; then
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_wm_mask.nii.gz has been saved.\n"
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_wm_mask.nii.gz has been saved.\n"
 	else
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_wm_mask.nii.gz has not been saved!!\n"
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_wm_mask.nii.gz has not been saved!!\n"
+		exit 1
+	fi
+
+	# Cortical mask
+	# -------------
+	for i in 3 8 42 47
+	do
+		fslmaths ${aseg} -thr ${i} -uthr ${i} -bin ${tmp}/temp_roi_${i}.nii.gz
+		if [[ ${i} = 3 ]]; then
+			cp ${tmp}/temp_roi_${i}.nii.gz ${tmp}/temp_mask.nii.gz
+		else
+			fslmaths ${tmp}/temp_mask.nii.gz -add ${tmp}/temp_roi_${i}.nii.gz ${tmp}/temp_mask.nii.gz
+		fi
+	done
+	fslmaths ${tmp}/temp_mask.nii.gz -bin ${tmp}/fs_t1_ctx_mask.nii.gz
+	fslreorient2std ${tmp}/fs_t1_ctx_mask.nii.gz ${tmp}/fs_t1_ctx_mask.nii.gz
+	if [[ -f ${tmp}/fs_t1_ctx_mask.nii.gz ]]; then
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_ctx_mask.nii.gz has been saved.\n"
+	else
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_ctx_mask.nii.gz has not been saved!!\n"
+		exit 1
+	fi
+
+	# Subcortical mask
+	# ----------------
+	for i in 10 11 12 13 17 18 26 30 49 50 51 52 53 54 58 62
+	do
+		fslmaths ${aseg} -thr ${i} -uthr ${i} -bin ${tmp}/temp_roi_${i}.nii.gz
+		if [[ ${i} = 10 ]]; then
+			cp ${tmp}/temp_roi_${i}.nii.gz ${tmp}/temp_mask.nii.gz
+		else
+			fslmaths ${tmp}/temp_mask.nii.gz -add ${tmp}/temp_roi_${i}.nii.gz ${tmp}/temp_mask.nii.gz
+		fi
+	done
+	fslmaths ${tmp}/temp_mask.nii.gz -bin ${tmp}/fs_t1_subctx_mask.nii.gz
+	fslreorient2std ${tmp}/fs_t1_subctx_mask.nii.gz ${tmp}/fs_t1_subctx_mask.nii.gz
+	if [[ -f ${tmp}/fs_t1_subctx_mask.nii.gz ]]; then
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_subctx_mask.nii.gz has been saved.\n"
+	else
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_subctx_mask.nii.gz has not been saved!!\n"
 		exit 1
 	fi
 	
-	# Cerebellum
-	# ----------
-	mri_convert ${fp}/${grp}_${sbj}/mri/aseg.auto_noCCseg.mgz ${seg}
-	for k in 8 47
-	do
-		fslmaths ${seg} -thr ${k} -uthr ${k} -bin ${tmp}/temp_mask1.nii.gz
-		if [[ ${k} = 8 ]]; then
-			cp ${tmp}/temp_mask1.nii.gz ${tmp}/temp_mask.nii.gz
-		else
-			fslmaths ${tmp}/temp_mask.nii.gz -add ${tmp}/temp_mask1.nii.gz ${tmp}/temp_mask.nii.gz
-		fi
-	done
-	fslreorient2std ${tmp}/temp_mask.nii.gz ${tmp}/fs_t1_gm_cerebellum_mask.nii.gz
-	if [[ -f ${tmp}/fs_t1_gm_cerebellum_mask.nii.gz ]]; then
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_gm_cerebellum_mask.nii.gz has been saved.\n"
-	else
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_gm_cerebellum_mask.nii.gz has not been saved!!\n"
-		exit 1
-	fi
-
-	# White-matter with a neck
-	# ------------------------
-	for k in 7 16 28 46 60
-	do
-		fslmaths ${seg} -thr ${k} -uthr ${k} -bin ${tmp}/temp_mask1.nii.gz
-		if [[ ${k} = 7 ]]; then
-			cp ${tmp}/temp_mask1.nii.gz ${tmp}/temp_mask.nii.gz
-		else
-			fslmaths ${tmp}/temp_mask.nii.gz -add ${tmp}/temp_mask1.nii.gz ${tmp}/temp_mask.nii.gz
-		fi
-	done
-	fslmaths ${tmp}/temp_mask.nii.gz -bin -add ${tmp}/temp_WM_LH_mask.nii.gz -add ${tmp}/temp_WM_RH_mask.nii.gz -add ${tmp}/temp_WM_CC_mask.nii.gz -add ${tmp}/temp_WM_OC_mask.nii.gz -bin ${tmp}/fs_t1_neck_wm_mask.nii.gz
-	fslreorient2std ${tmp}/fs_t1_neck_wm_mask.nii.gz ${tmp}/fs_t1_neck_wm_mask.nii.gz
-	if [[ -f ${tmp}/fs_t1_neck_wm_mask.nii.gz ]]; then
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_neck_wm_mask.nii.gz has been saved.\n"
-	else
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_neck_wm_mask.nii.gz has not been saved!!\n"
-		exit 1
-	fi
-
 	# Cerebrospinal fluid (CSF)
 	# -------------------------
-	for i in 4 5 14 15 24 43 44
+	for i in 4 5 14 15 24 31 43 44 63
 	do
-		fslmaths ${parcseg} -thr ${i} -uthr ${i} -bin ${tmp}/temp_csf_${i}_mask.nii.gz
+		fslmaths ${aseg} -thr ${i} -uthr ${i} -bin ${tmp}/temp_roi_${i}.nii.gz
+		if [[ ${i} = 4 ]]; then
+			cp ${tmp}/temp_roi_${i}.nii.gz ${tmp}/temp_mask.nii.gz
+		else
+			fslmaths ${tmp}/temp_mask.nii.gz -add ${tmp}/temp_roi_${i}.nii.gz ${tmp}/temp_mask.nii.gz
+		fi
 	done
-	cp ${tmp}/temp_csf_4_mask.nii.gz ${tmp}/fs_t1_csf_mask.nii.gz
-	for i in 5 14 15 24 43 44
-	do
-		fslmaths ${tmp}/fs_t1_csf_mask.nii.gz -add ${tmp}/temp_csf_${i}_mask.nii.gz ${tmp}/fs_t1_csf_mask.nii.gz
-	done
-	fslmaths ${tmp}/fs_t1_csf_mask.nii.gz -bin ${tmp}/fs_t1_csf_mask.nii.gz
+	fslmaths ${tmp}/temp_mask.nii.gz -bin ${tmp}/fs_t1_csf_mask.nii.gz
 	fslreorient2std ${tmp}/fs_t1_csf_mask.nii.gz ${tmp}/fs_t1_csf_mask.nii.gz
 	if [[ -f ${tmp}/fs_t1_csf_mask.nii.gz ]]; then
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_csf_mask.nii.gz has been saved.\n"
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_csf_mask.nii.gz has been saved.\n"
 	else
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_csf_mask.nii.gz has not been saved!!\n"
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_csf_mask.nii.gz has not been saved!!\n"
 		exit 1
 	fi
 
 	# Brain-tissue
 	# ------------
-	fslmaths ${tmp}/fs_t1_ctx_mask.nii.gz -add ${tmp}/fs_t1_gm_cerebellum_mask.nii.gz -add ${tmp}/fs_t1_subctx_mask.nii.gz -bin ${tmp}/fs_t1_gm_mask.nii.gz
-	fslmaths ${tmp}/fs_t1_gm_mask.nii.gz -add ${tmp}/fs_t1_neck_wm_mask.nii.gz -bin ${tmp}/fs_t1_gmwm_mask.nii.gz
+	fslmaths ${tmp}/fs_t1_ctx_mask.nii.gz -add ${tmp}/fs_t1_subctx_mask.nii.gz -bin ${tmp}/fs_t1_neck_gm_mask.nii.gz
+	fslmaths ${tmp}/fs_t1_neck_gm_mask.nii.gz -add ${tmp}/fs_t1_neck_wm_mask.nii.gz -bin ${tmp}/fs_t1_gmwm_mask.nii.gz
 	if [[ -f ${tmp}/fs_t1_gmwm_mask.nii.gz ]]; then
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_gmwm_mask.nii.gz has been saved.\n"
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_gmwm_mask.nii.gz has been saved.\n"
 	else
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_gmwm_mask.nii.gz has not been saved!!\n"
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${tmp}/fs_t1_gmwm_mask.nii.gz has not been saved!!\n"
 		exit 1
 	fi
 
@@ -470,7 +451,7 @@ else
 	# ----------------------------
 	mri_binarize --i ${tmp}/fs_t1_gmwm_mask.nii.gz --min 0.5 --max 1.5 --dilate 20 --o ${tmp}/fs_t1_gmwm_mask_dilate.nii.gz
 	fslmaths ${tmp}/fs_t1.nii.gz -mas ${tmp}/fs_t1_gmwm_mask_dilate.nii.gz ${tp}/${grp}/${sbj}/fs_t1.nii.gz
-	fslmaths ${tp}/${grp}/${sbj}/fs_t1.nii.gz -mas ${tmp}/fs_t1_gmwm_mask.nii.gz ${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz
+	fslmaths ${tmp}/fs_t1.nii.gz -mas ${tmp}/fs_t1_gmwm_mask.nii.gz ${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz
 
 	# Linear registration
 	# -------------------
@@ -529,15 +510,15 @@ else
 	echo "    ${elapsedtime} Non-linear registration" >> ${et}
 fi
 
-# Make a cortical mask (Destrieux; aparc.a2009s)
-# ----------------------------------------------
-if [[ -f ${csf} ]]; then
+# Transform tissue masks (from aseg.mgz) to the diffusion space
+# -------------------------------------------------------------
+if [[ -f ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz ]]; then
 	printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - A cortical mask of Destrieux in Freesurfer exists!!!\n"
 else
 	printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - Make a cortical mask of Destrieux in Freesurfer.\n"
 
-	# Cortical gray-matter mask
-	# -------------------------
+	# Cortical gray-matter mask (Cerebrum + Cerebellum)
+	# -------------------------------------------------
 	applywarp -i ${tmp}/fs_t1_ctx_mask.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${ctx} --premat=${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
 	fslmaths ${ctx} -thr 0.5 -bin ${ctx}
 	if [[ -f ${ctx} ]]; then
@@ -547,10 +528,9 @@ else
 		exit 1
 	fi
 
-	# Cerebellum
-	# ----------
-	fslmaths ${tmp}/fs_t1_ctx_mask.nii.gz -add ${tmp}/fs_t1_gm_cerebellum_mask.nii.gz -bin ${tmp}/temp_mask.nii.gz
-	applywarp -i ${tmp}/temp_mask.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${gmneck} --premat=${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
+	# Gray-matter mask (Cortex + Subcortical areas)
+	# ---------------------------------------------
+	applywarp -i ${tmp}/fs_t1_neck_gm_mask.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${gmneck} --premat=${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
 	fslmaths ${gmneck} -thr 0.5 -bin ${gmneck}
 	if [[ -f ${gmneck} ]]; then
 		printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - ${gmneck} has been saved.\n"
@@ -603,6 +583,17 @@ else
 		exit 1
 	fi
 
+	# Brain extraction mask (BET)
+	# ---------------------------
+	applywarp -i ${tmp}/fs_t1_gmwm_mask.nii.gz -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz --premat=${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
+	fslmaths ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz -thr 0.5 -bin ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz
+	if [[ -f ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz ]]; then
+		printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz has been saved.\n"
+	else
+		printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz has not been saved!!\n"
+		exit 1
+	fi
+
 	# Clear temporary files
 	# ---------------------
 	rm -f ${tmp}/temp_*.nii.gz
@@ -616,40 +607,21 @@ fi
 
 # Make 5TT (Five-type tissues)
 # ----------------------------
-if [[ -f ${ftt_w_neck} ]]; then
+if [[ -f ${ftt} ]]; then
 	printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - 5TT image exists!!!\n"
 else
 	printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - Make a 5TT image.\n"
 	cp ${csf} ${tmp}/temp.nii.gz
 	fslmaths ${tmp}/temp.nii.gz -mul 0 -bin ${tmp}/temp.nii.gz
-	fslmerge -t ${ftt} ${ctx} ${sub} ${wm} ${csf} ${tmp}/temp.nii.gz
-	fslmerge -t ${tp}/${grp}/${sbj}/5tt_xsub.nii.gz ${ctx} ${tmp}/temp.nii.gz ${wm} ${csf} ${tmp}/temp.nii.gz
-	fslmaths ${ctx} -add ${sub} -add ${wm} -bin ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz
-	rm -f ${tmp}/temp.nii.gz
-
-	cd ${tp}/${grp}/${sbj}
-	fslsplit ${ftt} split -t
-	cd ${wp}
-	
-	fslmaths ${tp}/${grp}/${sbj}/split0000.nii.gz -add ${gmneck} -thr 0.5 -bin ${tp}/${grp}/${sbj}/split0000.nii.gz
-	fslmaths ${tp}/${grp}/${sbj}/split0001.nii.gz -sub ${wmneck} -thr 0.5 -bin ${tp}/${grp}/${sbj}/split0001.nii.gz
-	fslmaths ${tp}/${grp}/${sbj}/split0002.nii.gz -add ${wmneck} -thr 0.5 -bin ${tp}/${grp}/${sbj}/split0002.nii.gz
-	
-	fslmaths ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz -add ${tp}/${grp}/${sbj}/split0000.nii.gz -add ${tp}/${grp}/${sbj}/split0002.nii.gz -bin ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask_w_neck.nii.gz
-
-	fslmaths ${tp}/${grp}/${sbj}/split0000.nii.gz -add ${tp}/${grp}/${sbj}/split0001.nii.gz -bin ${tp}/${grp}/${sbj}/fs_t1_gm_mask_to_dwi.nii.gz
-	
-	cp ${tp}/${grp}/${sbj}/split0002.nii.gz ${tp}/${grp}/${sbj}/fs_t1_wm_mask_to_dwi.nii.gz
-	
-	fslmerge -t ${ftt_w_neck} ${tp}/${grp}/${sbj}/split0000.nii.gz ${tp}/${grp}/${sbj}/split0001.nii.gz ${tp}/${grp}/${sbj}/split0002.nii.gz ${tp}/${grp}/${sbj}/split0003.nii.gz ${tp}/${grp}/${sbj}/split0004.nii.gz
-	if [[ -f ${ftt_w_neck} ]]; then
-		printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - ${ftt_w_neck} has been saved.\n"
+	fslmerge -t ${tp}/${grp}/${sbj}/5tt_xsub.nii.gz ${ctx} ${tmp}/temp.nii.gz ${wmneck} ${csf} ${tmp}/temp.nii.gz
+	fslmerge -t ${ftt} ${ctx} ${sub} ${wmneck} ${csf} ${tmp}/temp.nii.gz
+	if [[ -f ${ftt} ]]; then
+		printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - ${ftt} has been saved.\n"
 	else
-		printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - ${ftt_w_neck} has not been saved!!\n"
+		printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - ${ftt} has not been saved!!\n"
 		exit 1
 	fi
-	rm -f ${tp}/${grp}/${sbj}/split*.nii.gz
-	rm -f ${seg}
+	rm -f ${tmp}/temp.nii.gz
 
 	# Elapsed time
 	# ------------
