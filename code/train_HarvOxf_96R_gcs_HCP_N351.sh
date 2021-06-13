@@ -32,8 +32,17 @@ fi
 
 printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - Convert T1 brain: ${tmp}/fs_t1_brain.nii.gz.\n"
 mri_convert ${fp}/${grp}_${sbj}/mri/brain.mgz ${tmp}/fs_t1_brain_ori.nii.gz
-fslreorient2std -m ${tmp}/fs_t1_brain_reori.mat ${tmp}/fs_t1_brain_ori.nii.gz ${tmp}/fs_t1_brain.nii.gz
-convert_xfm -omat ${tmp}/fs_t1_brain_reori_inv.mat -inverse ${tmp}/fs_t1_brain_reori.mat
+
+# fslreorient2std ${tp}/${grp}/${sbj}/t1w_bc.nii.gz ${tmp}/t1w_bc_reori.nii.gz
+robustfov -i ${tmp}/fs_t1_brain_ori.nii.gz -b 170 -m ${tmp}/acpc_roi2full.mat -r ${tmp}/acpc_robustroi.nii.gz
+flirt -interp spline -in ${tmp}/acpc_robustroi.nii.gz -ref ${mni_brain} -omat ${tmp}/acpc_roi2std.mat -out ${tmp}/acpc_roi2std.nii.gz -searchrx -30 30 -searchry -30 30 -searchrz -30 30
+convert_xfm -omat ${tmp}/acpc_full2roi.mat -inverse ${tmp}/acpc_roi2full.mat
+convert_xfm -omat ${tmp}/acpc_full2std.mat -concat ${tmp}/acpc_roi2std.mat ${tmp}/acpc_full2roi.mat
+aff2rigid ${tmp}/acpc_full2std.mat ${tmp}/acpc.mat
+convert_xfm -omat ${tmp}/acpc_inv.mat -inverse ${tmp}/acpc.mat
+applywarp --rel --interp=spline -i ${tmp}/fs_t1_brain_ori.nii.gz -r ${mni} --premat=${tmp}/acpc.mat -o ${tmp}/fs_t1_brain.nii.gz
+# fslreorient2std ${tmp}/fs_t1_brain_ori.nii.gz ${tmp}/fs_t1_brain.nii.gz
+printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - AC-PC alignment: ${tmp}/acpc.mat and ${tmp}/acpc_inv.mat has been calculated.\n"
 
 # Linear transformation from T1-weigted image to the MNI152 T1 1mm
 # --------------------------------------------------------------------
@@ -49,7 +58,7 @@ printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Non-linear transformation: ${
 # ---------------------------------------------------
 invwarp --ref=${tmp}/fs_t1_brain.nii.gz --warp=${tp}/${grp}/${sbj}/fs_t1_to_mni_warp_struct.nii.gz --out=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz
 applywarp --ref=${tmp}/fs_t1_brain.nii.gz --in=${ap}/${atl} --warp=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --out=${tp}/${grp}/${sbj}/HO_to_fs_t1.nii.gz --interp=nn
-applywarp -i ${tp}/${grp}/${sbj}/HO_to_fs_t1.nii.gz -r ${tmp}/fs_t1_brain_ori.nii.gz -o ${tp}/${grp}/${sbj}/HO_to_fs_t1_ori.nii.gz --premat=${tmp}/fs_t1_brain_reori_inv.mat --interp=nn
+applywarp -i ${tp}/${grp}/${sbj}/HO_to_fs_t1.nii.gz -r ${tmp}/fs_t1_brain_ori.nii.gz -o ${tp}/${grp}/${sbj}/HO_to_fs_t1_ori.nii.gz --premat=${tmp}/acpc_inv.mat --interp=nn
 printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Apply the deformation: ${tp}/${grp}/${sbj}/HO_to_fs_t1.nii.gz has been saved.\n"
 
 # Create annotation files (lh and rh)
