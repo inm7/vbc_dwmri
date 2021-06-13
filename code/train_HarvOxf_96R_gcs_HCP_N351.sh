@@ -31,7 +31,9 @@ else
 fi
 
 printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - Convert T1 brain: ${tmp}/fs_t1_brain.nii.gz.\n"
-mri_convert ${fp}/${grp}_${sbj}/mri/brain.mgz ${tmp}/fs_t1_brain.nii.gz
+mri_convert ${fp}/${grp}_${sbj}/mri/brain.mgz ${tmp}/fs_t1_brain_ori.nii.gz
+fslreorient2std -m ${tmp}/fs_t1_brain_reori.mat ${tmp}/fs_t1_brain_ori.nii.gz ${tmp}/fs_t1_brain.nii.gz
+convert_xfm -omat ${tmp}/fs_t1_brain_reori_inv.mat -inverse ${tmp}/fs_t1_brain_reori.mat
 
 # Linear transformation from T1-weigted image to the MNI152 T1 1mm
 # --------------------------------------------------------------------
@@ -47,11 +49,13 @@ printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Non-linear transformation: ${
 # ---------------------------------------------------
 invwarp --ref=${tmp}/fs_t1_brain.nii.gz --warp=${tp}/${grp}/${sbj}/fs_t1_to_mni_warp_struct.nii.gz --out=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz
 applywarp --ref=${tmp}/fs_t1_brain.nii.gz --in=${ap}/${atl} --warp=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --out=${tp}/${grp}/${sbj}/HO_to_fs_t1.nii.gz --interp=nn
+applywarp -i ${tp}/${grp}/${sbj}/HO_to_fs_t1.nii.gz -r ${tmp}/fs_t1_brain_ori.nii.gz -o ${tp}/${grp}/${sbj}/HO_to_fs_t1_ori.nii.gz --premat=${tmp}/fs_t1_brain_reori_inv.mat --interp=nn
 printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Apply the deformation: ${tp}/${grp}/${sbj}/HO_to_fs_t1.nii.gz has been saved.\n"
 
 # Create annotation files (lh and rh)
 # -----------------------------------
-mri_convert ${tp}/${grp}/${sbj}/HO_to_fs_t1.nii.gz ${fp}/${grp}_${sbj}/mri/HarvardOxford_96R.mgz 
+mri_convert ${tp}/${grp}/${sbj}/HO_to_fs_t1_ori.nii.gz ${fp}/${grp}_${sbj}/mri/HarvardOxford_96R.mgz 
 mris_sample_parc -ct ${ap}/HO_R96_color_table.txt -sdir ${fp} ${grp}_${sbj} lh HarvardOxford_96R.mgz lh.HarvardOxford_96R.annot
 mris_sample_parc -ct ${ap}/HO_R96_color_table.txt -sdir ${fp} ${grp}_${sbj} rh HarvardOxford_96R.mgz rh.HarvardOxford_96R.annot
 printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - Annotation files: lh.HarvardOxford_96R.annot and rh.HarvardOxford_96R.annot have been saved.\n"
+
