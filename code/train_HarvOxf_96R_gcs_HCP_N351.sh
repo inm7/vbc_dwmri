@@ -40,7 +40,7 @@ convert_xfm -omat ${tmp}/acpc_full2roi.mat -inverse ${tmp}/acpc_roi2full.mat
 convert_xfm -omat ${tmp}/acpc_full2std.mat -concat ${tmp}/acpc_roi2std.mat ${tmp}/acpc_full2roi.mat
 aff2rigid ${tmp}/acpc_full2std.mat ${tmp}/acpc.mat
 convert_xfm -omat ${tmp}/acpc_inv.mat -inverse ${tmp}/acpc.mat
-applywarp --rel --interp=spline -i ${tmp}/fs_t1_brain_ori.nii.gz -r ${mni} --premat=${tmp}/acpc.mat -o ${tmp}/fs_t1_brain.nii.gz
+applywarp --rel --interp=spline -i ${tmp}/fs_t1_brain_ori.nii.gz -r ${mni_brain} --premat=${tmp}/acpc.mat -o ${tmp}/fs_t1_brain.nii.gz
 # fslreorient2std ${tmp}/fs_t1_brain_ori.nii.gz ${tmp}/fs_t1_brain.nii.gz
 printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - AC-PC alignment: ${tmp}/acpc.mat and ${tmp}/acpc_inv.mat has been calculated.\n"
 
