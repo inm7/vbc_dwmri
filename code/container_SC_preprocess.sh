@@ -433,8 +433,8 @@ else
 	echo "    ${elapsedtime} Creating tissue masks" >> ${et}
 fi
 
-# Co-registration (from T1WI to averaged DWI)
-# -------------------------------------------
+# Averaged DWIs
+# -------------
 if [[ -f ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz ]]; then
 	printf "${GRN}[MRtrix & FSL]${RED} ID: ${grp}${sbj}${NCR} - An averaged DWI was already created!!!\n"
 else
@@ -442,6 +442,9 @@ else
 	dwiextract -shells ${non_zero_shells} -fslgrad ${mc_bvec} ${mc_bval} -nthreads ${threads} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${tp}/${grp}/${sbj}/dwi_nonzero_bval.nii.gz
 	fslmaths ${tp}/${grp}/${sbj}/dwi_nonzero_bval.nii.gz -Tmean ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz
 fi
+
+# Co-registration (from T1WI to averaged DWI)
+# -------------------------------------------
 if [[ -f ${tp}/${grp}/${sbj}/fs_t1_to_dwi.nii.gz ]]; then
 	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Coregistration from T1WI in Freesurfer to DWI space was already performed!!!\n"
 else
