@@ -5,9 +5,9 @@
 # sbj=101309
 grp=HCP
 sbj=${1}
-fp=/p/project/cjinm71/SC_Pipe_jung3/Neuroimage/Tools/freesurfer/subjects
-ap=/p/project/cjinm71/SC_Pipe_jung3/Neuroimage/Atlas
-tp=/p/scratch/cjinm71/jung3/03_Structural_Connectivity
+fp=/mnt_fp # /p/project/cjinm71/SC_Pipe_jung3/Neuroimage/Tools/freesurfer/subjects
+ap=/mnt_ap # /p/project/cjinm71/SC_Pipe_jung3/Neuroimage/Atlas
+tp=/mnt_tp # /p/scratch/cjinm71/jung3/03_Structural_Connectivity
 atl=HarvardOxford/HarvardOxford-cortl-maxprob-thr0-1mm.nii.gz
 tmp=${tp}/${grp}/${sbj}/temp
 
