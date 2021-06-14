@@ -33,7 +33,8 @@ fi
 printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - Convert T1 brain: ${tmp}/fs_t1_brain.nii.gz.\n"
 mri_convert ${fp}/${grp}_${sbj}/mri/brain.mgz ${tmp}/fs_t1_brain_ori.nii.gz
 
-# fslreorient2std ${tp}/${grp}/${sbj}/t1w_bc.nii.gz ${tmp}/t1w_bc_reori.nii.gz
+# AC-PC alignment
+# ---------------
 robustfov -i ${tmp}/fs_t1_brain_ori.nii.gz -b 170 -m ${tmp}/acpc_roi2full.mat -r ${tmp}/acpc_robustroi.nii.gz
 flirt -interp spline -in ${tmp}/acpc_robustroi.nii.gz -ref ${mni_brain} -omat ${tmp}/acpc_roi2std.mat -out ${tmp}/acpc_roi2std.nii.gz -searchrx -30 30 -searchry -30 30 -searchrz -30 30
 convert_xfm -omat ${tmp}/acpc_full2roi.mat -inverse ${tmp}/acpc_roi2full.mat
@@ -41,7 +42,6 @@ convert_xfm -omat ${tmp}/acpc_full2std.mat -concat ${tmp}/acpc_roi2std.mat ${tmp
 aff2rigid ${tmp}/acpc_full2std.mat ${tmp}/acpc.mat
 convert_xfm -omat ${tmp}/acpc_inv.mat -inverse ${tmp}/acpc.mat
 applywarp --rel --interp=spline -i ${tmp}/fs_t1_brain_ori.nii.gz -r ${mni_brain} --premat=${tmp}/acpc.mat -o ${tmp}/fs_t1_brain.nii.gz
-# fslreorient2std ${tmp}/fs_t1_brain_ori.nii.gz ${tmp}/fs_t1_brain.nii.gz
 printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - AC-PC alignment: ${tmp}/acpc.mat and ${tmp}/acpc_inv.mat has been calculated.\n"
 
 # Linear transformation from T1-weigted image to the MNI152 T1 1mm
@@ -68,3 +68,12 @@ mris_sample_parc -ct ${ap}/HO_R96_color_table.txt -sdir ${fp} ${grp}_${sbj} lh H
 mris_sample_parc -ct ${ap}/HO_R96_color_table.txt -sdir ${fp} ${grp}_${sbj} rh HarvardOxford_96R.mgz rh.HarvardOxford_96R.annot
 printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - Annotation files: lh.HarvardOxford_96R.annot and rh.HarvardOxford_96R.annot have been saved.\n"
 
+# mris_ca_train -sdir /Users/kyesamjung/Projects/Neuroimage/Tools/freesurfer/subjects -n 10 -t /Users/kyesamjung/Projects/Neuroimage/Tools/freesurfer/classifiers/HO_R96_color_table.txt lh sphere.reg HarvardOxford_96R HCP_101309 HCP_102311 HCP_103111 HCP_108525 HCP_110411 HCP_111009 HCP_111413 HCP_112920 HCP_126628 HCP_131217 lh.HarvardOxford_96R_HCP_N10.gcs
+# mris_ca_train -sdir /Users/kyesamjung/Projects/Neuroimage/Tools/freesurfer/subjects -n 10 -t /Users/kyesamjung/Projects/Neuroimage/Tools/freesurfer/classifiers/HO_R96_color_table.txt rh sphere.reg HarvardOxford_96R HCP_101309 HCP_102311 HCP_103111 HCP_108525 HCP_110411 HCP_111009 HCP_111413 HCP_112920 HCP_126628 HCP_131217 rh.HarvardOxford_96R_HCP_N10.gcs
+
+# mris_ca_label -sdir ${FS} -l ${FS}/PD_HHU_PD_020130429/label/lh.cortex.label -t /Users/kyesamjung/Projects/Neuroimage/Tools/freesurfer/classifiers/HO_R96_color_table.txt PD_HHU_PD_020130429 lh ${FS}/PD_HHU_PD_020130429/surf/lh.sphere.reg /Users/kyesamjung/Projects/Neuroimage/Tools/freesurfer/classifiers/lh.HarvardOxford_96R_HCP_N10.gcs ${FS}/PD_HHU_PD_020130429/label/lh.HarvardOxford_96R_HCP_N10.annot
+# mris_ca_label -sdir ${FS} -l ${FS}/PD_HHU_PD_020130429/label/rh.cortex.label -t /Users/kyesamjung/Projects/Neuroimage/Tools/freesurfer/classifiers/HO_R96_color_table.txt PD_HHU_PD_020130429 rh ${FS}/PD_HHU_PD_020130429/surf/rh.sphere.reg /Users/kyesamjung/Projects/Neuroimage/Tools/freesurfer/classifiers/rh.HarvardOxford_96R_HCP_N10.gcs ${FS}/PD_HHU_PD_020130429/label/rh.HarvardOxford_96R_HCP_N10.annot
+
+# export SUBJECTS_DIR=${FS}
+# mri_aparc2aseg --s PD_HHU_PD_020130429 --o ./temp_atlas.nii.gz --annot HarvardOxford_96R_HCP_N10
+# export SUBJECTS_DIR=/Applications/freesurfer/7.1.1/subjects
