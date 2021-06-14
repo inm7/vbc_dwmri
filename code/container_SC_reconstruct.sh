@@ -41,7 +41,11 @@ fi
 if [[ ${tract} -gt 999999 ]]; then
 	tractM=$((${tract}/1000000))M
 else
-	tractM=$((${tract}/1000))K
+	if [[ ${tract} -gt 999 ]]; then
+		tractM=$((${tract}/1000))K
+	else
+		tractM=${tract}
+	fi
 fi
 
 # Start the SC reconstruct
