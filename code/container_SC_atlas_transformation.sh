@@ -25,9 +25,9 @@ mni152 )
 	atl=${tp}/${grp}/${sbj}/${atlname}_to_dwi_${parcellation}.nii.gz
 ;;
 esac
-aseg=${tmp}/aseg.nii.gz
 gmneck=${tp}/${grp}/${sbj}/fs_t1_neck_gm_mask_to_dwi.nii.gz
 tmp=${tp}/${grp}/${sbj}/temp
+aseg=${tmp}/aseg.nii.gz
 
 # Transform function for loops
 # ----------------------------
