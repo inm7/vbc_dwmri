@@ -15,8 +15,17 @@ num=${numparc}
 # Path setting
 # ------------
 atlmni=${ap}/${atlas}
-atlt1w=${tp}/${grp}/${sbj}/${atlname}_to_fs_t1_${parcellation}.nii.gz
-atl=${tp}/${grp}/${sbj}/${atlname}_to_dwi_${parcellation}.nii.gz
+case ${parcellation} in
+native )
+	atlt1w=${tp}/${grp}/${sbj}/${atlname}_to_fs_t1_${parcellation}+subctx.nii.gz
+	atl=${tp}/${grp}/${sbj}/${atlname}_to_dwi_${parcellation}+subctx.nii.gz
+;;
+mni152 )
+	atlt1w=${tp}/${grp}/${sbj}/${atlname}_to_fs_t1_${parcellation}.nii.gz
+	atl=${tp}/${grp}/${sbj}/${atlname}_to_dwi_${parcellation}.nii.gz
+;;
+esac
+aseg=${tmp}/aseg.nii.gz
 gmneck=${tp}/${grp}/${sbj}/fs_t1_neck_gm_mask_to_dwi.nii.gz
 tmp=${tp}/${grp}/${sbj}/temp
 
@@ -137,6 +146,17 @@ else
 			done
 			;;
 		esac
+		num=${nLabel}
+
+		# Add subcortical areas
+		# ---------------------
+		for i in 10 11 12 13 17 18 26 30 49 50 51 52 53 54 58 62
+		do
+			(( nLabel++ ))
+			fslmaths ${aseg} -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
+		done
+		num=${nLabel}
+
 		mv ${tmp}/temp.nii.gz ${atlt1w}
 		fslreorient2std ${atlt1w} ${atlt1w}
 		if [[ -f ${atlt1w} ]]; then
@@ -151,6 +171,7 @@ else
 	# -------------------------------------
 	mni152 )
 		printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - Atlas: ${atlmni}.\n"
+		nLabel=${num}
 		;;
 	* )
 	esac

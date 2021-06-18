@@ -13,7 +13,14 @@ done
 
 # Path setting
 # ------------
-atl=${tp}/${grp}/${sbj}/${atlname}_to_dwi_${parcellation}.nii.gz
+case ${parcellation} in
+native )
+	atl=${tp}/${grp}/${sbj}/${atlname}_to_dwi_${parcellation}+subctx.nii.gz
+;;
+mni152 )
+	atl=${tp}/${grp}/${sbj}/${atlname}_to_dwi_${parcellation}.nii.gz
+;;
+esac
 
 # Colors
 # ------
