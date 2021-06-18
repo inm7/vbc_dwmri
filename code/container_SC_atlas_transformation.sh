@@ -150,7 +150,7 @@ else
 
 		# Add subcortical areas
 		# ---------------------
-		for i in 10 11 12 13 17 18 26 30 49 50 51 52 53 54 58 62
+		for i in 10 11 12 13 17 18 26 49 50 51 52 53 54 58
 		do
 			(( nLabel++ ))
 			fslmaths ${aseg} -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz

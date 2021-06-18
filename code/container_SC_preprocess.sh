@@ -377,7 +377,7 @@ else
 
 	# Subcortical mask
 	# ----------------
-	for i in 10 11 12 13 17 18 26 30 49 50 51 52 53 54 58 62
+	for i in 10 11 12 13 17 18 26 49 50 51 52 53 54 58
 	do
 		fslmaths ${aseg} -thr ${i} -uthr ${i} -bin ${tmp}/temp_roi_${i}.nii.gz
 		if [[ ${i} = 10 ]]; then
