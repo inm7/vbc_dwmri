@@ -45,3 +45,60 @@
 #         printf "${bind_bin} > ${bind_hex} (Job ${i})\n"
 #     fi
 # done
+
+# fn=${1}
+# startNum=${2}
+# totalNum=${3}
+# wp=$(pwd)
+# for (( i = startNum; i < totalNum + 1 ; i++ )); do
+#     sbj=$(sed -n ${i}p ${wp}/${fn})
+# done
+
+# fn=${1}
+# totalNum=${2}
+
+# sp=/data/group/mathneuro/Popovych/PD_HHU/raw
+# wp=$(pwd)
+# tp=$(pwd)
+# printf "MRI\n"
+
+# for (( i = 1; i < totalNum + 1 ; i++ )); do
+#     sbj=$(sed -n ${i}p ${wp}/${fn})
+# 	t1w=${sp}/${sbj}/3D/${sbj}_orig.nii.gz
+# 	dwi=${sp}/${sbj}/DWI/${sbj}.nii.gz
+# 	bval=${sp}/${sbj}/DWI/${sbj}.bval
+# 	bvec=${sp}/${sbj}/DWI/${sbj}.bvec
+# 	epi=${sp}/${sbj}/EPI/${sbj}.nii.gz
+
+# 	sbj_bool=true
+
+# 	if [[ -f ${t1w} ]]; then
+# 		t1w_bool=true	
+# 	else
+# 		sbj_bool=false
+# 	fi
+# 	if [[ -f ${dwi} && -f ${bval} && -f ${bvec} ]]; then
+# 		dwi_bool=true
+# 	else
+# 		sbj_bool=false
+# 	fi
+# 	if [[ -f ${epi} ]]; then
+# 		epi_bool=true
+# 	else
+# 		sbj_bool=false
+# 	fi
+
+# 	if ${sbj_bool}; then
+# 		mkdir -p ${tp}/${sbj}/anat
+# 		mkdir -p ${tp}/${sbj}/dwi
+# 		mkdir -p ${tp}/${sbj}/func
+# 		cp ${t1w} ${tp}/${sbj}/anat/${sbj}_T1w.nii.gz
+# 		cp ${bval} ${tp}/${sbj}/dwi/${sbj}_dwi.bval
+# 		cp ${bvec} ${tp}/${sbj}/dwi/${sbj}_dwi.bvec
+# 		cp ${dwi} ${tp}/${sbj}/dwi/${sbj}_dwi.nii.gz
+# 		cp ${epi} ${tp}/${sbj}/func/${sbj}_task-rest_bold.nii.gz
+# 		printf "1\n"
+# 	else
+# 		printf "0\n"
+# 	fi
+# done
