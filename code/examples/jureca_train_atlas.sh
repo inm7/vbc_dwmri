@@ -22,7 +22,8 @@ startNum=${3}
 endNum=${4}
 threads=${5}
 
-SCRIPT='train_HarvOxf_96R_gcs.sh'
+num=50
+SCRIPT='/p/project/cjinm71/Jung/01_MRI_pipelines/Container/vbc_dwmri/code/examples/train_HarvOxf_96R_gcs.sh'
 
 wp=$(pwd)
 
@@ -30,7 +31,7 @@ wp=$(pwd)
 # ----------------------------------
 # max_threads=256        # JUREDA-DC
 # ----------------------------------
-max_threads=256
+max_threads=$(( threads * ( endNum - startNum + 1 ) ))
 
 for (( j = 1; j < threads + 1; j++ )); do
     if [[ ${j} -eq 1 ]]; then
@@ -45,11 +46,14 @@ printf "run_threads  = ${run_threads}\n"
 printf "null_threads = ${null_threads}\n"
 
 nSbj=${startNum}
+nThr=0
 for (( i = threads; i < max_threads + 1; i+= threads )); do
-    
+    (( nThr++ ))
+    printf "\n[+] Running thread ${nThr} - index ${i}\n"
+
     # Set binary number
     # -----------------
-    if [[ ${i} -eq 1 ]]; then
+    if [[ ${nThr} -eq 1 ]]; then
         bind_bin=${run_threads}
         zero_bin=${null_threads}
     else
@@ -65,7 +69,7 @@ for (( i = threads; i < max_threads + 1; i+= threads )); do
         # Convert binary to hexadecimal
         # -----------------------------
         bind_hex=$(echo "obase=16;ibase=2;${bind_bin}" | bc )
-        printf "\n[cpu-bind] Binary = ${bind_bin}, Hexadecimal = ${bind_hex} (Thread index = ${i})\n"
+        printf "[cpu-bind] Binary = ${bind_bin}, Hexadecimal = ${bind_hex} (Thread index = ${i})\n"
 
         # Perform srun
         # ------------
@@ -74,10 +78,13 @@ for (( i = threads; i < max_threads + 1; i+= threads )); do
             printf "Subject number (${nSbj}) exceeded the end number (${endNum}). \n"
         else
             printf "srun --exclusive --cpu-bind=mask_cpu:0x${bind_hex} -n 1 -N 1 singularity exec --cleanenv -B ${SET_TP}:/mnt_tp,${SET_FP}:/mnt_fp,${SET_AP}:/mnt_ap,${FREESURFER_LICENSE}:/opt/freesurfer/license.txt,${SCRIPT}:/opt/script.sh ${VBC_DWMRI} /opt/script.sh ${grp} ${sbj} &\n"
-            # srun --exclusive --cpu-bind=mask_cpu:0x${bind_hex} -n 1 -N 1 singularity exec --cleanenv -B ${SET_TP}:/mnt_tp,${SET_FP}:/mnt_fp,${SET_AP}:/mnt_ap,${FREESURFER_LICENSE}:/opt/freesurfer/license.txt,${SCRIPT}:/opt/script.sh ${VBC_DWMRI} /opt/script.sh ${grp} ${sbj} &
+            srun --exclusive --cpu-bind=mask_cpu:0x${bind_hex} -n 1 -N 1 singularity exec --cleanenv -B ${SET_TP}:/mnt_tp,${SET_FP}:/mnt_fp,${SET_AP}:/mnt_ap,${FREESURFER_LICENSE}:/opt/freesurfer/license.txt,${SCRIPT}:/opt/script.sh ${VBC_DWMRI} /opt/script.sh ${grp} ${sbj} &
         fi
         (( nSbj++ ))
     fi
+    if [[ ${nThr} -eq ${num} ]]; then
+        wait
+        nThr=0
+    fi
 done
-
 wait
