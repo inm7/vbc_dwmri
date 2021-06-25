@@ -122,8 +122,16 @@ else
 				fslmaths ${tmp}/temp_atlas.nii.gz -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
 			done
 			;;
-			
-		HarvardOxford-cortl-maxprob-thr25 )
+
+		# Harvard-Oxford 96-Parcel
+		# ------------------------
+		HarvardOxford_96Parcels )
+			nLabel=0
+			for i in $(seq 1001 2 1095) $(seq 2002 2 2096)
+			do
+				(( nLabel++ ))
+				fslmaths ${tmp}/temp_atlas.nii.gz -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
+			done
 			;;
 
 		# Desikan-Killiany-Tourville (DKT) atlas

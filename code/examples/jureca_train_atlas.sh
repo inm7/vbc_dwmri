@@ -22,7 +22,7 @@ startNum=${3}
 endNum=${4}
 threads=${5}
 
-num=50
+num=60
 SCRIPT='/p/project/cjinm71/Jung/01_MRI_pipelines/Container/vbc_dwmri/code/examples/train_HarvOxf_96R_gcs.sh'
 
 wp=$(pwd)
@@ -88,3 +88,31 @@ for (( i = threads; i < max_threads + 1; i+= threads )); do
     fi
 done
 wait
+
+# export FS=/Users/kyesamjung/Projects/Neuroimage/Tools/freesurfer/subjects
+# export SUBJECTS_DIR=/Applications/freesurfer/7.1.1/subjects
+# cd ${FS}
+# grp=HCP
+# LUT=/Users/kyesamjung/Projects/Neuroimage/Tools/freesurfer/classifiers/HarvardOxford_96R_LUT.txt
+# for sbj in 101309 102311 103111 108525 110411 111009 111413 112920 126628 131217; do
+# 	mris_sample_parc -ct ${LUT} -sdir ${FS} ${grp}_${sbj} lh HarvardOxford_96R.mgz lh.HarvardOxford_96R_v3.annot
+# 	mris_sample_parc -ct ${LUT} -sdir ${FS} ${grp}_${sbj} rh HarvardOxford_96R.mgz rh.HarvardOxford_96R_v3.annot
+# done
+# mris_ca_train -sdir ${FS} -t ${LUT} -n 10 lh lh.sphere.reg HarvardOxford_96R_v3 HCP_101309 HCP_102311 HCP_103111 HCP_108525 HCP_110411 HCP_111009 HCP_111413 HCP_112920 HCP_126628 HCP_131217 lh.HarvardOxford_96R_HCP_N10.gcs
+# mris_ca_train -sdir ${FS} -t ${LUT} -n 10 rh rh.sphere.reg HarvardOxford_96R_v3 HCP_101309 HCP_102311 HCP_103111 HCP_108525 HCP_110411 HCP_111009 HCP_111413 HCP_112920 HCP_126628 HCP_131217 rh.HarvardOxford_96R_HCP_N10.gcs
+# mv ${FS}/lh.HarvardOxford_96R_HCP_N10.gcs /Users/kyesamjung/Projects/Neuroimage/Tools/freesurfer/classifiers/lh.HarvardOxford_96R_HCP_N10_v3.gcs
+# mv ${FS}/rh.HarvardOxford_96R_HCP_N10.gcs /Users/kyesamjung/Projects/Neuroimage/Tools/freesurfer/classifiers/rh.HarvardOxford_96R_HCP_N10_v3.gcs
+
+# # Project to individuals
+# # ----------------------
+# export FS=/Users/kyesamjung/Projects/Neuroimage/Tools/freesurfer/subjects
+# grp=PD_HHU
+# # for sbj in PD_020130429 PD_20111212 PD_20120126 PD_20120315; do
+# for sbj in PD_20111212 PD_20120126 PD_20120315; do
+# 	mris_ca_label -sdir ${FS} -l ${FS}/${grp}_${sbj}/label/lh.cortex.label ${grp}_${sbj} lh ${FS}/${grp}_${sbj}/surf/lh.sphere.reg /Users/kyesamjung/Projects/Neuroimage/Tools/freesurfer/classifiers/lh.HarvardOxford_96R_HCP_N10_v3.gcs ${FS}/${grp}_${sbj}/label/lh.HarvardOxford_96R_HCP_N10_v3.annot
+# 	mris_ca_label -sdir ${FS} -l ${FS}/${grp}_${sbj}/label/rh.cortex.label ${grp}_${sbj} rh ${FS}/${grp}_${sbj}/surf/rh.sphere.reg /Users/kyesamjung/Projects/Neuroimage/Tools/freesurfer/classifiers/rh.HarvardOxford_96R_HCP_N10_v3.gcs ${FS}/${grp}_${sbj}/label/rh.HarvardOxford_96R_HCP_N10_v3.annot
+# 	export SUBJECTS_DIR=${FS}
+# 	mri_aparc2aseg --s ${grp}_${sbj} --o ${FS}/${grp}_${sbj}_HarvardOxford_96R_HCP_N10_v3.nii.gz --annot HarvardOxford_96R_HCP_N10_v3
+# 	mri_convert ${FS}/${grp}_${sbj}_HarvardOxford_96R_HCP_N10_v3.nii.gz ${FS}/${grp}_${sbj}/mri/aparc.HarvardOxford_96R.mgz
+# 	export SUBJECTS_DIR=/Applications/freesurfer/7.1.1/subjects
+# done

@@ -56,22 +56,18 @@
 
 # fn=${1}
 # totalNum=${2}
-
 # sp=/data/group/mathneuro/Popovych/PD_HHU/raw
 # wp=$(pwd)
 # tp=$(pwd)
 # printf "MRI\n"
-
 # for (( i = 1; i < totalNum + 1 ; i++ )); do
-#     sbj=$(sed -n ${i}p ${wp}/${fn})
+#   sbj=$(sed -n ${i}p ${wp}/${fn})
 # 	t1w=${sp}/${sbj}/3D/${sbj}_orig.nii.gz
 # 	dwi=${sp}/${sbj}/DWI/${sbj}.nii.gz
 # 	bval=${sp}/${sbj}/DWI/${sbj}.bval
 # 	bvec=${sp}/${sbj}/DWI/${sbj}.bvec
 # 	epi=${sp}/${sbj}/EPI/${sbj}.nii.gz
-
 # 	sbj_bool=true
-
 # 	if [[ -f ${t1w} ]]; then
 # 		t1w_bool=true	
 # 	else
@@ -87,7 +83,6 @@
 # 	else
 # 		sbj_bool=false
 # 	fi
-
 # 	if ${sbj_bool}; then
 # 		mkdir -p ${tp}/${sbj}/anat
 # 		mkdir -p ${tp}/${sbj}/dwi
@@ -101,4 +96,11 @@
 # 	else
 # 		printf "0\n"
 # 	fi
+# done
+
+# nStep=0
+# for i in $(seq 1001 2 1095) $(seq 2002 2 2096)
+# do
+#     (( nStep++ ))
+#     printf "step ${nStep}: ${i}\n"
 # done

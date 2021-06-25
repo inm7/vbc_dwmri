@@ -9,7 +9,7 @@ line2=xxxxxxxxxxxxx
 # ---------------
 grp=INM                         # Name of dataset
 tract=100000                    # Total number of streamlines for whole-brain tractography
-atlname=atlas_prefix            # Compact name of the atlas for prefixing results
+atlname=atlas_prefix            # Compact name of the atlas for prefixing results (Schaefer2018_100Parcels_17Networks, HarvardOxford_96Parcels)
 numparc=100                     # Total number of regions in a given atlas
 shells=0,1000,2000,3000         # shells=0,1000,2000,3000 for HCP dwMRI, i.e., b-values
 non_zero_shells=1000,2000,3000  # shells=1000,2000,3000 for HCP dwMRI
