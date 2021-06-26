@@ -49,15 +49,7 @@ SET_AP='/p/project/cjinm71/SC_Pipe_jung3/Neuroimage/Atlas'
 # train_HarvOxf_96R_gcs_step_3.sh
 # -------------------------------
 SCRIPT='/p/project/cjinm71/Jung/01_MRI_pipelines/Container/vbc_dwmri/code/examples/train_HarvOxf_96R_gcs_step_3.sh'
-for (( i = startNum; i < endNum + 1 ; i++ )); do
-    sbj=$(sed -n ${i}p ${fn})
-    if [[ ${i} -eq 1 ]]; then
-        ARGUMENTS="${grp}_${sbj}"
-    else
-        ARGUMENTS+=" ${grp}_${sbj}"
-    fi
-done
-wait
 
-printf "singularity exec --cleanenv -B ${SET_TP}:/mnt_tp,${SET_FP}:/mnt_fp,${SET_AP}:/mnt_ap,${FREESURFER_LICENSE}:/opt/freesurfer/license.txt,${SCRIPT}:/opt/script.sh ${VBC_DWMRI} /opt/script.sh ${ARGUMENTS} &\n"
-# singularity exec --cleanenv -B ${SET_TP}:/mnt_tp,${SET_FP}:/mnt_fp,${SET_AP}:/mnt_ap,${FREESURFER_LICENSE}:/opt/freesurfer/license.txt,${SCRIPT}:/opt/script.sh ${VBC_DWMRI} /opt/script.sh ${ARGUMENTS} &
+printf "singularity exec --cleanenv -B ${SET_TP}:/mnt_tp,${SET_FP}:/mnt_fp,${SET_AP}:/mnt_ap,${FREESURFER_LICENSE}:/opt/freesurfer/license.txt,${SCRIPT}:/opt/script.sh ${VBC_DWMRI} /opt/script.sh &\n"
+singularity exec --cleanenv -B ${SET_TP}:/mnt_tp,${SET_FP}:/mnt_fp,${SET_AP}:/mnt_ap,${FREESURFER_LICENSE}:/opt/freesurfer/license.txt,${SCRIPT}:/opt/script.sh ${VBC_DWMRI} /opt/script.sh
+wait
