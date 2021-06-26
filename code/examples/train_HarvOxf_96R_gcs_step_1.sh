@@ -67,9 +67,6 @@ applywarp --ref=${tmp}/fs_t1_brain.nii.gz --in=${ap}/${atl} --warp=${tp}/${grp}/
 applywarp -i ${tp}/${grp}/${sbj}/HO_to_fs_t1.nii.gz -r ${tmp}/fs_t1_brain_ori.nii.gz -o ${tp}/${grp}/${sbj}/HO_to_fs_t1_ori.nii.gz --premat=${tmp}/acpc_inv.mat --interp=nn
 printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Apply the deformation: ${tp}/${grp}/${sbj}/HO_to_fs_t1.nii.gz has been saved.\n"
 
-# Create annotation files (lh and rh)
-# -----------------------------------
+# Convert image format and copy to subject image paths
+# ----------------------------------------------------
 mri_convert ${tp}/${grp}/${sbj}/HO_to_fs_t1_ori.nii.gz ${fp}/${grp}_${sbj}/mri/HarvardOxford_96R.mgz 
-# mris_sample_parc -ct ${ap}/HarvardOxford_96Parcels_LUT.txt -sdir ${fp} ${grp}_${sbj} lh HarvardOxford_96R.mgz lh.HarvardOxford_96Parcels.annot
-# mris_sample_parc -ct ${ap}/HarvardOxford_96Parcels_LUT.txt -sdir ${fp} ${grp}_${sbj} rh HarvardOxford_96R.mgz rh.HarvardOxford_96Parcels.annot
-# printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - Annotation files: lh.HarvardOxford_96Parcels.annot and rh.HarvardOxford_96Parcels.annot have been saved.\n"
