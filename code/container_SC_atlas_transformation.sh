@@ -100,8 +100,8 @@ else
 	# -----------------------------------
 	native )
 		printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - Atlas: ${atlt1w}.\n"
-		mris_ca_label -sdir ${fp} -l ${fp}/${grp}_${sbj}/label/lh.cortex.label ${grp}_${sbj} lh ${fp}/${grp}_${sbj}/surf/lh.sphere.reg ${ap}/${gcs_lh} ${fp}/${grp}_${sbj}/label/lh.${atlname}.annot
-		mris_ca_label -sdir ${fp} -l ${fp}/${grp}_${sbj}/label/rh.cortex.label ${grp}_${sbj} rh ${fp}/${grp}_${sbj}/surf/rh.sphere.reg ${ap}/${gcs_rh} ${fp}/${grp}_${sbj}/label/rh.${atlname}.annot
+		mris_ca_label -sdir ${fp} -l ${fp}/${grp}_${sbj}/label/lh.cortex.label -seed 1234 ${grp}_${sbj} lh ${fp}/${grp}_${sbj}/surf/lh.sphere.reg ${ap}/${gcs_lh} ${fp}/${grp}_${sbj}/label/lh.${atlname}.annot
+		mris_ca_label -sdir ${fp} -l ${fp}/${grp}_${sbj}/label/rh.cortex.label -seed 1234 ${grp}_${sbj} rh ${fp}/${grp}_${sbj}/surf/rh.sphere.reg ${ap}/${gcs_rh} ${fp}/${grp}_${sbj}/label/rh.${atlname}.annot
 		TMP_SUBJECTS_DIR=${SUBJECTS_DIR}
 		export SUBJECTS_DIR=${fp}
 		mri_aparc2aseg --s ${grp}_${sbj} --o ${tmp}/temp_atlas.nii.gz --annot ${atlname}
