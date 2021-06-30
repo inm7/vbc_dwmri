@@ -3,14 +3,14 @@ From: debian:stretch-slim
 
 %setup
     # install your pipeline script into /usr/local/bin
-    install -m 755 /data/project/SC_pipeline/01_MRI_pipelines/Container/vbc_dwmri/code/*.sh ${SINGULARITY_ROOTFS}/usr/local/bin
+    install -m 755 /data/project/personalized_pipeline/01_MRI_pipelines/Container/vbc_dwmri/code/*.sh ${SINGULARITY_ROOTFS}/usr/local/bin
 
 %environment
     export LC_ALL=C
 
 %post
     apt-get update && apt-get -y -V upgrade
-    apt-get -y install curl gnupg apt-transport-https wget sudo
+    apt-get -y install curl gnupg apt-transport-https wget sudo apt-utils
 
     # NeuroDebian
     curl http://neuro.debian.net/lists/stretch.de-fzj.full -o /etc/apt/sources.list.d/neurodebian.sources.list
