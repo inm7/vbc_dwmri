@@ -9,8 +9,8 @@ From: debian:stretch-slim
     export LC_ALL=C
 
 %post
-    apt-get update && apt-get -y -V upgrade
-    apt-get -y install curl gnupg apt-transport-https wget sudo apt-utils
+    apt-get update && apt-get -y apt-utils && apt-get -y -V upgrade
+    apt-get -y install curl gnupg apt-transport-https wget sudo
 
     # NeuroDebian
     curl http://neuro.debian.net/lists/stretch.de-fzj.full -o /etc/apt/sources.list.d/neurodebian.sources.list
