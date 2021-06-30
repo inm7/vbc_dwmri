@@ -6,6 +6,7 @@ RAM='48G'
 DISK='120G'
 LOGS_DIR=~/htcondor-templates/vbc_dwmri/logs
 VBC_DWMRI='/data/project/singularity/vbc_dwmri_1.1.0.simg'
+SOFTWARE_DIR='/data/project/SC_pipeline/01_MRI_pipelines/Container/vbc_dwmri'
 DATA_DIR='/data/project/SC_pipeline/02_MRI_data'
 ATLAS_DIR='/data/project/SC_pipeline/02_MRI_data/Atlases'
 OUTPUT_DIR='/data/project/SC_pipeline/03_Structural_Connectivity'
@@ -32,9 +33,9 @@ executable     = /usr/bin/singularity
 # loop over all subjects
 for sub in 101309 102311; do
     printf "arguments = exec --cleanenv \
-                        -B ${DATA_DIR}:/mnt_sp,${OUTPUT_DIR}:/mnt_tp,${FREESURFER_OUTPUT}:/mnt_fp,${ATLAS_DIR}:/mnt_ap,${FREESURFER_LICENSE}:/opt/freesurfer/license.txt,${INPUT_PARAMETERS}:/opt/input.txt \
+                        -B ${SOFTWARE_DIR}:/mnt_sw,${DATA_DIR}:/mnt_sp,${OUTPUT_DIR}:/mnt_tp,${FREESURFER_OUTPUT}:/mnt_fp,${ATLAS_DIR}:/mnt_ap,${FREESURFER_LICENSE}:/opt/freesurfer/license.txt,${INPUT_PARAMETERS}:/opt/input.txt \
                         ${VBC_DWMRI} \
-                        /usr/local/bin/container_SC_pipeline.sh \
+                        /mnt_sw/code/container_SC_pipeline.sh \
                         /opt/input.txt \
                         ${CPUS} \
                         ${sub}\n"
