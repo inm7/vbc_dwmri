@@ -14,6 +14,8 @@ FREESURFER_OUTPUT='/data/project/SC_pipeline/Neuroimage/Tools/freesurfer/subject
 FREESURFER_LICENSE='/opt/freesurfer/6.0/license.txt'
 INPUT_PARAMETERS='/data/project/SC_pipeline/03_Structural_Connectivity/input_HCP_500K_Schaefer100P17N.txt'
 
+SHELL_SCRIPT=$(pwd)/${1}
+
 # create the logs dir if it doesn't exist
 [ ! -d "${LOGS_DIR}" ] && mkdir -p "${LOGS_DIR}"
 
@@ -33,7 +35,7 @@ executable     = /usr/bin/singularity
 # loop over all subjects
 for sub in 101309 102311; do
     printf "arguments = exec --cleanenv \
-                        -B ${SOFTWARE_DIR}:/mnt_sw,${DATA_DIR}:/mnt_sp,${OUTPUT_DIR}:/mnt_tp,${FREESURFER_OUTPUT}:/mnt_fp,${ATLAS_DIR}:/mnt_ap,${FREESURFER_LICENSE}:/opt/freesurfer/license.txt,${INPUT_PARAMETERS}:/opt/input.txt \
+                        -B ${SOFTWARE_DIR}:/mnt_sw,${DATA_DIR}:/mnt_sp,${OUTPUT_DIR}:/mnt_tp,${FREESURFER_OUTPUT}:/mnt_fp,${ATLAS_DIR}:/mnt_ap,${FREESURFER_LICENSE}:/opt/freesurfer/license.txt,${SHELL_SCRIPT}:/opt/script.sh,${INPUT_PARAMETERS}:/opt/input.txt \
                         ${VBC_DWMRI} \
                         /mnt_sw/code/container_SC_pipeline.sh \
                         /opt/input.txt \
