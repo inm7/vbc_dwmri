@@ -133,7 +133,17 @@ else
 				fslmaths ${tmp}/temp_atlas.nii.gz -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
 			done
 			;;
-
+		# Kleist 98-Parcel
+		# -----------------
+		Kleist_98Parcels )
+			nLabel=0
+			for i in {1001..1049} {2001..2049}
+			do
+				(( nLabel++ ))
+				fslmaths ${tmp}/temp_atlas.nii.gz -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
+			done
+			;;
+		
 		# Desikan-Killiany-Tourville (DKT) atlas
 		# --------------------------------------
 		DKTaparc.atlas.acfb40.noaparc.i12.2020-05-13 )
