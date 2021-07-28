@@ -13,8 +13,9 @@ atl=${tp}/${grp}/${sbj}/${atlname}_to_epi_native+subctx.nii.gz
 atlt1w=${tp}/${grp}/${sbj}/${atlname}_to_fs_t1_native+subctx.nii.gz
 gmneck=${tp}/${grp}/${sbj}/fs_t1_neck_gm_mask_to_dwi.nii.gz
 epi=${sp}/${grp}/Derivatives/vbc_fmri/rfMRI/${sbj}/fMRI1/filtered_func_data.nii.gz
-epi_avg=${tp}/${grp}/${sbj}/filtered_func_data_avg.nii.gz
-bold=${sp}/${grp}/Derivatives/vbc_fmri/rfMRI/${sbj}/fMRI1/Atlas/filtered_func_data_${atlname}_native_subctx_BOLD.csv
+epiup=${sp}/${grp}/Derivatives/vbc_fmri/rfMRI/${sbj}/fMRI1/filtered_func_data_upsample.nii.gz
+epi_avg=${tp}/${grp}/${sbj}/filtered_func_data_avg_upsample.nii.gz
+bold=${sp}/${grp}/Derivatives/vbc_fmri/rfMRI/${sbj}/fMRI1/Atlas/filtered_func_data_upsample_${atlname}_native_subctx_BOLD.csv
 
 # Transform function for loops
 # ----------------------------
@@ -37,7 +38,7 @@ Transform()
 BOLD_Extraction()
 {
     fp=${sp}/${grp}/Derivatives/vbc_fmri/rfMRI/${sbj}/fMRI1/Atlas
-    fslmeants -i ${epi} --label=${atl} -o ${fp}/temp_BOLD.txt
+    fslmeants -i ${epiup} --label=${atl} -o ${fp}/temp_BOLD.txt
     cat ${fp}/temp_BOLD.txt | tr -s " " >> ${fp}/temp.txt
     cat ${fp}/temp.txt | tr ' ' ',' >> ${fp}/temp2.txt
     cat ${fp}/temp2.txt | sed 's/.$//' > ${fp}/temp3.txt
@@ -64,9 +65,21 @@ source /etc/fsl/fsl.sh
 # 	printf "Freesurfer license has been updated.\n"
 # fi
 
+cd ${tmp}
+fslsplit ${epi} temp_epi_ -t
+cmd="fslmerge -t ${tmp}/merged_upsampled_epi.nii.gz"
+for i in {0..299}; do
+	epinum=$(printf "%04d" ${i})
+	flirt -in ${tmp}/temp_epi_${epinum}.nii.gz -ref ${tmp}/temp_epi_${epinum}.nii.gz -applyisoxfm 1.0 -out ${tmp}/temp_epi_${epinum}_upsample.nii.gz
+	cmd+=" ${tmp}/temp_epi_${epinum}_upsample.nii.gz"
+done
+eval "${cmd}"
+rm -rf ${tmp}/temp_epi_*.nii.gz
+mv ${tmp}/merged_upsampled_epi.nii.gz ${epiup}
+
 # Co-registration between T1-weighted image and EPI (rs-fMRI)
 # -----------------------------------------------------------
-fslmaths ${epi} -Tmean ${epi_avg}
+fslmaths ${epiup} -Tmean ${epi_avg}
 flirt -in ${epi_avg} -ref ${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz -out ${tp}/${grp}/${sbj}/epi_to_fs_t1_affine.nii.gz -omat ${tp}/${grp}/${sbj}/epi_to_fs_t1_affine.mat -dof 6 -cost corratio
 convert_xfm -omat ${tp}/${grp}/${sbj}/epi_to_fs_t1_invaffine.mat -inverse ${tp}/${grp}/${sbj}/epi_to_fs_t1_affine.mat
 applywarp -i ${tp}/${grp}/${sbj}/fs_t1.nii.gz -r ${epi_avg} -o ${tp}/${grp}/${sbj}/fs_t1_to_epi.nii.gz --premat=${tp}/${grp}/${sbj}/epi_to_fs_t1_invaffine.mat
