@@ -134,10 +134,21 @@ else
 			done
 			;;
 		# Kleist 98-Parcel
-		# -----------------
+		# ----------------
 		Kleist_98Parcels )
 			nLabel=0
 			for i in {1001..1049} {2001..2049}
+			do
+				(( nLabel++ ))
+				fslmaths ${tmp}/temp_atlas.nii.gz -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
+			done
+			;;
+		
+		# Smith 88-Parcel
+		# ---------------
+		Smith_88Parcels )
+			nLabel=0
+			for i in {1001..1044} {2001..2044}
 			do
 				(( nLabel++ ))
 				fslmaths ${tmp}/temp_atlas.nii.gz -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
@@ -156,7 +167,7 @@ else
 			;;
 
 		# Desikan-Killiany (DK) atlas
-		# --------------------------------------
+		# ---------------------------
 		DesikanKilliany_68Parcels )
 			nLabel=0
 			for i in 1001 1002 1003 1005 1006 1007 1008 1009 1010 1011 1012 1013 1014 1015 1016 1017 1018 1019 1020 1021 1022 1023 1024 1025 1026 1027 1028 1029 1030 1031 1032 1033 1034 1035 2001 2002 2003 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 2020 2021 2022 2023 2024 2025 2026 2027 2028 2029 2030 2031 2032 2033 2034 2035
