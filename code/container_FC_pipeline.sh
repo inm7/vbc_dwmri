@@ -16,7 +16,12 @@ export LC_ALL=C
 export ANTSPATH=/usr/lib/ants
 export PATH=${PATH}:/usr/lib/ants
 
+# Source path (BIDS)
+# ------------------
 sp=/mnt_sp
+
+# Target path (BOLD)
+# ------------------
 tp=/mnt_tp/PD_HHU_by_KJung
 
 # sp=/data/project/personalized_pipeline/02_MRI_data
@@ -63,6 +68,29 @@ Transform()
 	applywarp -i ${mask1} -r ${epi_ref} -o ${mask3} --premat=${tp}/${sbj}/epi_to_fs_t1_invaffine.mat
 	fslmaths ${mask3} -thr 0.5 -uthr 0.5 ${mask4}
 	fslmaths ${mask3} -sub ${mask4} -thr 0.5 -bin -mul ${idx} ${mask3}
+}
+
+# Loop for extrating the first eigenvariate of BOLD in a region
+# -------------------------------------------------------------
+ExtractEigenvariateBOLD()
+{
+	idx=${1}
+	mask1=${tmp}/temp_${atlname}_label${idx}_mask1.nii.gz
+
+	fslmaths ${atlepi} -thr ${idx} -uthr ${idx} -bin ${mask1}
+	fslmeants -i ${epi_out} -m ${mask1} --eig -o ${tmp}/${atlname}_${idx}_eig.txt
+}
+
+# Format as 'csv'
+# ---------------
+ConvertCSV()
+{
+    cat ${tmp}/temp_BOLD.txt | tr -s " " >> ${tmp}/temp.txt
+    cat ${tmp}/temp.txt | tr ' ' ',' >> ${tmp}/temp2.txt
+    cat ${tmp}/temp2.txt | sed 's/.$//' > ${tmp}/temp3.txt
+    mv ${tmp}/temp3.txt ${epi_out}_${atlname}_native_subctx_EigenBOLD.csv
+    rm -f ${tmp}/temp*.txt
+	printf "  + ${epi_out}_${atlname}_native_subctx_EigenBOLD.csv has been saved.\n"
 }
 
 # Check directories
@@ -141,10 +169,10 @@ epi_ref=${tp}/${sbj}/epi_avg_bc2.nii.gz
 
 # Coregistration from T1 (1mm freesurfered) to EPI (upsampled)
 # ------------------------------------------------------------
-# t1_ctx=${ppsc}/${grp}/${sbj}/temp/fs_t1_ctx_mask.nii.gz
-# t1_subctx=${ppsc}/${grp}/${sbj}/temp/fs_t1_subctx_mask.nii.gz
-# t1_wm=${ppsc}/${grp}/${sbj}/temp/fs_t1_wm_mask.nii.gz
-# t1_csf=${ppsc}/${grp}/${sbj}/temp/fs_t1_csf_mask.nii.gz
+# t1_ctx=${ppsc}/${sbj}/temp/fs_t1_ctx_mask.nii.gz
+# t1_subctx=${ppsc}/${sbj}/temp/fs_t1_subctx_mask.nii.gz
+# t1_wm=${ppsc}/${sbj}/temp/fs_t1_wm_mask.nii.gz
+# t1_csf=${ppsc}/${sbj}/temp/fs_t1_csf_mask.nii.gz
 
 # Co-registration between T1-weighted image and EPI (rs-fMRI)
 # -----------------------------------------------------------
@@ -152,17 +180,17 @@ printf "  + Co-registration between T1-weighted image and EPI (rs-fMRI)\n"
 if [[ -f ${tp}/${sbj}/epi_to_fs_t1_invaffine.mat ]]; then
     printf "  + ${tp}/${sbj}/epi_to_fs_t1_invaffine.mat has been checked! Skip co-registration.\n"
 else
-    flirt -in ${epi_ref} -ref ${ppsc}/${grp}/${sbj}/fs_t1_brain.nii.gz -out ${tp}/${sbj}/epi_to_fs_t1_affine.nii.gz -omat ${tp}/${sbj}/epi_to_fs_t1_affine.mat -dof 6 -cost mutualinfo
+    flirt -in ${epi_ref} -ref ${ppsc}/${sbj}/fs_t1_brain.nii.gz -out ${tp}/${sbj}/epi_to_fs_t1_affine.nii.gz -omat ${tp}/${sbj}/epi_to_fs_t1_affine.mat -dof 6 -cost mutualinfo
     convert_xfm -omat ${tp}/${sbj}/epi_to_fs_t1_invaffine.mat -inverse ${tp}/${sbj}/epi_to_fs_t1_affine.mat
-    applywarp -i ${ppsc}/${grp}/${sbj}/fs_t1.nii.gz -r ${epi_ref} -o ${tp}/${sbj}/fs_t1_to_epi.nii.gz --premat=${tp}/${sbj}/epi_to_fs_t1_invaffine.mat
-    applywarp -i ${ppsc}/${grp}/${sbj}/fs_t1_brain.nii.gz -r ${epi_ref} -o ${tp}/${sbj}/fs_t1_brain_to_epi.nii.gz --premat=${tp}/${sbj}/epi_to_fs_t1_invaffine.mat
+    applywarp -i ${ppsc}/${sbj}/fs_t1.nii.gz -r ${epi_ref} -o ${tp}/${sbj}/fs_t1_to_epi.nii.gz --premat=${tp}/${sbj}/epi_to_fs_t1_invaffine.mat
+    applywarp -i ${ppsc}/${sbj}/fs_t1_brain.nii.gz -r ${epi_ref} -o ${tp}/${sbj}/fs_t1_brain_to_epi.nii.gz --premat=${tp}/${sbj}/epi_to_fs_t1_invaffine.mat
 fi
 
 # Transform tissue masks in T1 to the upsampled EPI
 # -------------------------------------------------
 printf "  + Transform tissue masks in T1 to the upsampled EPI\n"
 for tissue in ctx subctx wm csf; do
-	applywarp -i ${ppsc}/${grp}/${sbj}/temp/fs_t1_${tissue}_mask.nii.gz -r ${epi_ref} -o ${tp}/${sbj}/fs_t1_${tissue}_mask_to_epi_upsample --premat=${tp}/${sbj}/epi_to_fs_t1_invaffine.mat
+	applywarp -i ${ppsc}/${sbj}/temp/fs_t1_${tissue}_mask.nii.gz -r ${epi_ref} -o ${tp}/${sbj}/fs_t1_${tissue}_mask_to_epi_upsample --premat=${tp}/${sbj}/epi_to_fs_t1_invaffine.mat
 	fslmaths ${tp}/${sbj}/fs_t1_${tissue}_mask_to_epi_upsample -thr 0.5 -bin ${tp}/${sbj}/fs_t1_${tissue}_mask_to_epi_upsample
 done
 fslmaths ${tp}/${sbj}/fs_t1_wm_mask_to_epi_upsample -add ${tp}/${sbj}/fs_t1_csf_mask_to_epi_upsample -add ${tp}/${sbj}/fs_t1_ctx_mask_to_epi_upsample -add ${tp}/${sbj}/fs_t1_subctx_mask_to_epi_upsample -bin ${tp}/${sbj}/fs_t1_global_mask_to_epi_upsample
@@ -261,7 +289,7 @@ printf "  + ${tp}/${sbj}/filtered_func_data.nii.gz has been saved.\n"
 # --------------------------------------------------
 for atlname in Schaefer2018_100Parcels_17Networks DesikanKilliany_68Parcels Smith_88Parcels Kleist_98Parcels HarvardOxford_96Parcels
 do
-	atlt1w=${ppsc}/${grp}/${sbj}/${atlname}_to_fs_t1_native+subctx.nii.gz
+	atlt1w=${ppsc}/${sbj}/${atlname}_to_fs_t1_native+subctx.nii.gz
 	atlepi=${tp}/${sbj}/${atlname}_to_epi_upsample_native+subctx.nii.gz
 
 	case ${atlname} in
@@ -317,6 +345,33 @@ do
 	rm -f ${tp}/${sbj}/temp*.txt
 	printf "  + ${epi_out}_${atlname}_native_subctx_BOLD.csv has been saved.\n"
 
+	# Extract the first eigenvariate of BOLD (prefiltered)
+	# ----------------------------------------------------
+	printf "  + Eigenvariate (1st) BOLD extraction (prefiltered)\n"
+	nThr=0
+	for (( i = 1; i < num + 1; i++ ))
+	do
+	    ExtractEigenvariateBOLD ${i} &
+	    (( nThr++ ))
+	    printf "[+] Running thread ${nThr} - index ${i}\n"
+	    if [[ ${nThr} -eq ${threads} ]]; then
+	        wait
+	        nThr=0
+	    fi
+	done
+	wait
+	cmd=""
+	for (( i = 1; i < num + 1; i++ ))
+	do
+		cmd="${cmd} ${tmp}/${atlname}_${i}_eig.txt"
+	done
+	paste -d " " ${cmd} >> ${tmp}/temp_BOLD.txt
+
+	ConvertCSV
+
+	rm -rf ${tmp}/${atlname}*eig.txt
+	rm -rf ${tmp}/temp_${atlname}_label*.nii.gz
+
 	# BOLD extraction (filtered)
 	# --------------------------
 	epi_out=${tp}/${sbj}/filtered_func_data
@@ -328,6 +383,33 @@ do
 	mv ${tp}/${sbj}/temp3.txt ${epi_out}_${atlname}_native_subctx_BOLD.csv
 	rm -f ${tp}/${sbj}/temp*.txt
 	printf "  + ${epi_out}_${atlname}_native_subctx_BOLD.csv has been saved.\n"
+
+	# Extract the first eigenvariate of BOLD (filtered)
+	# -------------------------------------------------
+	printf "  + Eigenvariate (1st) BOLD extraction (filtered)\n"
+	nThr=0
+	for (( i = 1; i < num + 1; i++ ))
+	do
+	    ExtractEigenvariateBOLD ${i} &
+	    (( nThr++ ))
+	    printf "[+] Running thread ${nThr} - index ${i}\n"
+	    if [[ ${nThr} -eq ${threads} ]]; then
+	        wait
+	        nThr=0
+	    fi
+	done
+	wait
+	cmd=""
+	for (( i = 1; i < num + 1; i++ ))
+	do
+		cmd="${cmd} ${tmp}/${atlname}_${i}_eig.txt"
+	done
+	paste -d " " ${cmd} >> ${tmp}/temp_BOLD.txt
+
+	ConvertCSV
+
+	rm -rf ${tmp}/${atlname}*eig.txt
+	rm -rf ${tmp}/temp_${atlname}_label*.nii.gz
 done
 
 # Delete files
