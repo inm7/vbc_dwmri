@@ -32,7 +32,7 @@ mc=${tp}/${sbj}/mc.1D
 mcdt=${tp}/${sbj}/mcdt.1D
 sc_tmp=${ppsc}/${grp}/${sbj}/temp
 aseg=${sc_tmp}/aseg.nii.gz
-atlt1w=${ppsc}/${sbj}/${atlname}_to_fs_t1_native+subctx.nii.gz
+atlt1w=${ppsc}/${grp}/${sbj}/${atlname}_to_fs_t1_native+subctx.nii.gz
 atlepi=${tp}/${sbj}/${atlname}_to_epi_upsample_native+subctx.nii.gz
 
 # Colors
@@ -129,40 +129,40 @@ echo "    Starting time in seconds ${startingtime}" >> ${et}
 # Check EPI
 # ---------
 if [[ -f ${sp}/${grp}/${sbj}/func/${sbj}_task-rest_bold.nii.gz ]]; then
-	printf "${GRN}[Functional EPI]${RED} ID: ${grp}${sbj}${NCR} - Check file: ${sp}/${grp}/${sbj}/func/${sbj}_task-rest_bold.nii.gz\n"
+	printf "${GRN}[Functional EPI]${RED} ID: ${grp}-${sbj}${NCR} - Check file: ${sp}/${grp}/${sbj}/func/${sbj}_task-rest_bold.nii.gz\n"
 else
-	printf "${RED}[Functional EPI]${RED} ID: ${grp}${sbj}${NCR} - There is not a functional EPI!!!\n"
+	printf "${RED}[Functional EPI]${RED} ID: ${grp}-${sbj}${NCR} - There is not a functional EPI!!!\n"
 	exit 1
 fi
 
 # Check slice order
 # -----------------
 if [[ -f ${sliceorder} ]]; then
-	printf "${GRN}[Functional EPI]${RED} ID: ${grp}${sbj}${NCR} - Check file: ${sliceorder}\n"
+	printf "${GRN}[Functional EPI]${RED} ID: ${grp}-${sbj}${NCR} - Check file: ${sliceorder}\n"
 else
-	printf "${RED}[Functional EPI]${RED} ID: ${grp}${sbj}${NCR} - There is not a functional EPI!!!\n"
+	printf "${RED}[Functional EPI]${RED} ID: ${grp}-${sbj}${NCR} - There is not a functional EPI!!!\n"
 	exit 1
 fi
 
 # Slice timing correction
 # -----------------------
 if [[ -f ${tp}/${sbj}/epi_s.nii.gz ]]; then
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Slice timing was already performed.\n"
+	printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - Slice timing was already performed.\n"
 else
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Slice timing correction.\n"
+	printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - Slice timing correction.\n"
 	slicetimer -i ${sp}/${grp}/${sbj}/func/${sbj}_task-rest_bold.nii.gz -o ${tp}/${sbj}/epi_s -r ${TR} --ocustom=${sliceorder}
 
 	if [[ -f ${tp}/${sbj}/epi_s.nii.gz ]]; then
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/epi_s.nii.gz has been saved.\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${tp}/${sbj}/epi_s.nii.gz has been saved.\n"
 	else
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/epi_s.nii.gz has not been saved!!\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${tp}/${sbj}/epi_s.nii.gz has not been saved!!\n"
 		exit 1
 	fi
 
 	# Elapsed time
 	# ------------
 	elapsedtime=$(($(date +%s) - ${startingtime}))
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+	printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} Slice timing correction" >> ${et}
 fi
 
@@ -176,16 +176,16 @@ else
 	fslmaths ${tp}/${sbj}/temp.nii.gz -Tmean ${tp}/${sbj}/epi_sm_mean
 
 	if [[ -f ${tp}/${sbj}/epi_sm_mean.nii.gz ]]; then
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/epi_sm_mean.nii.gz has been saved.\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${tp}/${sbj}/epi_sm_mean.nii.gz has been saved.\n"
 	else
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/epi_sm_mean.nii.gz has not been saved!!\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${tp}/${sbj}/epi_sm_mean.nii.gz has not been saved!!\n"
 		exit 1
 	fi
 
 	# Elapsed time
 	# ------------
 	elapsedtime=$(($(date +%s) - ${startingtime}))
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+	printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} Mean volume for a reference image" >> ${et}
 fi
 
@@ -198,16 +198,16 @@ else
 	mcflirt -in ${tp}/${sbj}/epi_s.nii.gz -o ${tp}/${sbj}/epi_sm -reffile ${tp}/${sbj}/epi_sm_mean.nii.gz -plots -dof 6 -mats -cost normcorr -stages 3
 
 	if [[ -f ${tp}/${sbj}/epi_sm.nii.gz ]]; then
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/epi_sm.nii.gz has been saved.\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${tp}/${sbj}/epi_sm.nii.gz has been saved.\n"
 	else
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/epi_sm.nii.gz has not been saved!!\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${tp}/${sbj}/epi_sm.nii.gz has not been saved!!\n"
 		exit 1
 	fi
 
 	# Elapsed time
 	# ------------
 	elapsedtime=$(($(date +%s) - ${startingtime}))
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+	printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} Head motion correction" >> ${et}
 fi
 
@@ -235,16 +235,16 @@ else
 	fslmaths ${epiup} -inm 10000 ${epiup}
 
 	if [[ -f ${epiup} ]]; then
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${epiup} has been saved.\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${epiup} has been saved.\n"
 	else
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${epiup} has not been saved!!\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${epiup} has not been saved!!\n"
 		exit 1
 	fi
 
 	# Elapsed time
 	# ------------
 	elapsedtime=$(($(date +%s) - ${startingtime}))
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+	printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} EPI upsampling 2mm iso-cubic" >> ${et}
 fi
 
@@ -259,16 +259,16 @@ else
 	fslmaths ${epi_out}_detrend -add ${epi_avg} ${epi_out}_detrend
 
 	if [[ -f ${epi_out}_detrend.nii.gz ]]; then
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${epi_out}_detrend.nii.gz has been saved.\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${epi_out}_detrend.nii.gz has been saved.\n"
 	else
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${epi_out}_detrend.nii.gz has not been saved!!\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${epi_out}_detrend.nii.gz has not been saved!!\n"
 		exit 1
 	fi
 
 	# Elapsed time
 	# ------------
 	elapsedtime=$(($(date +%s) - ${startingtime}))
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+	printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} Detrending with very slow fluctuation (High-pass)" >> ${et}
 fi
 
@@ -281,25 +281,25 @@ else
 	fslmaths ${epi_out}_detrend -Tmean ${epi_avg}
 
 	if [[ -f ${epi_avg} ]]; then
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${epi_avg} has been saved.\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${epi_avg} has been saved.\n"
 	else
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${epi_avg} has not been saved!!\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${epi_avg} has not been saved!!\n"
 		exit 1
 	fi
 
 	# Elapsed time
 	# ------------
 	elapsedtime=$(($(date +%s) - ${startingtime}))
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+	printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} Mean EPI volume for coregistration to T1" >> ${et}
 fi
 
 # Preprocessed file
 # -----------------
 if [[ -f ${epi_out}_detrend.nii.gz ]]; then
-	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - ${epi_out}_detrend.nii.gz has been saved (Final oputput).\n"
+	printf "${GRN}[Unix]${RED} ID: ${grp}-${sbj}${NCR} - ${epi_out}_detrend.nii.gz has been saved (Final oputput).\n"
 else
-	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - ${epi_out}_detrend.nii.gz has not been saved!!\n"
+	printf "${GRN}[Unix]${RED} ID: ${grp}-${sbj}${NCR} - ${epi_out}_detrend.nii.gz has not been saved!!\n"
 	exit 1
 fi
 
@@ -314,55 +314,55 @@ else
 	epi_ref=${tp}/${sbj}/epi_avg_bc2.nii.gz
 
 	if [[ -f ${tp}/${sbj}/epi_avg_bc2.nii.gz ]]; then
-		printf "${GRN}[ANTs]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/epi_avg_bc2.nii.gz has been saved.\n"
+		printf "${GRN}[ANTs]${RED} ID: ${grp}-${sbj}${NCR} - ${tp}/${sbj}/epi_avg_bc2.nii.gz has been saved.\n"
 	else
-		printf "${GRN}[ANTs]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/epi_avg_bc2.nii.gz has not been saved!!\n"
+		printf "${GRN}[ANTs]${RED} ID: ${grp}-${sbj}${NCR} - ${tp}/${sbj}/epi_avg_bc2.nii.gz has not been saved!!\n"
 		exit 1
 	fi
 
 	# Elapsed time
 	# ------------
 	elapsedtime=$(($(date +%s) - ${startingtime}))
-	printf "${GRN}[ANTs]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+	printf "${GRN}[ANTs]${RED} ID: ${grp}-${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} Bias field correction (Average EPI)" >> ${et}
 fi
 
 # Check a subject directory for structural process
 # ------------------------------------------------
 if [[ -d ${ppsc}/${grp}/${sbj} ]]; then
-	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - The subject directory (${ppsc}/${grp}/${sbj}) exists.\n"
+	printf "${GRN}[Unix]${RED} ID: ${grp}-${sbj}${NCR} - The subject directory (${ppsc}/${grp}/${sbj}) exists.\n"
 else
-	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - Make a subject directory.\n"
+	printf "${GRN}[Unix]${RED} ID: ${grp}-${sbj}${NCR} - Make a subject directory.\n"
 	mkdir -p ${ppsc}/${grp}/${sbj}
 fi
 if [[ -d ${sc_tmp} ]]; then
-	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - The subject directory (${sc_tmp}) exists.\n"
+	printf "${GRN}[Unix]${RED} ID: ${grp}-${sbj}${NCR} - The subject directory (${sc_tmp}) exists.\n"
 else
-	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - Make a subject directory.\n"
+	printf "${GRN}[Unix]${RED} ID: ${grp}-${sbj}${NCR} - Make a subject directory.\n"
 	mkdir -p ${sc_tmp}
 fi
 
 # Check a subject directory for Freesurfing
 # -----------------------------------------
 if [[ -d ${fp}/${grp}_${sbj}/mri/orig ]]; then
-	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - The subject directory exists.\n"
+	printf "${GRN}[Unix]${RED} ID: ${grp}-${sbj}${NCR} - The subject directory exists.\n"
 else
-	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - Make a subject directory.\n"
+	printf "${GRN}[Unix]${RED} ID: ${grp}-${sbj}${NCR} - Make a subject directory.\n"
 	mkdir -p ${fp}/${grp}_${sbj}/mri/orig
 fi
 
 # Check T1WI for freesurfing, if not, do the AC-PC alignment and the bias-field correction for T1WI
 # -------------------------------------------------------------------------------------------------
 if [[ -f ${fp}/${grp}_${sbj}/mri/orig/001.mgz ]]; then
-	printf "${GRN}[ANTs, Freesurfer, and FSL]${RED} ID: ${grp}${sbj}${NCR} - The T1-weighted image exists in the subject directory for recon-all.\n"
+	printf "${GRN}[ANTs, Freesurfer, and FSL]${RED} ID: ${grp}-${sbj}${NCR} - The T1-weighted image exists in the subject directory for recon-all.\n"
 else
 
 	# Bias-field correction for T1-weighted image before recon-all
 	# ------------------------------------------------------------
 	if [[ -f ${ppsc}/${grp}/${sbj}/t1w_bc.nii.gz ]]; then
-		printf "${GRN}[ANTs]${RED} ID: ${grp}${sbj}${NCR} - Bias-field correction for T1-weighted image was already performed.\n"
+		printf "${GRN}[ANTs]${RED} ID: ${grp}-${sbj}${NCR} - Bias-field correction for T1-weighted image was already performed.\n"
 	else
-		printf "${GRN}[ANTs]${RED} ID: ${grp}${sbj}${NCR} - Estimate bias-field of T1-weighted image.\n"
+		printf "${GRN}[ANTs]${RED} ID: ${grp}-${sbj}${NCR} - Estimate bias-field of T1-weighted image.\n"
 		
 		# 4-time iterative bias-field corrections, because of the bright occipital lobe by very dark outside of the brain.
 		# ----------------------------------------------------------------------------------------------------------------
@@ -376,25 +376,25 @@ else
 		rm -f ${ppsc}/${grp}/${sbj}/t1w_bc3.nii.gz
 
 		if [[ -f ${ppsc}/${grp}/${sbj}/t1w_bc.nii.gz ]]; then
-			printf "${GRN}[ANTs]${RED} ID: ${grp}${sbj}${NCR} - ${ppsc}/${grp}/${sbj}/t1w_bc.nii.gz has been saved.\n"
+			printf "${GRN}[ANTs]${RED} ID: ${grp}-${sbj}${NCR} - ${ppsc}/${grp}/${sbj}/t1w_bc.nii.gz has been saved.\n"
 		else
-			printf "${GRN}[ANTs]${RED} ID: ${grp}${sbj}${NCR} - ${ppsc}/${grp}/${sbj}/t1w_bc.nii.gz has not been saved!!\n"
+			printf "${GRN}[ANTs]${RED} ID: ${grp}-${sbj}${NCR} - ${ppsc}/${grp}/${sbj}/t1w_bc.nii.gz has not been saved!!\n"
 			exit 1
 		fi
 
 		# Elapsed time
 		# ------------
 		elapsedtime=$(($(date +%s) - ${startingtime}))
-		printf "${GRN}[ANTs]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+		printf "${GRN}[ANTs]${RED} ID: ${grp}-${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 		echo "    ${elapsedtime} N4BiasFieldCorrection" >> ${et}
 	fi
 
 	# AC-PC alignment
 	# ---------------
 	if [[ -f ${sc_tmp}/t1w_acpc.nii.gz ]]; then
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - AC-PC aligned T1-weighted image exists!!!l.\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - AC-PC aligned T1-weighted image exists!!!l.\n"
 	else
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - AC-PC align and convert T1-weighted image to mgz.\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - AC-PC align and convert T1-weighted image to mgz.\n"
 		fslreorient2std ${ppsc}/${grp}/${sbj}/t1w_bc.nii.gz ${sc_tmp}/t1w_bc_reori.nii.gz
 		robustfov -i ${sc_tmp}/t1w_bc_reori.nii.gz -b 170 -m ${sc_tmp}/acpc_roi2full.mat -r ${sc_tmp}/acpc_robustroi.nii.gz
 		flirt -interp spline -in ${sc_tmp}/acpc_robustroi.nii.gz -ref ${mni} -omat ${sc_tmp}/acpc_roi2std.mat -out ${sc_tmp}/acpc_roi2std.nii.gz -searchrx -30 30 -searchry -30 30 -searchrz -30 30
@@ -403,26 +403,26 @@ else
 		aff2rigid ${sc_tmp}/acpc_full2std.mat ${sc_tmp}/acpc.mat
 		applywarp --rel --interp=spline -i ${sc_tmp}/t1w_bc_reori.nii.gz -r ${mni} --premat=${sc_tmp}/acpc.mat -o ${sc_tmp}/t1w_acpc.nii.gz
 		if [[ -f ${sc_tmp}/t1w_acpc.nii.gz ]]; then
-			printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${sc_tmp}/t1w_acpc.nii.gz has been saved.\n"
+			printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${sc_tmp}/t1w_acpc.nii.gz has been saved.\n"
 		else
-			printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${sc_tmp}/t1w_acpc.nii.gz has not been saved!!\n"
+			printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${sc_tmp}/t1w_acpc.nii.gz has not been saved!!\n"
 			exit 1
 		fi
 
 		# Elapsed time
 		# ------------
 		elapsedtime=$(($(date +%s) - ${startingtime}))
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 		echo "    ${elapsedtime} AC-PC alignment" >> ${et}
 	fi
 
-	printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - Convert T1-weighted image to mgz.\n"
+	printf "${GRN}[Freesurfer]${RED} ID: ${grp}-${sbj}${NCR} - Convert T1-weighted image to mgz.\n"
 	mri_convert ${sc_tmp}/t1w_acpc.nii.gz ${fp}/${grp}_${sbj}/mri/orig/001.mgz
 
 	if [[ -f ${fp}/${grp}_${sbj}/mri/orig/001.mgz ]]; then
-		printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - ${fp}/${grp}_${sbj}/mri/orig/001.mgz has been saved.\n"
+		printf "${GRN}[Freesurfer]${RED} ID: ${grp}-${sbj}${NCR} - ${fp}/${grp}_${sbj}/mri/orig/001.mgz has been saved.\n"
 	else
-		printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - ${fp}/${grp}_${sbj}/mri/orig/001.mgz has not been saved!!\n"
+		printf "${GRN}[Freesurfer]${RED} ID: ${grp}-${sbj}${NCR} - ${fp}/${grp}_${sbj}/mri/orig/001.mgz has not been saved!!\n"
 		exit 1
 	fi
 fi
@@ -430,30 +430,30 @@ fi
 # Check recon-all by Freesurfer
 # -----------------------------
 if [[ -f ${fp}/${grp}_${sbj}/scripts/recon-all.done ]]; then
-	printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - Freesurfer already preprocessed!!!\n"
+	printf "${GRN}[Freesurfer]${RED} ID: ${grp}-${sbj}${NCR} - Freesurfer already preprocessed!!!\n"
 else
-	printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - Start recon-all.\n"
+	printf "${GRN}[Freesurfer]${RED} ID: ${grp}-${sbj}${NCR} - Start recon-all.\n"
 	recon-all -subjid ${grp}_${sbj} -all -noappend -no-isrunning -parallel -openmp ${threads} -sd ${fp}
 	if [[ -f ${fp}/${grp}_${sbj}/scripts/recon-all.done ]]; then
-		printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - ${fp}/${grp}_${sbj}/scripts/recon-all.done has been saved.\n"
+		printf "${GRN}[Freesurfer]${RED} ID: ${grp}-${sbj}${NCR} - ${fp}/${grp}_${sbj}/scripts/recon-all.done has been saved.\n"
 	else
-		printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - ${fp}/${grp}_${sbj}/scripts/recon-all.done has not been saved!!\n"
+		printf "${GRN}[Freesurfer]${RED} ID: ${grp}-${sbj}${NCR} - ${fp}/${grp}_${sbj}/scripts/recon-all.done has not been saved!!\n"
 		exit 1
 	fi
 
 	# Elapsed time
 	# ------------
 	elapsedtime=$(($(date +%s) - ${startingtime}))
-	printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+	printf "${GRN}[Freesurfer]${RED} ID: ${grp}-${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} recon-all" >> ${et}
 fi
 
 # Create brain masks on T1 space (Freesurfer output)
 # --------------------------------------------------
 if [[ -f ${sc_tmp}/fs_t1_gmwm_mask.nii.gz ]]; then
-	printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - Brain masks on T1 space (Freesurfer output) exist!!!\n"
+	printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}-${sbj}${NCR} - Brain masks on T1 space (Freesurfer output) exist!!!\n"
 else
-	printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}${sbj}${NCR} - Create brain masks on T1 space (Freesurfer output).\n"
+	printf "${GRN}[FSL & Image processing]${RED} ID: ${grp}-${sbj}${NCR} - Create brain masks on T1 space (Freesurfer output).\n"
 	mri_convert ${fp}/${grp}_${sbj}/mri/aseg.mgz ${aseg}
 
 	# White-matter mask with a neck
@@ -470,9 +470,9 @@ else
 	fslmaths ${sc_tmp}/temp_mask.nii.gz -bin ${sc_tmp}/fs_t1_neck_wm_mask.nii.gz
 	fslreorient2std ${sc_tmp}/fs_t1_neck_wm_mask.nii.gz ${sc_tmp}/fs_t1_neck_wm_mask.nii.gz
 	if [[ -f ${sc_tmp}/fs_t1_neck_wm_mask.nii.gz ]]; then
-		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${sc_tmp}/fs_t1_neck_wm_mask.nii.gz has been saved.\n"
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}-${sbj}${NCR} - ${sc_tmp}/fs_t1_neck_wm_mask.nii.gz has been saved.\n"
 	else
-		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${sc_tmp}/fs_t1_neck_wm_mask.nii.gz has not been saved!!\n"
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}-${sbj}${NCR} - ${sc_tmp}/fs_t1_neck_wm_mask.nii.gz has not been saved!!\n"
 		exit 1
 	fi
 
@@ -481,9 +481,9 @@ else
 	fslmaths ${sc_tmp}/temp_roi_2.nii.gz -add ${sc_tmp}/temp_roi_41.nii.gz -add ${sc_tmp}/temp_roi_77.nii.gz -add ${sc_tmp}/temp_roi_251.nii.gz -add ${sc_tmp}/temp_roi_252.nii.gz -add ${sc_tmp}/temp_roi_253.nii.gz -add ${sc_tmp}/temp_roi_254.nii.gz -add ${sc_tmp}/temp_roi_255.nii.gz -bin ${sc_tmp}/fs_t1_wm_mask.nii.gz
 	fslreorient2std ${sc_tmp}/fs_t1_wm_mask.nii.gz ${sc_tmp}/fs_t1_wm_mask.nii.gz
 	if [[ -f ${sc_tmp}/fs_t1_wm_mask.nii.gz ]]; then
-		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${sc_tmp}/fs_t1_wm_mask.nii.gz has been saved.\n"
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}-${sbj}${NCR} - ${sc_tmp}/fs_t1_wm_mask.nii.gz has been saved.\n"
 	else
-		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${sc_tmp}/fs_t1_wm_mask.nii.gz has not been saved!!\n"
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}-${sbj}${NCR} - ${sc_tmp}/fs_t1_wm_mask.nii.gz has not been saved!!\n"
 		exit 1
 	fi
 
@@ -501,9 +501,9 @@ else
 	fslmaths ${sc_tmp}/temp_mask.nii.gz -bin ${sc_tmp}/fs_t1_ctx_mask.nii.gz
 	fslreorient2std ${sc_tmp}/fs_t1_ctx_mask.nii.gz ${sc_tmp}/fs_t1_ctx_mask.nii.gz
 	if [[ -f ${sc_tmp}/fs_t1_ctx_mask.nii.gz ]]; then
-		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${sc_tmp}/fs_t1_ctx_mask.nii.gz has been saved.\n"
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}-${sbj}${NCR} - ${sc_tmp}/fs_t1_ctx_mask.nii.gz has been saved.\n"
 	else
-		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${sc_tmp}/fs_t1_ctx_mask.nii.gz has not been saved!!\n"
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}-${sbj}${NCR} - ${sc_tmp}/fs_t1_ctx_mask.nii.gz has not been saved!!\n"
 		exit 1
 	fi
 
@@ -521,9 +521,9 @@ else
 	fslmaths ${sc_tmp}/temp_mask.nii.gz -bin ${sc_tmp}/fs_t1_subctx_mask.nii.gz
 	fslreorient2std ${sc_tmp}/fs_t1_subctx_mask.nii.gz ${sc_tmp}/fs_t1_subctx_mask.nii.gz
 	if [[ -f ${sc_tmp}/fs_t1_subctx_mask.nii.gz ]]; then
-		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${sc_tmp}/fs_t1_subctx_mask.nii.gz has been saved.\n"
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}-${sbj}${NCR} - ${sc_tmp}/fs_t1_subctx_mask.nii.gz has been saved.\n"
 	else
-		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${sc_tmp}/fs_t1_subctx_mask.nii.gz has not been saved!!\n"
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}-${sbj}${NCR} - ${sc_tmp}/fs_t1_subctx_mask.nii.gz has not been saved!!\n"
 		exit 1
 	fi
 	
@@ -541,9 +541,9 @@ else
 	fslmaths ${sc_tmp}/temp_mask.nii.gz -bin ${sc_tmp}/fs_t1_csf_mask.nii.gz
 	fslreorient2std ${sc_tmp}/fs_t1_csf_mask.nii.gz ${sc_tmp}/fs_t1_csf_mask.nii.gz
 	if [[ -f ${sc_tmp}/fs_t1_csf_mask.nii.gz ]]; then
-		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${sc_tmp}/fs_t1_csf_mask.nii.gz has been saved.\n"
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}-${sbj}${NCR} - ${sc_tmp}/fs_t1_csf_mask.nii.gz has been saved.\n"
 	else
-		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${sc_tmp}/fs_t1_csf_mask.nii.gz has not been saved!!\n"
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}-${sbj}${NCR} - ${sc_tmp}/fs_t1_csf_mask.nii.gz has not been saved!!\n"
 		exit 1
 	fi
 
@@ -552,25 +552,25 @@ else
 	fslmaths ${sc_tmp}/fs_t1_ctx_mask.nii.gz -add ${sc_tmp}/fs_t1_subctx_mask.nii.gz -bin ${sc_tmp}/fs_t1_neck_gm_mask.nii.gz
 	fslmaths ${sc_tmp}/fs_t1_neck_gm_mask.nii.gz -add ${sc_tmp}/fs_t1_neck_wm_mask.nii.gz -bin ${sc_tmp}/fs_t1_gmwm_mask.nii.gz
 	if [[ -f ${sc_tmp}/fs_t1_gmwm_mask.nii.gz ]]; then
-		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${sc_tmp}/fs_t1_gmwm_mask.nii.gz has been saved.\n"
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}-${sbj}${NCR} - ${sc_tmp}/fs_t1_gmwm_mask.nii.gz has been saved.\n"
 	else
-		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}${sbj}${NCR} - ${sc_tmp}/fs_t1_gmwm_mask.nii.gz has not been saved!!\n"
+		printf "${GRN}[FSL Tissue masks]${RED} ID: ${grp}-${sbj}${NCR} - ${sc_tmp}/fs_t1_gmwm_mask.nii.gz has not been saved!!\n"
 		exit 1
 	fi
 
 	# Elapsed time
 	# ------------
 	elapsedtime=$(($(date +%s) - ${startingtime}))
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+	printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} Creating tissue masks" >> ${et}
 fi
 
 # Brain tissue mask on T1 (Freesurfer)
 # ------------------------------------
 if [[ -f ${ppsc}/${grp}/${sbj}/fs_t1_brain.nii.gz ]]; then
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Coregistration from T1WI in Freesurfer to DWI space was already performed!!!\n"
+	printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - Coregistration from T1WI in Freesurfer to DWI space was already performed!!!\n"
 else
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Start coregistration.\n"
+	printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - Start coregistration.\n"
 	mri_convert ${fp}/${grp}_${sbj}/mri/nu.mgz ${sc_tmp}/fs_t1.nii.gz
 	fslreorient2std ${sc_tmp}/fs_t1.nii.gz ${sc_tmp}/fs_t1.nii.gz
 
@@ -581,16 +581,16 @@ else
 	fslmaths ${sc_tmp}/fs_t1.nii.gz -mas ${sc_tmp}/fs_t1_gmwm_mask.nii.gz ${ppsc}/${grp}/${sbj}/fs_t1_brain.nii.gz
 
 	if [[ -f ${ppsc}/${grp}/${sbj}/fs_t1_brain.nii.gz ]]; then
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${ppsc}/${grp}/${sbj}/fs_t1_brain.nii.gz has been saved.\n"
+		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}-${sbj}${NCR} - ${ppsc}/${grp}/${sbj}/fs_t1_brain.nii.gz has been saved.\n"
 	else
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${ppsc}/${grp}/${sbj}/fs_t1_brain.nii.gz has not been saved!!\n"
+		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}-${sbj}${NCR} - ${ppsc}/${grp}/${sbj}/fs_t1_brain.nii.gz has not been saved!!\n"
 		exit 1
 	fi
 
 	# Elapsed time
 	# ------------
 	elapsedtime=$(($(date +%s) - ${startingtime}))
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+	printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} Brain-tissue mask" >> ${et}
 fi
 
@@ -613,16 +613,16 @@ else
     applywarp -i ${ppsc}/${grp}/${sbj}/fs_t1_brain.nii.gz -r ${epi_ref} -o ${tp}/${sbj}/fs_t1_brain_to_epi.nii.gz --premat=${tp}/${sbj}/epi_to_fs_t1_invaffine.mat
 
 	if [[ -f ${tp}/${sbj}/epi_to_fs_t1_invaffine.mat ]]; then
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/epi_to_fs_t1_invaffine.mat has been saved.\n"
+		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}-${sbj}${NCR} - ${tp}/${sbj}/epi_to_fs_t1_invaffine.mat has been saved.\n"
 	else
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/epi_to_fs_t1_invaffine.mat has not been saved!!\n"
+		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}-${sbj}${NCR} - ${tp}/${sbj}/epi_to_fs_t1_invaffine.mat has not been saved!!\n"
 		exit 1
 	fi
 
 	# Elapsed time
 	# ------------
 	elapsedtime=$(($(date +%s) - ${startingtime}))
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+	printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} Co-registration between R1-weighted image and EPI (rs-fMRI)" >> ${et}
 fi
 
@@ -639,16 +639,16 @@ else
 	fslmaths ${tp}/${sbj}/fs_t1_wm_mask_to_epi_upsample -add ${tp}/${sbj}/fs_t1_csf_mask_to_epi_upsample -add ${tp}/${sbj}/fs_t1_ctx_mask_to_epi_upsample -add ${tp}/${sbj}/fs_t1_subctx_mask_to_epi_upsample -bin ${tp}/${sbj}/fs_t1_global_mask_to_epi_upsample
 
 	if [[ -f ${tp}/${sbj}/fs_t1_global_mask_to_epi_upsample.nii.gz ]]; then
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/fs_t1_global_mask_to_epi_upsample.nii.gz has been saved.\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${tp}/${sbj}/fs_t1_global_mask_to_epi_upsample.nii.gz has been saved.\n"
 	else
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/fs_t1_global_mask_to_epi_upsample.nii.gz has not been saved!!\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${tp}/${sbj}/fs_t1_global_mask_to_epi_upsample.nii.gz has not been saved!!\n"
 		exit 1
 	fi
 
 	# Elapsed time
 	# ------------
 	elapsedtime=$(($(date +%s) - ${startingtime}))
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+	printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} Transform tissue masks in T1 to the upsampled EPI" >> ${et}
 fi
 
@@ -720,33 +720,33 @@ else
 	paste ${tp}/${sbj}/regressor_wm.txt ${tp}/${sbj}/regressor_csf.txt ${tp}/${sbj}/regressor_ctx.txt ${tp}/${sbj}/regressor_subctx.txt ${tp}/${sbj}/Friston-24.txt >> ${tp}/${sbj}/regressors_wm_csf_ctx_subctx_Friston.txt
 
 	if [[ -f ${tp}/${sbj}/regressor_global.txt ]]; then
-		printf "${GRN}[AFNI and Unix]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/regressor_global.txt has been saved.\n"
+		printf "${GRN}[AFNI and Unix]${RED} ID: ${grp}-${sbj}${NCR} - ${tp}/${sbj}/regressor_global.txt has been saved.\n"
 	else
-		printf "${GRN}[AFNI and Unix]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/regressor_global.txt has not been saved!!\n"
+		printf "${GRN}[AFNI and Unix]${RED} ID: ${grp}-${sbj}${NCR} - ${tp}/${sbj}/regressor_global.txt has not been saved!!\n"
 		exit 1
 	fi
 
 	# Elapsed time
 	# ------------
 	elapsedtime=$(($(date +%s) - ${startingtime}))
-	printf "${GRN}[AFNI and Unix]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+	printf "${GRN}[AFNI and Unix]${RED} ID: ${grp}-${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} Nuisance regressors" >> ${et}
 fi
 
 # Atlas derived by a classifier (gcs)
 # -----------------------------------
 if [[ -f ${atlt1w} ]]; then
-	printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - ${atlt1w} has been checked!!!\n"
+	printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${atlt1w} has been checked!!!\n"
 else
-	printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - Transform the target atlas.\n"
-	printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - Parcellation scheme is ${parcellation}.\n"
+	printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}-${sbj}${NCR} - Transform the target atlas.\n"
+	printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}-${sbj}${NCR} - Parcellation scheme is ${parcellation}.\n"
 
 	case ${parcellation} in
 
 	# Atlas on the native T1 (Freesurfer)
 	# -----------------------------------
 	native )
-		printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - Atlas: ${atlt1w}.\n"
+		printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}-${sbj}${NCR} - Atlas: ${atlt1w}.\n"
 		mris_ca_label -sdir ${fp} -l ${fp}/${grp}_${sbj}/label/lh.cortex.label -seed 1234 ${grp}_${sbj} lh ${fp}/${grp}_${sbj}/surf/lh.sphere.reg ${ap}/${gcs_lh} ${fp}/${grp}_${sbj}/label/lh.${atlname}.annot
 		mris_ca_label -sdir ${fp} -l ${fp}/${grp}_${sbj}/label/rh.cortex.label -seed 1234 ${grp}_${sbj} rh ${fp}/${grp}_${sbj}/surf/rh.sphere.reg ${ap}/${gcs_rh} ${fp}/${grp}_${sbj}/label/rh.${atlname}.annot
 		TMP_SUBJECTS_DIR=${SUBJECTS_DIR}
@@ -851,23 +851,23 @@ else
 		wait
 
 		if [[ -f ${atlt1w} ]]; then
-			printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - ${atlt1w} has been saved.\n"
+			printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${atlt1w} has been saved.\n"
 		else
-			printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - ${atlt1w} has not been saved!!\n"
+			printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${atlt1w} has not been saved!!\n"
 			exit 1
 		fi
 
 		# Elapsed time
 		# ------------
 		elapsedtime=$(($(date +%s) - ${startingtime}))
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 		echo "    ${elapsedtime} Atlas on the native T1 (Freesurfer)" >> ${et}
 		;;
 
 	# Atlas on the MNI152 T1 1mm (standard)
 	# -------------------------------------
 	mni152 )
-		printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - Atlas on the MNI space is not supported by the current pipeline.\n"
+		printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}-${sbj}${NCR} - Atlas on the MNI space is not supported by the current pipeline.\n"
 		;;
 	* )
 	esac
@@ -923,16 +923,16 @@ else
 	wait
 
 	if [[ -f ${atlepi} ]]; then
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${atlepi} has been saved.\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${atlepi} has been saved.\n"
 	else
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${atlepi} has not been saved!!\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - ${atlepi} has not been saved!!\n"
 		exit 1
 	fi
 
 	# Elapsed time
 	# ------------
 	elapsedtime=$(($(date +%s) - ${startingtime}))
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+	printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} Atlas transformation from T1 to resliced EPI" >> ${et}
 fi
 
