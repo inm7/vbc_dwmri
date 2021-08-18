@@ -10,16 +10,17 @@ line2=xxxxxxxxxxxxx
 grp=INM                         # Name of dataset
 tract=100000                    # Total number of streamlines for whole-brain tractography
 atlname=atlas_prefix            # Compact name of the atlas for prefixing results (Schaefer2018_100Parcels_17Networks, HarvardOxford_96Parcels)
-numparc=100                     # Total number of regions in a given atlas
+numparc=114                     # Total number of regions in a given atlas
 shells=0,1000,2000,3000         # shells=0,1000,2000,3000 for HCP dwMRI, i.e., b-values
 non_zero_shells=1000,2000,3000  # shells=1000,2000,3000 for HCP dwMRI
 
 # Paths setting
 # -------------
-tp=/mnt_tp                                                              # Target (result) path
 sp=/mnt_sp                                                              # Source (raw) data path
 fp=/mnt_fp                                                              # Subject's path for freesurfer
 ap=/mnt_ap                                                              # Atlas path
+ppsc=/mnt_sc                                                            # Output directory for structural connectivity
+ppfc=/mnt_fc                                                            # Output directory for functional connectivity
 parcellation=native                                                     # Parcellation scheme (native: use gcs classifier; mni152: use non-linear registration from MNI152 T1 space)
 gcs_lh=lh.Schaefer2018_100Parcels_17Networks.gcs                        # If the parcellation scheme is 'native', provide a 'gcs' filename for 'gcs_lh'
 gcs_rh=rh.Schaefer2018_100Parcels_17Networks.gcs                        # If the parcellation scheme is 'native', provide a 'gcs' filename for 'gcs_rh'
@@ -71,3 +72,19 @@ tckgen_power=0.25                   # default = 0.25
 # Reconstruct
 # ===========
 tck2connectome_assignment_radial_search=2 # default = 2
+
+# [PART 5] ====
+# FC preprocess
+# =============
+TR=2.21
+
+
+# [PART 6] ======
+# BOLD extraction
+# ===============
+
+# [PART 7] =====
+# FC postprocess
+# ==============
+highbands=0.01
+lowbands=0.1

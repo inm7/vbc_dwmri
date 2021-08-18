@@ -17,16 +17,16 @@ num=${numparc}
 atlmni=${ap}/${atlas}
 case ${parcellation} in
 native )
-	atlt1w=${tp}/${grp}/${sbj}/${atlname}_to_fs_t1_${parcellation}+subctx.nii.gz
-	atl=${tp}/${grp}/${sbj}/${atlname}_to_dwi_${parcellation}+subctx.nii.gz
+	atlt1w=${ppsc}/${grp}/${sbj}/${atlname}_to_fs_t1_${parcellation}+subctx.nii.gz
+	atl=${ppsc}/${grp}/${sbj}/${atlname}_to_dwi_${parcellation}+subctx.nii.gz
 ;;
 mni152 )
-	atlt1w=${tp}/${grp}/${sbj}/${atlname}_to_fs_t1_${parcellation}.nii.gz
-	atl=${tp}/${grp}/${sbj}/${atlname}_to_dwi_${parcellation}.nii.gz
+	atlt1w=${ppsc}/${grp}/${sbj}/${atlname}_to_fs_t1_${parcellation}.nii.gz
+	atl=${ppsc}/${grp}/${sbj}/${atlname}_to_dwi_${parcellation}.nii.gz
 ;;
 esac
-gmneck=${tp}/${grp}/${sbj}/fs_t1_neck_gm_mask_to_dwi.nii.gz
-tmp=${tp}/${grp}/${sbj}/temp
+gmneck=${ppsc}/${grp}/${sbj}/fs_t1_neck_gm_mask_to_dwi.nii.gz
+tmp=${ppsc}/${grp}/${sbj}/temp
 aseg=${tmp}/aseg.nii.gz
 
 # Transform function for loops
@@ -42,13 +42,13 @@ Transform()
 	case ${parcellation} in
 	native )
 		fslmaths ${atlt1w} -thr ${idx} -uthr ${idx} -bin ${mask1}
-		applywarp -i ${mask1} -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${mask3} --premat=${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
+		applywarp -i ${mask1} -r ${ppsc}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${mask3} --premat=${ppsc}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
 		;;
 
 	mni152 )
 		fslmaths ${atlmni} -thr ${idx} -uthr ${idx} -bin ${mask1}
-		applywarp --ref=${tp}/${grp}/${sbj}/fs_t1_brain.nii.gz --in=${mask1} --out=${mask2} --warp=${tp}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --interp=${reg_fnirt_interp}
-		applywarp -i ${mask2} -r ${tp}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${mask3} --premat=${tp}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
+		applywarp --ref=${ppsc}/${grp}/${sbj}/fs_t1_brain.nii.gz --in=${mask1} --out=${mask2} --warp=${ppsc}/${grp}/${sbj}/mni_to_fs_t1_warp_struct.nii.gz --interp=${reg_fnirt_interp}
+		applywarp -i ${mask2} -r ${ppsc}/${grp}/${sbj}/dwi_bcecmc_avg.nii.gz -o ${mask3} --premat=${ppsc}/${grp}/${sbj}/dwi_to_fs_t1_invaffine.mat
 		;;
 
 	* )
@@ -83,7 +83,7 @@ fi
 # Start the SC atlas transformation
 # ---------------------------------
 startingtime=$(date +%s)
-et=${tp}/${grp}/${sbj}/SC_pipeline_elapsedtime.txt
+et=${ppsc}/${grp}/${sbj}/SC_pipeline_elapsedtime.txt
 echo "[+] SC atlas transformation with ${threads} thread(s) - $(date)" >> ${et}
 echo "    Starting time in seconds ${startingtime}" >> ${et}
 
@@ -92,7 +92,7 @@ if [[ -f ${atl} ]]; then
 else
 	printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - Transform the target atlas.\n"
 	printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - Parcellation scheme is ${parcellation}.\n"
-	fslmaths ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz -mul 0 ${tmp}/temp_mask.nii.gz
+	fslmaths ${ppsc}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz -mul 0 ${tmp}/temp_mask.nii.gz
 
 	case ${parcellation} in
 

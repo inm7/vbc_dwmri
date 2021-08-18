@@ -13,9 +13,9 @@ done
 
 # Path setting
 # ------------
-ftt=${tp}/${grp}/${sbj}/5tt.nii.gz
-wm=${tp}/${grp}/${sbj}/fs_t1_wm_mask_to_dwi.nii.gz
-wmneck=${tp}/${grp}/${sbj}/fs_t1_neck_wm_mask_to_dwi.nii.gz
+ftt=${ppsc}/${grp}/${sbj}/5tt.nii.gz
+wm=${ppsc}/${grp}/${sbj}/fs_t1_wm_mask_to_dwi.nii.gz
+wmneck=${ppsc}/${grp}/${sbj}/fs_t1_neck_wm_mask_to_dwi.nii.gz
 
 # Colors
 # ------
@@ -75,23 +75,23 @@ fi
 # Start the SC tractography
 # -------------------------
 startingtime=$(date +%s)
-et=${tp}/${grp}/${sbj}/SC_pipeline_elapsedtime.txt
+et=${ppsc}/${grp}/${sbj}/SC_pipeline_elapsedtime.txt
 echo "[+] SC tractography for ${tractM} with ${threads} thread(s) - $(date)" >> ${et}
 echo "    Starting time in seconds ${startingtime}" >> ${et}
 
 # Files for MRtrix
 # ----------------
-tck=${tp}/${grp}/${sbj}/WBT_${tractM}_ctx.tck
-out=${tp}/${grp}/${sbj}/WBT_${tractM}_seeds_ctx.txt
-mc_bval=${tp}/${grp}/${sbj}/mc_bval.dat
-mc_bvec=${tp}/${grp}/${sbj}/mc_bvec.dat
-odfGM=${tp}/${grp}/${sbj}/odf_gm.mif
-odfWM=${tp}/${grp}/${sbj}/odf_wm.mif
-odfCSF=${tp}/${grp}/${sbj}/odf_csf.mif
-resGM=${tp}/${grp}/${sbj}/response_gm.txt
-resWM=${tp}/${grp}/${sbj}/response_wm.txt
-resSFWM=${tp}/${grp}/${sbj}/response_sfwm.txt
-resCSF=${tp}/${grp}/${sbj}/response_csf.txt
+tck=${ppsc}/${grp}/${sbj}/WBT_${tractM}_ctx.tck
+out=${ppsc}/${grp}/${sbj}/WBT_${tractM}_seeds_ctx.txt
+mc_bval=${ppsc}/${grp}/${sbj}/mc_bval.dat
+mc_bvec=${ppsc}/${grp}/${sbj}/mc_bvec.dat
+odfGM=${ppsc}/${grp}/${sbj}/odf_gm.mif
+odfWM=${ppsc}/${grp}/${sbj}/odf_wm.mif
+odfCSF=${ppsc}/${grp}/${sbj}/odf_csf.mif
+resGM=${ppsc}/${grp}/${sbj}/response_gm.txt
+resWM=${ppsc}/${grp}/${sbj}/response_wm.txt
+resSFWM=${ppsc}/${grp}/${sbj}/response_sfwm.txt
+resCSF=${ppsc}/${grp}/${sbj}/response_csf.txt
 
 # FOD estimation
 # --------------
@@ -104,14 +104,14 @@ else
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Estimate response functions.\n"
 	case ${tracking_algorithm} in
 	msmt_5tt )
-	dwi2response msmt_5tt -shells ${shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -pvf 0.95 -fa 0.2 -wm_algo tournier -fslgrad ${mc_bvec} ${mc_bval} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${ftt} ${resWM} ${resGM} ${resCSF}
+	dwi2response msmt_5tt -shells ${shells} -force -nthreads ${threads} -voxels ${ppsc}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -pvf 0.95 -fa 0.2 -wm_algo tournier -fslgrad ${mc_bvec} ${mc_bval} ${ppsc}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${ftt} ${resWM} ${resGM} ${resCSF}
 		;;
 	tournier )
-	dwi2response tournier ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resWM} -shells ${non_zero_shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -fslgrad ${mc_bvec} ${mc_bval}
+	dwi2response tournier ${ppsc}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resWM} -shells ${non_zero_shells} -force -nthreads ${threads} -voxels ${ppsc}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -fslgrad ${mc_bvec} ${mc_bval}
 	cp ${resWM} ${resSFWM}
 		;;
 	dhollander )
-	dwi2response dhollander ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resWM} ${resGM} ${resCSF} -shells ${shells} -force -nthreads ${threads} -voxels ${tp}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -fslgrad ${mc_bvec} ${mc_bval} -erode 3 -fa 0.2 -sfwm 0.5 -gm 2 -csf 10
+	dwi2response dhollander ${ppsc}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resWM} ${resGM} ${resCSF} -shells ${shells} -force -nthreads ${threads} -voxels ${ppsc}/${grp}/${sbj}/response_voxels.nii.gz -mask ${wmneck} -fslgrad ${mc_bvec} ${mc_bval} -erode 3 -fa 0.2 -sfwm 0.5 -gm 2 -csf 10
 	# if [[ -f ${resSFWM} ]]; then
 	# 	rm -f ${resSFWM}
 	# fi
@@ -134,10 +134,10 @@ else
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Estimate fibre orientation distributions using spherical deconvolution.\n"
 	case ${fod_algorithm} in
 	msmt_csd )
-	dwi2fod ${fod_algorithm} -shells ${shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz -fslgrad ${mc_bvec} ${mc_bval} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resWM} ${odfWM} ${resGM} ${odfGM} ${resCSF} ${odfCSF}
+	dwi2fod ${fod_algorithm} -shells ${shells} -force -nthreads ${threads} -mask ${ppsc}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz -fslgrad ${mc_bvec} ${mc_bval} ${ppsc}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resWM} ${odfWM} ${resGM} ${odfGM} ${resCSF} ${odfCSF}
 		;;
 	csd )
-	dwi2fod ${fod_algorithm} ${tp}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resSFWM} ${odfWM} -shells ${non_zero_shells} -force -nthreads ${threads} -mask ${tp}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz -fslgrad ${mc_bvec} ${mc_bval}
+	dwi2fod ${fod_algorithm} ${ppsc}/${grp}/${sbj}/dwi_bcecmc.nii.gz ${resSFWM} ${odfWM} -shells ${non_zero_shells} -force -nthreads ${threads} -mask ${ppsc}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz -fslgrad ${mc_bvec} ${mc_bval}
 		;;
 	* )
 	printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - Invalid FOD algorithm for dwi2fod!\n"

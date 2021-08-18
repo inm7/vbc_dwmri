@@ -15,10 +15,10 @@ done
 # ------------
 case ${parcellation} in
 native )
-	atl=${tp}/${grp}/${sbj}/${atlname}_to_dwi_${parcellation}+subctx.nii.gz
+	atl=${ppsc}/${grp}/${sbj}/${atlname}_to_dwi_${parcellation}+subctx.nii.gz
 ;;
 mni152 )
-	atl=${tp}/${grp}/${sbj}/${atlname}_to_dwi_${parcellation}.nii.gz
+	atl=${ppsc}/${grp}/${sbj}/${atlname}_to_dwi_${parcellation}.nii.gz
 ;;
 esac
 
@@ -58,13 +58,13 @@ fi
 # Start the SC reconstruct
 # ------------------------
 startingtime=$(date +%s)
-et=${tp}/${grp}/${sbj}/SC_pipeline_elapsedtime.txt
+et=${ppsc}/${grp}/${sbj}/SC_pipeline_elapsedtime.txt
 echo "[+] SC reconstruct for ${tractM} with ${threads} thread(s) - $(date)" >> ${et}
 echo "    Starting time in seconds ${startingtime}" >> ${et}
 
-tck=${tp}/${grp}/${sbj}/WBT_${tractM}_ctx.tck
-counts=${tp}/${grp}/${sbj}/${atlname}_${tractM}_ctx_count.csv
-lengths=${tp}/${grp}/${sbj}/${atlname}_${tractM}_ctx_length.csv
+tck=${ppsc}/${grp}/${sbj}/WBT_${tractM}_ctx.tck
+counts=${ppsc}/${grp}/${sbj}/${atlname}_${tractM}_ctx_count.csv
+lengths=${ppsc}/${grp}/${sbj}/${atlname}_${tractM}_ctx_length.csv
 
 # SC Reconstruct
 # --------------
