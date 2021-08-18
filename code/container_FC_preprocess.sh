@@ -297,9 +297,9 @@ fi
 # Preprocessed file
 # -----------------
 if [[ -f ${epi_out}_detrend.nii.gz ]]; then
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${epi_out}_detrend.nii.gz has been saved (Final oputput).\n"
+	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - ${epi_out}_detrend.nii.gz has been saved (Final oputput).\n"
 else
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${epi_out}_detrend.nii.gz has not been saved!!\n"
+	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - ${epi_out}_detrend.nii.gz has not been saved!!\n"
 	exit 1
 fi
 
@@ -314,16 +314,16 @@ else
 	epi_ref=${tp}/${sbj}/epi_avg_bc2.nii.gz
 
 	if [[ -f ${tp}/${sbj}/epi_avg_bc2.nii.gz ]]; then
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/epi_avg_bc2.nii.gz has been saved.\n"
+		printf "${GRN}[ANTs]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/epi_avg_bc2.nii.gz has been saved.\n"
 	else
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/epi_avg_bc2.nii.gz has not been saved!!\n"
+		printf "${GRN}[ANTs]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/epi_avg_bc2.nii.gz has not been saved!!\n"
 		exit 1
 	fi
 
 	# Elapsed time
 	# ------------
 	elapsedtime=$(($(date +%s) - ${startingtime}))
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+	printf "${GRN}[ANTs]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} Bias field correction (Average EPI)" >> ${et}
 fi
 
@@ -345,16 +345,16 @@ fi
 # Check a subject directory for Freesurfing
 # -----------------------------------------
 if [[ -d ${fp}/${grp}_${sbj}/mri/orig ]]; then
-	printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - The subject directory exists.\n"
+	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - The subject directory exists.\n"
 else
-	printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - Make a subject directory.\n"
+	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - Make a subject directory.\n"
 	mkdir -p ${fp}/${grp}_${sbj}/mri/orig
 fi
 
 # Check T1WI for freesurfing, if not, do the AC-PC alignment and the bias-field correction for T1WI
 # -------------------------------------------------------------------------------------------------
 if [[ -f ${fp}/${grp}_${sbj}/mri/orig/001.mgz ]]; then
-	printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - The T1-weighted image exists in the subject directory for recon-all.\n"
+	printf "${GRN}[ANTs, Freesurfer, and FSL]${RED} ID: ${grp}${sbj}${NCR} - The T1-weighted image exists in the subject directory for recon-all.\n"
 else
 
 	# Bias-field correction for T1-weighted image before recon-all
@@ -392,9 +392,9 @@ else
 	# AC-PC alignment
 	# ---------------
 	if [[ -f ${sc_tmp}/t1w_acpc.nii.gz ]]; then
-		printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - AC-PC aligned T1-weighted image exists!!!l.\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - AC-PC aligned T1-weighted image exists!!!l.\n"
 	else
-		printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - AC-PC align and convert T1-weighted image to mgz.\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - AC-PC align and convert T1-weighted image to mgz.\n"
 		fslreorient2std ${ppsc}/${grp}/${sbj}/t1w_bc.nii.gz ${sc_tmp}/t1w_bc_reori.nii.gz
 		robustfov -i ${sc_tmp}/t1w_bc_reori.nii.gz -b 170 -m ${sc_tmp}/acpc_roi2full.mat -r ${sc_tmp}/acpc_robustroi.nii.gz
 		flirt -interp spline -in ${sc_tmp}/acpc_robustroi.nii.gz -ref ${mni} -omat ${sc_tmp}/acpc_roi2std.mat -out ${sc_tmp}/acpc_roi2std.nii.gz -searchrx -30 30 -searchry -30 30 -searchrz -30 30
@@ -420,9 +420,9 @@ else
 	mri_convert ${sc_tmp}/t1w_acpc.nii.gz ${fp}/${grp}_${sbj}/mri/orig/001.mgz
 
 	if [[ -f ${fp}/${grp}_${sbj}/mri/orig/001.mgz ]]; then
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${fp}/${grp}_${sbj}/mri/orig/001.mgz has been saved.\n"
+		printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - ${fp}/${grp}_${sbj}/mri/orig/001.mgz has been saved.\n"
 	else
-		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${fp}/${grp}_${sbj}/mri/orig/001.mgz has not been saved!!\n"
+		printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - ${fp}/${grp}_${sbj}/mri/orig/001.mgz has not been saved!!\n"
 		exit 1
 	fi
 fi
@@ -435,9 +435,9 @@ else
 	printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - Start recon-all.\n"
 	recon-all -subjid ${grp}_${sbj} -all -noappend -no-isrunning -parallel -openmp ${threads} -sd ${fp}
 	if [[ -f ${fp}/${grp}_${sbj}/scripts/recon-all.done ]]; then
-		printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - ${fp}/${grp}_${sbj}/scripts/recon-all.done has been saved.\n"
+		printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - ${fp}/${grp}_${sbj}/scripts/recon-all.done has been saved.\n"
 	else
-		printf "${GRN}[MRtrix]${RED} ID: ${grp}${sbj}${NCR} - ${fp}/${grp}_${sbj}/scripts/recon-all.done has not been saved!!\n"
+		printf "${GRN}[Freesurfer]${RED} ID: ${grp}${sbj}${NCR} - ${fp}/${grp}_${sbj}/scripts/recon-all.done has not been saved!!\n"
 		exit 1
 	fi
 
@@ -639,9 +639,9 @@ else
 	fslmaths ${tp}/${sbj}/fs_t1_wm_mask_to_epi_upsample -add ${tp}/${sbj}/fs_t1_csf_mask_to_epi_upsample -add ${tp}/${sbj}/fs_t1_ctx_mask_to_epi_upsample -add ${tp}/${sbj}/fs_t1_subctx_mask_to_epi_upsample -bin ${tp}/${sbj}/fs_t1_global_mask_to_epi_upsample
 
 	if [[ -f ${tp}/${sbj}/fs_t1_global_mask_to_epi_upsample.nii.gz ]]; then
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/fs_t1_global_mask_to_epi_upsample.nii.gz has been saved.\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/fs_t1_global_mask_to_epi_upsample.nii.gz has been saved.\n"
 	else
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/fs_t1_global_mask_to_epi_upsample.nii.gz has not been saved!!\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/fs_t1_global_mask_to_epi_upsample.nii.gz has not been saved!!\n"
 		exit 1
 	fi
 
@@ -720,16 +720,16 @@ else
 	paste ${tp}/${sbj}/regressor_wm.txt ${tp}/${sbj}/regressor_csf.txt ${tp}/${sbj}/regressor_ctx.txt ${tp}/${sbj}/regressor_subctx.txt ${tp}/${sbj}/Friston-24.txt >> ${tp}/${sbj}/regressors_wm_csf_ctx_subctx_Friston.txt
 
 	if [[ -f ${tp}/${sbj}/regressor_global.txt ]]; then
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/regressor_global.txt has been saved.\n"
+		printf "${GRN}[AFNI and Unix]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/regressor_global.txt has been saved.\n"
 	else
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/regressor_global.txt has not been saved!!\n"
+		printf "${GRN}[AFNI and Unix]${RED} ID: ${grp}${sbj}${NCR} - ${tp}/${sbj}/regressor_global.txt has not been saved!!\n"
 		exit 1
 	fi
 
 	# Elapsed time
 	# ------------
 	elapsedtime=$(($(date +%s) - ${startingtime}))
-	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+	printf "${GRN}[AFNI and Unix]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} Nuisance regressors" >> ${et}
 fi
 
@@ -740,7 +740,6 @@ if [[ -f ${atlt1w} ]]; then
 else
 	printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - Transform the target atlas.\n"
 	printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - Parcellation scheme is ${parcellation}.\n"
-	fslmaths ${ppsc}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz -mul 0 ${tmp}/temp_mask.nii.gz
 
 	case ${parcellation} in
 
@@ -924,9 +923,9 @@ else
 	wait
 
 	if [[ -f ${atlepi} ]]; then
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${atlepi} has been saved.\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${atlepi} has been saved.\n"
 	else
-		printf "${GRN}[FSL Co-registration]${RED} ID: ${grp}${sbj}${NCR} - ${atlepi} has not been saved!!\n"
+		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - ${atlepi} has not been saved!!\n"
 		exit 1
 	fi
 
