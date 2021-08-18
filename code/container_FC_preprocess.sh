@@ -1,16 +1,15 @@
 #!/bin/bash
-
 input=${1}
 threads=${2}
 sbj=${3}
 
+# Read input parameters
+# ---------------------
 totalNum=$(grep -c $ ${input})
 for (( i = 1; i < totalNum + 1 ; i++ )); do
 	cmd=$(sed -n ${i}p ${input})
 	eval "${cmd}"
 done
-
-# num=${numparc}
 
 # Source path (BIDS)
 # ------------------
@@ -625,7 +624,7 @@ else
 	# ------------
 	elapsedtime=$(($(date +%s) - ${startingtime}))
 	printf "${GRN}[FSL]${RED} ID: ${grp}-${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
-	echo "    ${elapsedtime} Co-registration between R1-weighted image and EPI (rs-fMRI)" >> ${et}
+	echo "    ${elapsedtime} Co-registration between T1-weighted image and EPI (rs-fMRI)" >> ${et}
 fi
 
 # Transform tissue masks in T1 to the upsampled EPI
