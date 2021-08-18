@@ -702,6 +702,147 @@ else
 	echo "    ${elapsedtime} Nuisance regressors" >> ${et}
 fi
 
+# Atlas derived by a classifier (gcs)
+# -----------------------------------
+if [[ -f ${atlt1w} ]]; then
+	printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - ${atlt1w} has been checked!!!\n"
+else
+	printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - Transform the target atlas.\n"
+	printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - Parcellation scheme is ${parcellation}.\n"
+	fslmaths ${ppsc}/${grp}/${sbj}/dwi_bcecmc_avg_bet_mask.nii.gz -mul 0 ${tmp}/temp_mask.nii.gz
+
+	case ${parcellation} in
+
+	# Atlas on the native T1 (Freesurfer)
+	# -----------------------------------
+	native )
+		printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - Atlas: ${atlt1w}.\n"
+		mris_ca_label -sdir ${fp} -l ${fp}/${grp}_${sbj}/label/lh.cortex.label -seed 1234 ${grp}_${sbj} lh ${fp}/${grp}_${sbj}/surf/lh.sphere.reg ${ap}/${gcs_lh} ${fp}/${grp}_${sbj}/label/lh.${atlname}.annot
+		mris_ca_label -sdir ${fp} -l ${fp}/${grp}_${sbj}/label/rh.cortex.label -seed 1234 ${grp}_${sbj} rh ${fp}/${grp}_${sbj}/surf/rh.sphere.reg ${ap}/${gcs_rh} ${fp}/${grp}_${sbj}/label/rh.${atlname}.annot
+		TMP_SUBJECTS_DIR=${SUBJECTS_DIR}
+		export SUBJECTS_DIR=${fp}
+		mri_aparc2aseg --s ${grp}_${sbj} --o ${tmp}/temp_atlas.nii.gz --annot ${atlname}
+		export SUBJECTS_DIR=${TMP_SUBJECTS_DIR}
+		
+		# Relabeling in ascending order
+		# -----------------------------
+		fslmaths ${tmp}/temp_atlas.nii.gz -mul 0 ${tmp}/temp.nii.gz
+		case ${atlname} in
+
+		# Schaefer 100-Parcel
+		# -------------------
+		Schaefer2018_100Parcels_17Networks )
+			nLabel=0
+			for i in {1001..1050} {2001..2050}
+			do
+				(( nLabel++ ))
+				fslmaths ${tmp}/temp_atlas.nii.gz -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
+			done
+			;;
+
+		# Harvard-Oxford 96-Parcel
+		# ------------------------
+		HarvardOxford_96Parcels )
+			nLabel=0
+			for i in $(seq 1001 2 1095) $(seq 2002 2 2096)
+			do
+				(( nLabel++ ))
+				fslmaths ${tmp}/temp_atlas.nii.gz -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
+			done
+			;;
+		# Kleist 98-Parcel
+		# ----------------
+		Kleist_98Parcels )
+			nLabel=0
+			for i in {1001..1049} {2001..2049}
+			do
+				(( nLabel++ ))
+				fslmaths ${tmp}/temp_atlas.nii.gz -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
+			done
+			;;
+		
+		# Smith 88-Parcel
+		# ---------------
+		Smith_88Parcels )
+			nLabel=0
+			for i in {1001..1044} {2001..2044}
+			do
+				(( nLabel++ ))
+				fslmaths ${tmp}/temp_atlas.nii.gz -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
+			done
+			;;
+		
+		# Desikan-Killiany-Tourville (DKT) atlas
+		# --------------------------------------
+		DKTaparc.atlas.acfb40.noaparc.i12.2020-05-13 )
+			nLabel=0
+			for i in 1002 1003 1005 1006 1007 1008 1009 1010 1011 1012 1013 1014 1015 1016 1017 1018 1019 1020 1021 1022 1023 1024 1025 1026 1027 1028 1029 1030 1031 1034 1035 2002 2003 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 2020 2021 2022 2023 2024 2025 2026 2027 2028 2029 2030 2031 2034 2035
+			do
+				(( nLabel++ ))
+				fslmaths ${tmp}/temp_atlas.nii.gz -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
+			done
+			;;
+
+		# Desikan-Killiany (DK) atlas
+		# ---------------------------
+		DesikanKilliany_68Parcels )
+			nLabel=0
+			for i in 1001 1002 1003 1005 1006 1007 1008 1009 1010 1011 1012 1013 1014 1015 1016 1017 1018 1019 1020 1021 1022 1023 1024 1025 1026 1027 1028 1029 1030 1031 1032 1033 1034 1035 2001 2002 2003 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 2020 2021 2022 2023 2024 2025 2026 2027 2028 2029 2030 2031 2032 2033 2034 2035
+			do
+				(( nLabel++ ))
+				fslmaths ${tmp}/temp_atlas.nii.gz -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
+			done
+			;;
+
+		* )
+			nLabel=0
+			for i in ${labels}
+			do
+				(( nLabel++ ))
+				fslmaths ${tmp}/temp_atlas.nii.gz -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
+			done
+			;;
+		esac
+		num=${nLabel}
+
+		# Add subcortical areas
+		# ---------------------
+		for i in 10 11 12 13 17 18 26 49 50 51 52 53 54 58
+		do
+			(( nLabel++ ))
+			fslmaths ${aseg} -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
+		done
+		num=${nLabel}
+
+		mv ${tmp}/temp.nii.gz ${atlt1w}
+		fslreorient2std ${atlt1w} ${atlt1w}
+		wait
+		rm -rf ${tmp}/temp*.nii.gz
+		wait
+
+		if [[ -f ${atlt1w} ]]; then
+			printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - ${atlt1w} has been saved.\n"
+		else
+			printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - ${atlt1w} has not been saved!!\n"
+			exit 1
+		fi
+
+		# Elapsed time
+		# ------------
+		elapsedtime=$(($(date +%s) - ${startingtime}))
+		printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
+		echo "    ${elapsedtime} Atlas on the native T1 (Freesurfer)" >> ${et}
+		;;
+
+	# Atlas on the MNI152 T1 1mm (standard)
+	# -------------------------------------
+	mni152 )
+		printf "${GRN}[Freesurfer & FSL]${RED} ID: ${grp}${sbj}${NCR} - Atlas on the MNI space is not supported by the current pipeline.\n"
+		;;
+	* )
+	esac
+fi
+
 # Atlas transformation from T1 to resliced EPI
 # --------------------------------------------
 if [[ -f ${atlepi} ]]; then
