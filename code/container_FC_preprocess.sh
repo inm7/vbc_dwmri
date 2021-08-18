@@ -22,6 +22,7 @@ tp=${ppfc}/${grp}
 
 # Set file paths
 # --------------
+t1=${sp}/${grp}/${sbj}/anat/${sbj}_T1w.nii.gz
 sliceorder=/opt/sliceorder.txt
 epiup=${tp}/${sbj}/epi_sm_upsample.nii.gz
 epi_avg=${tp}/${sbj}/epi_sm_upsample_avg.nii.gz
@@ -30,6 +31,7 @@ tmp=/tmp/${grp}_${sbj}
 mc=${tp}/${sbj}/mc.1D
 mcdt=${tp}/${sbj}/mcdt.1D
 sc_tmp=${ppsc}/${grp}/${sbj}/temp
+aseg=${sc_tmp}/aseg.nii.gz
 atlt1w=${ppsc}/${sbj}/${atlname}_to_fs_t1_native+subctx.nii.gz
 atlepi=${tp}/${sbj}/${atlname}_to_epi_upsample_native+subctx.nii.gz
 
@@ -43,6 +45,18 @@ NCR='\033[0m' 		# No Color
 # ------------------------------
 source /usr/local/bin/container_SC_dependencies.sh
 export SUBJECTS_DIR=/opt/freesurfer/subjects
+
+# Freesurfer license
+# ------------------
+if [[ -f /opt/freesurfer/license.txt ]]; then
+	printf "Freesurfer license has been checked.\n"
+else
+	echo "${email}" >> $FREESURFER_HOME/license.txt
+	echo "${digit}" >> $FREESURFER_HOME/license.txt
+	echo "${line1}" >> $FREESURFER_HOME/license.txt
+	echo "${line2}" >> $FREESURFER_HOME/license.txt
+	printf "Freesurfer license has been updated.\n"
+fi
 
 # Transform function for loops
 # ----------------------------
@@ -196,6 +210,7 @@ else
 	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} Head motion correction" >> ${et}
 fi
+
 # EPI upsampling 2mm iso-cubic
 # ----------------------------
 printf "  + EPI upsampling 2mm iso-cubic\n"
@@ -311,6 +326,22 @@ else
 	printf "${GRN}[FSL]${RED} ID: ${grp}${sbj}${NCR} - Elapsed time = ${elapsedtime} seconds.\n"
 	echo "    ${elapsedtime} Bias field correction (Average EPI)" >> ${et}
 fi
+
+# Check a subject directory for structural process
+# ------------------------------------------------
+if [[ -d ${ppsc}/${grp}/${sbj} ]]; then
+	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - The subject directory (${ppsc}/${grp}/${sbj}) exists.\n"
+else
+	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - Make a subject directory.\n"
+	mkdir -p ${ppsc}/${grp}/${sbj}
+fi
+if [[ -d ${sc_tmp} ]]; then
+	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - The subject directory (${sc_tmp}) exists.\n"
+else
+	printf "${GRN}[Unix]${RED} ID: ${grp}${sbj}${NCR} - Make a subject directory.\n"
+	mkdir -p ${sc_tmp}
+fi
+
 # Check a subject directory for Freesurfing
 # -----------------------------------------
 if [[ -d ${fp}/${grp}_${sbj}/mri/orig ]]; then

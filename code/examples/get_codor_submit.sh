@@ -13,9 +13,9 @@ OUTPUT_SC_DIR='/data/project/personalized_pipeline/03_Structural_Connectivity'
 OUTPUT_FC_DIR='/data/project/personalized_pipeline/03_Functional_Connectivity'
 FREESURFER_OUTPUT='/data/project/personalized_pipeline/Neuroimage/Tools/freesurfer/subjects'
 FREESURFER_LICENSE='/opt/freesurfer/6.0/license.txt'
-INPUT_PARAMETERS='/data/project/personalized_pipeline/02_MRI_data/input_HCP_500K_Schaefer100P17N.txt'
-
-SHELL_SCRIPT=$(pwd)/${1}
+INPUT_PARAMETERS='/data/project/personalized_pipeline/02_MRI_data/input_TEST_10M_Schaefer100P17N.txt'
+SLICEORDER='/data/project/personalized_pipeline/02_MRI_data/TEST_sliceorder.txt'
+# SHELL_SCRIPT=$(pwd)/${1}
 
 # create the logs dir if it doesn't exist
 [ ! -d "${LOGS_DIR}" ] && mkdir -p "${LOGS_DIR}"
@@ -36,7 +36,7 @@ executable     = /usr/bin/singularity
 # loop over all subjects
 for sub in 101309 102311; do
     printf "arguments = exec --cleanenv \
-                        -B ${SOFTWARE_DIR}:/mnt_sw,${DATA_DIR}:/mnt_sp,${OUTPUT_SC_DIR}:/mnt_sc,${OUTPUT_FC_DIR}:/mnt_fc,${FREESURFER_OUTPUT}:/mnt_fp,${ATLAS_DIR}:/mnt_ap,${FREESURFER_LICENSE}:/opt/freesurfer/license.txt,${SHELL_SCRIPT}:/opt/script.sh,${INPUT_PARAMETERS}:/opt/input.txt \
+                        -B ${SOFTWARE_DIR}:/mnt_sw,${DATA_DIR}:/mnt_sp,${OUTPUT_SC_DIR}:/mnt_sc,${OUTPUT_FC_DIR}:/mnt_fc,${FREESURFER_OUTPUT}:/mnt_fp,${ATLAS_DIR}:/mnt_ap,${FREESURFER_LICENSE}:/opt/freesurfer/license.txt,${SHELL_SCRIPT}:/opt/script.sh,${INPUT_PARAMETERS}:/opt/input.txt,${SLICEORDER}:/opt/sliceorder.txt \
                         ${VBC_DWMRI} \
                         /mnt_sw/code/container_FC_pipeline.sh \
                         /opt/input.txt \

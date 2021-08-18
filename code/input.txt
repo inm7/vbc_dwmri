@@ -78,7 +78,6 @@ tck2connectome_assignment_radial_search=2 # default = 2
 # =============
 TR=2.21
 
-
 # [PART 6] ======
 # BOLD extraction
 # ===============
