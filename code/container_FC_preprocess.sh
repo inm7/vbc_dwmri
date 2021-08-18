@@ -10,7 +10,7 @@ for (( i = 1; i < totalNum + 1 ; i++ )); do
 	eval "${cmd}"
 done
 
-num=${numparc}
+# num=${numparc}
 
 # Source path (BIDS)
 # ------------------
@@ -110,13 +110,13 @@ if [[ -d ${tp}/${sbj} ]]; then
 	printf "  + ${tp}/${sbj} exists.\n"
 else
 	printf "  + Create ${tp}/${sbj}.\n"
-	mkdir ${tp}/${sbj}
+	mkdir -p ${tp}/${sbj}
 fi
 if [[ -d ${tmp} ]]; then
 	printf "  + ${tmp} exists.\n"
 else
 	printf "  + Create ${tmp}.\n"
-	mkdir ${tmp}
+	mkdir -p ${tmp}
 fi
 
 # Start the FC preprocess
