@@ -27,6 +27,7 @@ sliceorder=/opt/sliceorder.txt
 epiup=${tp}/${sbj}/epi_sm_upsample.nii.gz
 epi_avg=${tp}/${sbj}/epi_sm_upsample_avg.nii.gz
 epi_out=${tp}/${sbj}/epi_sm_upsample
+epi_ref=${tp}/${sbj}/epi_avg_bc2.nii.gz
 tmp=/tmp/${grp}_${sbj}
 mc=${tp}/${sbj}/mc.1D
 mcdt=${tp}/${sbj}/mcdt.1D
@@ -306,17 +307,16 @@ fi
 # Bias field correction (Average EPI)
 # -----------------------------------
 printf "  + Bias field correction for referencing\n"
-if [[ -f ${tp}/${sbj}/epi_avg_bc2.nii.gz ]]; then
-    printf "  + ${tp}/${sbj}/epi_avg_bc2.nii.gz has been checked! Skip upsampling.\n"
+if [[ -f ${epi_ref} ]]; then
+    printf "  + ${epi_ref} has been checked! Skip upsampling.\n"
 else
 	N4BiasFieldCorrection -i ${epi_avg} -o [${tp}/${sbj}/epi_avg_bc1.nii.gz,${tp}/${sbj}/epi_avg_bf1.nii.gz]
-	N4BiasFieldCorrection -i ${tp}/${sbj}/epi_avg_bc1.nii.gz -o [${tp}/${sbj}/epi_avg_bc2.nii.gz,${tp}/${sbj}/epi_avg_bf2.nii.gz]
-	epi_ref=${tp}/${sbj}/epi_avg_bc2.nii.gz
+	N4BiasFieldCorrection -i ${tp}/${sbj}/epi_avg_bc1.nii.gz -o [${epi_ref},${tp}/${sbj}/epi_avg_bf2.nii.gz]
 
-	if [[ -f ${tp}/${sbj}/epi_avg_bc2.nii.gz ]]; then
-		printf "${GRN}[ANTs]${RED} ID: ${grp}-${sbj}${NCR} - ${tp}/${sbj}/epi_avg_bc2.nii.gz has been saved.\n"
+	if [[ -f ${epi_ref} ]]; then
+		printf "${GRN}[ANTs]${RED} ID: ${grp}-${sbj}${NCR} - ${epi_ref} has been saved.\n"
 	else
-		printf "${GRN}[ANTs]${RED} ID: ${grp}-${sbj}${NCR} - ${tp}/${sbj}/epi_avg_bc2.nii.gz has not been saved!!\n"
+		printf "${GRN}[ANTs]${RED} ID: ${grp}-${sbj}${NCR} - ${epi_ref} has not been saved!!\n"
 		exit 1
 	fi
 
@@ -558,6 +558,8 @@ else
 		exit 1
 	fi
 
+	rm -rf ${sc_tmp}/temp*.nii.gz
+
 	# Elapsed time
 	# ------------
 	elapsedtime=$(($(date +%s) - ${startingtime}))
@@ -633,7 +635,7 @@ if [[ -f ${tp}/${sbj}/fs_t1_global_mask_to_epi_upsample.nii.gz ]]; then
     printf "  + ${tp}/${sbj}/fs_t1_global_mask_to_epi_upsample.nii.gz has been checked! Skip transformations of tissue masks.\n"
 else
 	for tissue in ctx subctx wm csf; do
-		applywarp -i ${ppsc}/${grp}/${sbj}/temp/fs_t1_${tissue}_mask.nii.gz -r ${epi_ref} -o ${tp}/${sbj}/fs_t1_${tissue}_mask_to_epi_upsample --premat=${tp}/${sbj}/epi_to_fs_t1_invaffine.mat
+		applywarp -i ${sc_tmp}/fs_t1_${tissue}_mask.nii.gz -r ${epi_ref} -o ${tp}/${sbj}/fs_t1_${tissue}_mask_to_epi_upsample --premat=${tp}/${sbj}/epi_to_fs_t1_invaffine.mat
 		fslmaths ${tp}/${sbj}/fs_t1_${tissue}_mask_to_epi_upsample -thr 0.5 -bin ${tp}/${sbj}/fs_t1_${tissue}_mask_to_epi_upsample
 	done
 	fslmaths ${tp}/${sbj}/fs_t1_wm_mask_to_epi_upsample -add ${tp}/${sbj}/fs_t1_csf_mask_to_epi_upsample -add ${tp}/${sbj}/fs_t1_ctx_mask_to_epi_upsample -add ${tp}/${sbj}/fs_t1_subctx_mask_to_epi_upsample -bin ${tp}/${sbj}/fs_t1_global_mask_to_epi_upsample
