@@ -140,7 +140,7 @@ fi
 if [[ -f ${sliceorder} ]]; then
 	printf "${GRN}[Functional EPI]${RED} ID: ${grp}-${sbj}${NCR} - Check file: ${sliceorder}\n"
 else
-	printf "${RED}[Functional EPI]${RED} ID: ${grp}-${sbj}${NCR} - There is not a functional EPI!!!\n"
+	printf "${RED}[Functional EPI]${RED} ID: ${grp}-${sbj}${NCR} - There is no slice order information!!!\n"
 	exit 1
 fi
 
