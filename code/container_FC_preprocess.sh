@@ -307,7 +307,7 @@ fi
 # -----------------------------------
 printf "  + Bias field correction for referencing\n"
 if [[ -f ${epi_ref} ]]; then
-    printf "  + ${epi_ref} has been checked! Skip upsampling.\n"
+    printf "  + ${epi_ref} has been checked! Skip bias-field correction.\n"
 else
 	N4BiasFieldCorrection -i ${epi_avg} -o [${tp}/${sbj}/epi_avg_bc1.nii.gz,${tp}/${sbj}/epi_avg_bf1.nii.gz]
 	N4BiasFieldCorrection -i ${tp}/${sbj}/epi_avg_bc1.nii.gz -o [${epi_ref},${tp}/${sbj}/epi_avg_bf2.nii.gz]
