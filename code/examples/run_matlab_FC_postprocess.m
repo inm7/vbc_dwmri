@@ -9,9 +9,9 @@ sbjList  = {'ID_0001','ID_0002'};
 % -----------------
 input_options.preproc_dir   = '/preprocessed/fmri/path';    % Directory contains 'epi_sm_upsample_detrend.nii.gz' file by 'container_FC_preprocess.sh'
 input_options.target_dir    = '/postproceesed/fmri/path';
-input_options.atlCond       = {'sch','ho','kst','dk','sth'};
-input_options.atlList       = {'Schaefer2018_100Parcels_17Networks','HarvardOxford_96Parcels','Kleist_98Parcels','DesikanKilliany_68Parcels','Smith_88Parcels'};
-input_options.atlListCpt    = {'Sch100P','HvOx96P','Klst98P','DK68P','Smith88P'};
+input_options.atlCond       = {'sch','ho','kst','dk','sth','sch200'};
+input_options.atlList       = {'Schaefer2018_100Parcels_17Networks','HarvardOxford_96Parcels','Kleist_98Parcels','DesikanKilliany_68Parcels','Smith_88Parcels','Schaefer2018_200Parcels_17Networks'};
+input_options.atlListCpt    = {'Sch100P','HvOx96P','Klst98P','DK68P','Smith88P','Sch200P'};
 input_options.filtCond      = {'notf','bptf_mat','l_bptf_mat','h_bptf_mat'};
 input_options.grp           = 'Group_Name';
 input_options.numVols       = 300;  % No. EPI volumes

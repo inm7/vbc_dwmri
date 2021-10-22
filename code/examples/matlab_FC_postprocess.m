@@ -35,17 +35,19 @@ function matlab_FC_postprocess(input_options)
     nii_kst = load_untouch_nii(fullfile(preproc_dir,sbj,'Kleist_98Parcels_to_epi_upsample_native+subctx.nii.gz'));
     nii_sth = load_untouch_nii(fullfile(preproc_dir,sbj,'Smith_88Parcels_to_epi_upsample_native+subctx.nii.gz'));
     nii_ho  = load_untouch_nii(fullfile(preproc_dir,sbj,'HarvardOxford_96Parcels_to_epi_upsample_native+subctx.nii.gz'));
+    nii_sch200 = load_untouch_nii(fullfile(preproc_dir,sbj,'Schaefer2018_200Parcels_17Networks_to_epi_upsample_native+subctx.nii.gz'));
     fprintf('done.\n')
     
     % Take labeled voxels
     % ---------------------------------------------------------------------
-    lgc_label = nii_sch.img > 0 | nii_dk.img > 0 | nii_kst.img > 0 | nii_sth.img > 0 | nii_ho.img > 0;
+    lgc_label = nii_sch.img > 0 | nii_dk.img > 0 | nii_kst.img > 0 | nii_sth.img > 0 | nii_ho.img > 0 | nii_sch200.img > 0;
     label_vec_sch = nii_sch.img(lgc_label);
     label_vec_dk  = nii_dk.img(lgc_label);
     label_vec_kst = nii_kst.img(lgc_label);
     label_vec_sth = nii_sth.img(lgc_label);
     label_vec_ho  = nii_ho.img(lgc_label);
-    
+    label_vec_sch200 = nii_sch200.img(lgc_label);
+
     numVox = sum(lgc_label(:));
     Y = nan(numVols,numVox);
     for nVol = 1:numVols
