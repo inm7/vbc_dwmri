@@ -104,3 +104,12 @@
 #     (( nStep++ ))
 #     printf "step ${nStep}: ${i}\n"
 # done
+
+# tp=/Volumes/PROJECTS/Data/Functional_Connectivity/PD_HHU_by_KJung_2_Cases
+# sbj=PD_20150522
+# numVols=$(fslnvols ${tp}/${sbj}/epi_sm_upsample_detrend.nii.gz)
+# printf "Total number of time points = ${numVols}\n"
+# for (( i = 0; i < numVols; i++ ))
+# do
+#     printf "${i}\n"
+# done

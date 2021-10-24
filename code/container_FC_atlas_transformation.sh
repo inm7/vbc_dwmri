@@ -89,6 +89,9 @@ do
         Schaefer2018_100Parcels_17Networks )
         num=114
         ;;
+		Schaefer2018_200Parcels_17Networks )
+        num=214
+        ;;
         DesikanKilliany_68Parcels )
         num=82
         ;;

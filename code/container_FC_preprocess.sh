@@ -220,7 +220,10 @@ else
     cd ${tmp}
     fslsplit ${tp}/${sbj}/epi_sm.nii.gz temp_epi_ -t
     cmd="fslmerge -t ${tmp}/merged_upsampled_epi.nii.gz"
-    for i in {0..299}; do
+	numVols=$(fslnvols ${tp}/${sbj}/epi_sm.nii.gz)
+	printf "  + Total number of time points of EPI = ${numVols}\n"
+    for (( i = 0; i < numVols; i++ ))
+	do
     	epinum=$(printf "%04d" ${i})
     	flirt -in ${tmp}/temp_epi_${epinum}.nii.gz -ref ${tmp}/temp_epi_${epinum}.nii.gz -applyisoxfm 2.0 -out ${tmp}/temp_epi_${epinum}_upsample.nii.gz
     	cmd+=" ${tmp}/temp_epi_${epinum}_upsample.nii.gz"
@@ -792,11 +795,33 @@ else
 			done
 			;;
 		
+		# Flechsig 92-Parcel
+		# ---------------
+		Flechsig_92Parcels )
+			nLabel=0
+			for i in {1001..1046} {2001..2046}
+			do
+				(( nLabel++ ))
+				fslmaths ${tmp}/temp_atlas.nii.gz -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
+			done
+			;;
+		
 		# Smith 88-Parcel
 		# ---------------
 		Smith_88Parcels )
 			nLabel=0
 			for i in {1001..1044} {2001..2044}
+			do
+				(( nLabel++ ))
+				fslmaths ${tmp}/temp_atlas.nii.gz -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
+			done
+			;;
+		
+		# Brodmann 78-Parcel
+		# ------------------
+		Brodmann_78Parcels )
+			nLabel=0
+			for i in {1001..1039} {2001..2039}
 			do
 				(( nLabel++ ))
 				fslmaths ${tmp}/temp_atlas.nii.gz -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz

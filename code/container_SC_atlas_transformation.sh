@@ -155,11 +155,33 @@ else
 			done
 			;;
 		
+		# Flechsig 92-Parcel
+		# ---------------
+		Flechsig_92Parcels )
+			nLabel=0
+			for i in {1001..1046} {2001..2046}
+			do
+				(( nLabel++ ))
+				fslmaths ${tmp}/temp_atlas.nii.gz -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
+			done
+			;;
+
 		# Smith 88-Parcel
 		# ---------------
 		Smith_88Parcels )
 			nLabel=0
 			for i in {1001..1044} {2001..2044}
+			do
+				(( nLabel++ ))
+				fslmaths ${tmp}/temp_atlas.nii.gz -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
+			done
+			;;
+		
+		# Brodmann 78-Parcel
+		# ------------------
+		Brodmann_78Parcels )
+			nLabel=0
+			for i in {1001..1039} {2001..2039}
 			do
 				(( nLabel++ ))
 				fslmaths ${tmp}/temp_atlas.nii.gz -thr ${i} -uthr ${i} -bin -mul ${nLabel} -add ${tmp}/temp.nii.gz ${tmp}/temp.nii.gz
