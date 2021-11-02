@@ -5,7 +5,7 @@ tp=/mnt_tp # /p/scratch/cjinm71/jung3/03_Structural_Connectivity
 
 atl=HarvardOxford_96Parcels
 
-avg=fsaverage
+avg=fsaverage # OUTPUT of mode_labels_HarvOxf_96Parccels_annot_HCP_N351.m function, which makes fsaverage files from 351 annot files.
 LUT=${ap}/${atl}_LUT.txt
 
 # Call container_SC_dependencies
