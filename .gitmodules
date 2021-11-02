@@ -1,0 +1,4 @@
+[submodule "classifiers"]
+	path = classifiers
+	url = ./classifiers
+	datalad-id = 92a3b5a1-4ac2-4507-af51-2d396e61021a
